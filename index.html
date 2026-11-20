@@ -25356,24 +25356,29 @@
       pushUndoSnapshot(`添加${name}`);
       const id = `${type}_${Date.now().toString().slice(-3)}`;
       const count = sceneData.objects.filter((o) => o.type === type).length;
-      const offsetX = Number(((count % 3 - 1) * 0.75 + (Math.random() - 0.5) * 0.3).toFixed(2));
-      const offsetZ = Number(((Math.random() - 0.5) * 0.8).toFixed(2));
+      const base = computeViewportCenterSpawnPos();
       const obj = {
         id,
         name: `${name}_${count + 1}`,
         type,
-        pos: [offsetX, Number((size[1] * 0.5).toFixed(2)), offsetZ],
+        pos: [
+          base[0],
+          Number((base[1] + (size[1] || 0.5) * 0.5).toFixed(3)),
+          base[2],
+        ],
         size,
         rot: [0, 0, 0],
         color,
       };
       sceneData.objects.push(obj);
       selectedObjId = id;
+      selectedObjIds.clear();
+      selectedObjIds.add(id);
       setInteractionMode("object");
       rebuildThreeScene();
       syncPythonCodeFromScene();
       closeAllTopMenus();
-      logStatus(`＋ 已添加 ${obj.name} (${type})`);
+      logStatus(`＋ 已在左视口中心添加 ${obj.name} (${type})`);
     }
 
     document.getElementById("btnAddBox")?.addEventListener("click", () => addNewPrimitive("box", "方体", [0.5, 0.5, 0.5], "#EAEBED"));
@@ -25389,10 +25394,11 @@
       pushUndoSnapshot(`添加场景资产: ${name}`);
       const count = (sceneData.objects || []).filter((o) => o.name && o.name.startsWith(name)).length;
       const id = `asset_${Date.now().toString().slice(-4)}_${count + 1}`;
-      const pos = posOverride || [
-        Number(((count % 3 - 1) * 1.2).toFixed(2)),
-        Number((size[1] * 0.5).toFixed(2)),
-        Number((-1.5 - count * 0.9).toFixed(2)),
+      const base = computeViewportCenterSpawnPos();
+      const pos = [
+        base[0],
+        Number((base[1] + (size[1] || 0.5) * 0.5).toFixed(3)),
+        base[2],
       ];
       const obj = {
         id,
@@ -25406,13 +25412,15 @@
       };
       sceneData.objects.push(obj);
       selectedObjId = id;
+      selectedObjIds.clear();
+      selectedObjIds.add(id);
       setInteractionMode("object");
       rebuildThreeScene();
       renderSceneOutliner();
       renderTimelineUI();
       syncPythonCodeFromScene();
       closeAllTopMenus();
-      logStatus(`＋ 已添加场景资产【${obj.name}】`);
+      logStatus(`＋ 已在左视口中心添加场景资产【${obj.name}】`);
     }
     document.getElementById("btnAddDoorFrame")?.addEventListener("click", () => addSceneAssetProp("box", "门框", [0.9, 2.1, 0.18], "#7D8592"));
     document.getElementById("btnAddWindowFrame")?.addEventListener("click", () => addSceneAssetProp("box", "窗框", [1.2, 1.1, 0.18], "#8A94A3", [0, 1.45, -2.0]));
@@ -25432,14 +25440,15 @@
       const gunCount = (sceneData.objects || []).filter((o) => isGunOrRifleObject(o)).length;
       const id = nextUniqueObjectId("rifle");
       const col = GUN_PROP_PALETTE[gunCount % GUN_PROP_PALETTE.length] || "#4A5568";
-      const activeChar = getSelectedCharacter() || (sceneData.objects || []).find((o) => o.type === "character");
+      const activeChar = getSelectedCharacter();
+      const base = computeViewportCenterSpawnPos();
       const pos = activeChar
         ? [
             Number(((activeChar.pos?.[0] || 0) - 0.16).toFixed(3)),
-            1.18,
+            Number(((activeChar.pos?.[1] || 0) + 1.18).toFixed(3)),
             Number(((activeChar.pos?.[2] || 0) + 0.34).toFixed(3)),
           ]
-        : [Number((gunCount * 0.45).toFixed(2)), 1.15, 0.25];
+        : [base[0], Number((base[1] + 1.15).toFixed(3)), base[2]];
       const rifleObj = {
         id,
         name: `${gunCount + 1}号猎枪`,
@@ -25590,14 +25599,16 @@
       const count = existingUaz.length;
       const id = `uaz_${Date.now().toString().slice(-3)}`;
       const size = [1.78, 2.02, 4.02];
-      const posX = count === 0 ? -0.35 : Number((-0.35 + count * 2.35).toFixed(2));
-      const posZ = count === 0 ? -0.20 : Number((-0.20 - (count % 2) * 1.2).toFixed(2));
+      const base = computeViewportCenterSpawnPos();
+      const posX = base[0];
+      const posY = Number((base[1] + size[1] * 0.5).toFixed(3));
+      const posZ = base[2];
       const rotY = count === 0 ? 28.0 : 18.0;
       const uazObj = {
         id,
         name: count === 0 ? "UAZ-469 越野车" : `UAZ-469 越野车 ${count + 1}`,
         type: "uaz469",
-        pos: [posX, Number((size[1] * 0.5).toFixed(2)), posZ],
+        pos: [posX, posY, posZ],
         size,
         rot: [0, rotY, 0],
         color: "#434D38",
@@ -25606,11 +25617,13 @@
       sceneData.objects.push(uazObj);
       seatFourCharactersInUaz(uazObj);
       selectedObjId = id;
+      selectedObjIds.clear();
+      selectedObjIds.add(id);
       setInteractionMode("object");
       rebuildThreeScene();
       syncPythonCodeFromScene();
       closeAllTopMenus();
-      logStatus(`🚙 已添加【${uazObj.name}】及车内 4 名坐姿乘员；按 G 移动 / R 旋转车辆时车上 4 人随车联动`);
+      logStatus(`🚙 已在左视口中心添加【${uazObj.name}】及车内 4 名坐姿乘员；按 G 移动 / R 旋转车辆时车上 4 人随车联动`);
       return uazObj;
     }
     document.getElementById("btnAddUaz469")?.addEventListener("click", () => addNewUaz469());
@@ -25620,12 +25633,12 @@
       const existing = sceneData.objects.filter((o) => o.type === "uaz469");
       const count = existing.length;
       const id = `veh_${Date.now().toString().slice(-3)}`;
-      const posX = count === 0 ? 0.0 : Number((count * 2.4).toFixed(2));
+      const base = computeViewportCenterSpawnPos();
       const vehObj = {
         id,
         name: count === 0 ? variantName : `${variantName} ${count + 1}`,
         type: "uaz469",
-        pos: [posX, Number((size[1] * 0.5).toFixed(2)), 0.0],
+        pos: [base[0], Number((base[1] + size[1] * 0.5).toFixed(3)), base[2]],
         size: [...size],
         rot: [0, 0, 0],
         color,
@@ -25633,16 +25646,59 @@
       };
       sceneData.objects.push(vehObj);
       selectedObjId = id;
+      selectedObjIds.clear();
+      selectedObjIds.add(id);
       setInteractionMode("object");
       rebuildThreeScene();
       renderSceneOutliner();
       renderTimelineUI();
       syncPythonCodeFromScene();
       closeAllTopMenus();
-      logStatus(`🚙 已添加车辆【${vehObj.name}】`);
+      logStatus(`🚙 已在左视口中心添加车辆【${vehObj.name}】`);
     }
     document.getElementById("btnAddPickupVehicle")?.addEventListener("click", () => addOtherVehicleVariant("轻型皮卡 (4.4m)", [1.82, 1.88, 4.40], "#4E6172"));
     document.getElementById("btnAddTruckVehicle")?.addEventListener("click", () => addOtherVehicleVariant("军用卡车 (5.6m)", [2.20, 2.55, 5.60], "#4A5546"));
+
+    // 计算左视口（3D 自由工作区）画面正中心的 3D 落点（优先射线命中可见场景表面，其次地面 Y=0 交点，再回退左视口注视目标）
+    function computeViewportCenterSpawnPos() {
+      const cam = typeof workCamera !== "undefined" ? workCamera : directorCamera;
+      const orbitTgt = typeof workOrbit !== "undefined" ? workOrbit.target : (typeof camOrbit !== "undefined" ? camOrbit.target : null);
+
+      if (cam && typeof THREE !== "undefined" && typeof objectsRoot !== "undefined") {
+        cam.updateMatrixWorld(true);
+        const rc = new THREE.Raycaster();
+        rc.setFromCamera(new THREE.Vector2(0, 0), cam);
+        const pickMeshes = [];
+        objectsRoot.traverse((child) => {
+          if (!child.isMesh || !child.visible) return;
+          const oid = child.userData?.objId;
+          if (oid) {
+            const obj = sceneData?.objects?.find((o) => o.id === oid);
+            if (obj && obj.type === "character") return;
+          }
+          pickMeshes.push(child);
+        });
+        const hits = rc.intersectObjects(pickMeshes, false);
+        if (hits.length > 0 && Number.isFinite(hits[0].distance) && hits[0].distance < 200) {
+          const pt = hits[0].point;
+          return [Number(pt.x.toFixed(3)), Number(pt.y.toFixed(3)), Number(pt.z.toFixed(3))];
+        }
+        // 未命中实体网格时，求画面中心射线与 Y=0 地面的交点
+        const groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+        const groundHit = new THREE.Vector3();
+        if (rc.ray.intersectPlane(groundPlane, groundHit) && groundHit.distanceTo(cam.position) < 80) {
+          return [Number(groundHit.x.toFixed(3)), 0, Number(groundHit.z.toFixed(3))];
+        }
+      }
+      if (orbitTgt) {
+        return [
+          Number((orbitTgt.x || 0).toFixed(3)),
+          Number(Math.max(0, orbitTgt.y || 0).toFixed(3)),
+          Number((orbitTgt.z || 0).toFixed(3)),
+        ];
+      }
+      return [0, 0, 0];
+    }
 
     // 添加角色通用方法：支持 "mannequin" (IK 关节人偶) 与 "pawn" (球头人偶)
     const CHAR_STAGE_PALETTE = ["#D98178", "#73A9D8", "#79B69C", "#D4B56C", "#A18ACB", "#62B4BC", "#D99C68", "#C984A4"];
@@ -25653,25 +25709,50 @@
       const charCount = existingChars.length;
       const id = `char_${Date.now().toString().slice(-3)}`;
       const baseTargets = presetsData["standing"]?.targets || FALLBACK_STANDING_TARGETS;
-      const candidatePositions = [
-        [0.0, 0.0, 0.0],
-        [-0.45, 0.0, 0.0],
-        [0.45, 0.0, 0.0],
-        [-0.95, 0.0, 0.0],
-        [0.95, 0.0, 0.0],
-        [0.0, 0.0, 0.65],
-        [-1.40, 0.0, 0.0],
-        [1.40, 0.0, 0.0],
+
+      // 未选中对象（或选中非人物）时，自动落在当前视口画面中心；若已选中人物则以该人物位置为锚点旁侧错开
+      const curSelObj = (selectedObjId && !String(selectedObjId).startsWith("__"))
+        ? sceneData.objects.find((o) => o.id === selectedObjId)
+        : null;
+      const anchor = (curSelObj && curSelObj.type === "character")
+        ? [
+            Number(curSelObj.pos?.[0] || 0),
+            Number(curSelObj.pos?.[1] || 0),
+            Number(curSelObj.pos?.[2] || 0),
+          ]
+        : computeViewportCenterSpawnPos();
+
+      const candidateOffsets = [
+        [0.0, 0.0],
+        [-0.55, 0.0],
+        [0.55, 0.0],
+        [0.0, 0.55],
+        [-1.10, 0.0],
+        [1.10, 0.0],
+        [0.0, -0.55],
+        [-1.65, 0.0],
+        [1.65, 0.0],
       ];
-      let chosenPos = candidatePositions.find((cand) =>
-        existingChars.every((ch) => Math.hypot((ch.pos?.[0] || 0) - cand[0], (ch.pos?.[2] || 0) - cand[2]) >= 0.40)
-      );
+      let chosenPos = null;
+      for (const [dx, dz] of candidateOffsets) {
+        const cx = Number((anchor[0] + dx).toFixed(3));
+        const cy = anchor[1];
+        const cz = Number((anchor[2] + dz).toFixed(3));
+        const clear = existingChars.every(
+          (ch) => Math.hypot((ch.pos?.[0] || 0) - cx, (ch.pos?.[2] || 0) - cz) >= 0.40 || Math.abs((ch.pos?.[1] || 0) - cy) > 1.2
+        );
+        if (clear) {
+          chosenPos = [cx, cy, cz];
+          break;
+        }
+      }
       if (!chosenPos) {
         const sideSign = charCount % 2 === 1 ? 1 : -1;
         const step = Math.ceil((charCount + 1) / 2);
-        chosenPos = [Number((sideSign * 0.52 * step).toFixed(2)), 0, 0];
+        chosenPos = [Number((anchor[0] + sideSign * 0.55 * step).toFixed(3)), anchor[1], anchor[2]];
       }
       const posX = chosenPos[0];
+      const posY = chosenPos[1];
       const posZ = chosenPos[2];
       const usedColors = new Set(existingChars.map(o => (o.color || "").toLowerCase()));
       const charColor = CHAR_STAGE_PALETTE.find(color => !usedColors.has(color.toLowerCase())) || CHAR_STAGE_PALETTE[charCount % CHAR_STAGE_PALETTE.length];
@@ -25681,7 +25762,7 @@
         name: `人物 ${charCount + 1}`,
         type: "character",
         body_style: styleKey,
-        pos: [posX, 0, posZ],
+        pos: [posX, posY, posZ],
         rot: [0, 0, 0],
         scale: getDefaultCharacterScale(styleKey),
         color: charColor,
@@ -25691,7 +25772,7 @@
         keyframes: [
           {
             t: Number(currentTime.toFixed(2)),
-            pos: [posX, 0, posZ],
+            pos: [posX, posY, posZ],
             rot_y: 0,
             look_at: [...(baseTargets.head_target || [0, 1.56, 0.7])],
             targets: JSON.parse(JSON.stringify(baseTargets)),
@@ -25700,13 +25781,15 @@
       };
       sceneData.objects.push(newChar);
       selectedObjId = id;
+      selectedObjIds.clear();
+      selectedObjIds.add(id);
       activeHandleKey = "pelvis";
       setInteractionMode("object");
       rebuildThreeScene();
       syncPythonCodeFromScene();
       closeAllTopMenus();
       const styleDesc = styleKey === "pawn" ? "球头人偶" : "关节人偶";
-      logStatus(`已添加【${newChar.name}】（${styleDesc}）；按 G 移动 / R 旋转 / T 缩放，仅拖手柄修改`);
+      logStatus(`已添加【${newChar.name}】（${styleDesc}，位置 [${posX.toFixed(1)}, ${posY.toFixed(1)}, ${posZ.toFixed(1)}]）；按 G 移动 / R 旋转 / T 缩放`);
       return newChar;
     }
 
