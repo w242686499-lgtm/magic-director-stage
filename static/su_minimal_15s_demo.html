@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SU 极简彩色预演 — 15 秒五人一镜到底</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #14171c;
+      color: #e6ebf2;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      user-select: none;
+    }
+    .viewport-wrap {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px;
+      min-height: 0;
+    }
+    canvas#mainCanvas {
+      max-width: 100%;
+      max-height: 100%;
+      aspect-ratio: 16 / 9;
+      background: #e6ebf2;
+      border-radius: 6px;
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
+      display: block;
+    }
+    .controls-bar {
+      height: 56px;
+      background: #1c2027;
+      border-top: 1px solid #2e3540;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0 18px;
+      flex-shrink: 0;
+    }
+    .ctrl-btn {
+      background: #2b323d;
+      color: #e6ebf2;
+      border: 1px solid #3e4756;
+      border-radius: 5px;
+      padding: 7px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .ctrl-btn.primary {
+      background: #d97a36;
+      border-color: #e58d4e;
+      color: #fff;
+    }
+    .ctrl-btn:hover { filter: brightness(1.08); }
+    .scrubber-wrap {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    input[type="range"] {
+      flex: 1;
+      accent-color: #d97a36;
+      cursor: pointer;
+      height: 6px;
+    }
+    .time-readout {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 13px;
+      color: #b8c2d0;
+      min-width: 155px;
+      text-align: right;
+    }
+  </style>
+</head>
+<body>
+  <div class="viewport-wrap">
+    <canvas id="mainCanvas" width="1280" height="720"></canvas>
+  </div>
+
+  <!-- 极简播放控制栏：仅保留 播放/暂停、重新播放、15 秒进度条 -->
+  <div class="controls-bar">
+    <button id="btnPlayPause" class="ctrl-btn primary" type="button">暂停</button>
+    <button id="btnReplay" class="ctrl-btn" type="button">重新播放</button>
+    <div class="scrubber-wrap">
+      <input id="timeSlider" type="range" min="0" max="14.9583" step="0.0416667" value="0" />
+      <div id="timeReadout" class="time-readout">0.00s / 15.00s</div>
+    </div>
+  </div>
+
+  <script type="module">
+    import * as THREE from '/vendor/three.module.js';
+
+    // =========================================================================
+    // 1. SU 极简彩色预演集中配置 (su_minimal) — 与 director_engine.py 严格一致
+    // =========================================================================
+    export const SU_MINIMAL_CONFIG = {
+      styleName: 'su_minimal',
+      width: 1280,
+      height: 720,
+      fps: 24,
+      duration: 15.0,
+      totalFrames: 360,
+      colors: {
+        sky: 0xE6EBF2,
+        ground: 0xD8DCE2,
+        road: 0xB8C0CA,
+        boris: 0xD97A36,      // 鲍里斯：暖橙
+        followers: [
+          0x5B8DBE,           // 后方队员1：柔蓝
+          0x63A675,           // 后方队员2：柔绿
+          0x9378B8,           // 后方队员3：浅紫
+          0xC8A24B            // 后方队员4：土黄
+        ],
+        trees: [0x5E8C6A, 0x537E5F, 0x689674, 0x4B7356], // 树：柔绿色系
+        gun: 0x4A5568,        // 枪：独立深钢灰（与人物明显区分）
+        gunMuzzle: 0x202630,  // 枪口端面深色
+        headLine: 0x1E242B    // 头前朝向短线
+      }
+    };
+
+    function clamp(x, lo, hi) { return Math.max(lo, Math.min(hi, x)); }
+    function lerp(a, b, u) { return a + (b - a) * u; }
+    function smootherstep(e0, e1, x) {
+      const u = clamp((x - e0) / Math.max(1e-6, e1 - e0), 0.0, 1.0);
+      return u * u * u * (u * (u * 6.0 - 15.0) + 10.0);
+    }
+
+    function walkCurve(tVal, tStart, tStop) {
+      if (tVal <= tStart) return { prog: 0.0, env: 0.0 };
+      if (tVal >= tStop) return { prog: 1.0, env: 0.0 };
+      const dur = tStop - tStart;
+      const tau = tVal - tStart;
+      const tAcc = Math.min(0.45, dur * 0.15);
+      const tDec = Math.max(tAcc + 0.1, dur - 0.95);
+      const normArea = 0.5 * tAcc + (tDec - tAcc) + 0.5 * (dur - tDec);
+      let env = 0.0, area = 0.0;
+      if (tau < tAcc) {
+        const u = tau / tAcc;
+        env = u * u * (3.0 - 2.0 * u);
+        area = 0.5 * tau * env;
+      } else if (tau < tDec) {
+        env = 1.0;
+        area = 0.5 * tAcc + (tau - tAcc);
+      } else {
+        const u = (tau - tDec) / (dur - tDec);
+        env = 1.0 - u * u * (3.0 - 2.0 * u);
+        area = 0.5 * tAcc + (tDec - tAcc) + (dur - tDec) * (u - 0.5 * u * u * u * (2.0 - u));
+      }
+      return { prog: clamp(area / Math.max(1e-6, normArea), 0.0, 1.0), env };
+    }
+
+    // =========================================================================
+    // 2. 统一的按秒求值函数 evaluateAtTime(t) — 与 Python 端 100% 同步
+    // =========================================================================
+    export function evaluateAtTime(tRaw) {
+      const t = clamp(tRaw, 0.0, 14.9583333);
+
+      // (1) 鲍里斯 (0-4s 走近 -> 4-6s 停步抬头看画面最右侧 +X -> 6-10s 扫向中心 -> 10-15s 保持)
+      const wb = walkCurve(t, 0.0, 4.35);
+      const phB = 2.0 * Math.PI * 0.95 * t;
+      const strB = Math.sin(phB) * wb.env;
+      const bobB = Math.abs(Math.cos(phB)) * 0.028 * wb.env;
+      const xB = -0.06 + 0.012 * Math.sin(phB) * wb.env;
+      const zB = -1.10 + 2.50 * wb.prog;
+
+      const uLookUp = smootherstep(3.85, 5.65, t);
+      const uScanCenter = smootherstep(6.00, 9.95, t);
+      const headPitchB = lerp(0.26, -0.02, uLookUp);
+      const headYawB = lerp(0.0, 0.73, uLookUp) * (1.0 - uScanCenter) + 0.035 * uScanCenter;
+
+      const gunYawB = lerp(0.26, 0.38, uLookUp) * (1.0 - uScanCenter) + 0.195 * uScanCenter;
+      const gunPitchB = lerp(0.16, -0.025, smootherstep(4.0, 9.8, t)) - 0.02 * strB;
+      const gunYB = lerp(1.24, 1.385, smootherstep(4.2, 10.2, t)) + bobB * 0.85;
+
+      // (2) 后方四人错开跟进、停下并保持距离
+      const fSpecs = [
+        [-1.22, -3.10, -0.60, 0.15, 4.65, 0.90, 0.9,  0.16],
+        [-0.76, -4.20, -1.70, 0.35, 5.05, 0.86, 2.1, -0.18],
+        [ 0.94, -3.50, -1.00, 0.25, 4.85, 0.88, 1.5, -0.14],
+        [ 0.42, -5.10, -2.60, 0.45, 5.35, 0.84, 2.8,  0.15]
+      ];
+      const followers = fSpecs.map(([fx0, fz0, fz1, ts, te, freq, phOff, wYaw]) => {
+        const wf = walkCurve(t, ts, te);
+        const phF = 2.0 * Math.PI * freq * t + phOff;
+        const strF = Math.sin(phF) * wf.env;
+        const bobF = Math.abs(Math.cos(phF)) * 0.024 * wf.env;
+        const fyaw = wYaw * Math.sin(clamp((t - 5.5) / 6.0, 0.0, 1.0) * Math.PI);
+        return {
+          x: fx0,
+          z: fz0 + (fz1 - fz0) * wf.prog,
+          str: strF,
+          bob: bobF,
+          headYaw: fyaw
+        };
+      });
+
+      // (3) 摄影机真实前推与焦点移焦 (10-14s)
+      const uPush = smootherstep(10.0, 14.0, t);
+      const camPos = [
+        lerp(0.00, 0.045, uPush),
+        lerp(1.45, 1.435, uPush),
+        lerp(3.85, 2.42, uPush)
+      ];
+      const camTarget = [
+        lerp(0.00, 0.025, uPush),
+        lerp(1.32, 1.405, uPush),
+        1.40
+      ];
+
+      return {
+        t,
+        boris: {
+          x: xB,
+          z: zB,
+          str: strB,
+          bob: bobB,
+          headPitch: headPitchB,
+          headYaw: headYawB,
+          gunPos: [xB + 0.02, gunYB - 0.01, zB + 0.15],
+          gunRot: [gunPitchB, gunYawB, 0.0]
+        },
+        followers,
+        camera: {
+          pos: camPos,
+          target: camTarget,
+          fov: 32.0,
+          focusShift: uPush
+        }
+      };
+    }
+
+    // =========================================================================
+    // 3. 构建 SU 极简三维场景（单锥体树 + 极简球头人偶 + 3部件极简步枪）
+    // =========================================================================
+    const mainCanvas = document.getElementById('mainCanvas');
+    const ctx2d = mainCanvas.getContext('2d');
+
+    function createLayerRenderer() {
+      const r = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
+      r.setSize(SU_MINIMAL_CONFIG.width, SU_MINIMAL_CONFIG.height, false);
+      r.setPixelRatio(1);
+      return r;
+    }
+    const rendererBg = createLayerRenderer();
+    const rendererMid = createLayerRenderer();
+    const rendererFg = createLayerRenderer();
+
+    function populateLights(sc) {
+      const amb = new THREE.AmbientLight(0xffffff, 0.68);
+      const dir = new THREE.DirectionalLight(0xffffff, 0.52);
+      dir.position.set(3.5, 8.0, 5.5);
+      sc.add(amb, dir);
+    }
+
+    const sceneBg = new THREE.Scene();
+    sceneBg.background = new THREE.Color(SU_MINIMAL_CONFIG.colors.sky);
+    populateLights(sceneBg);
+
+    const sceneMid = new THREE.Scene();
+    populateLights(sceneMid);
+
+    const sceneFg = new THREE.Scene();
+    populateLights(sceneFg);
+
+    // 地面与道路（纯色平面，无网格线）
+    const groundMesh = new THREE.Mesh(
+      new THREE.PlaneGeometry(120, 120),
+      new THREE.MeshLambertMaterial({ color: SU_MINIMAL_CONFIG.colors.ground })
+    );
+    groundMesh.rotation.x = -Math.PI / 2;
+    sceneBg.add(groundMesh);
+
+    const roadMesh = new THREE.Mesh(
+      new THREE.BoxGeometry(3.2, 0.02, 24.0),
+      new THREE.MeshLambertMaterial({ color: SU_MINIMAL_CONFIG.colors.road })
+    );
+    roadMesh.position.set(0, 0.01, -4.5);
+    sceneBg.add(roadMesh);
+
+    // 树：严格使用单个低面数圆锥体（锥尖朝上、底面落地 y=0），无树干/树枝/积雪
+    const coneTreeSpecs = [
+      [-1.95,  0.80, 1.35, 4.8],
+      [ 1.88,  0.50, 1.40, 5.0],
+      [-1.75, -1.80, 1.45, 5.2],
+      [ 1.72, -2.10, 1.45, 5.1],
+      [-2.20, -4.50, 1.55, 5.4],
+      [ 2.15, -4.80, 1.50, 5.3],
+      [-1.65, -7.40, 1.60, 5.6],
+      [ 1.60, -7.80, 1.60, 5.5],
+      [-3.40, -6.20, 1.70, 5.8],
+      [ 3.35, -6.60, 1.70, 5.7],
+      [-0.95, -10.50, 1.65, 5.8],
+      [ 0.88, -11.20, 1.70, 6.0]
+    ];
+    coneTreeSpecs.forEach(([tx, tz, tw, th], idx) => {
+      const col = SU_MINIMAL_CONFIG.colors.trees[idx % SU_MINIMAL_CONFIG.colors.trees.length];
+      const cone = new THREE.Mesh(
+        new THREE.ConeGeometry(tw * 0.5, th, 10, 1),
+        new THREE.MeshLambertMaterial({ color: col, flatShading: true })
+      );
+      cone.position.set(tx, th * 0.5, tz);
+      sceneBg.add(cone);
+    });
+
+    // 极简球头人偶构建器：球头 + 躯干 + 4简单四肢 + 1头前朝向短线（共 7 部件，无五官/帽子/关节球）
+    function createSuMinimalCharacter(colorHex, scale = 1.0) {
+      const root = new THREE.Group();
+      root.scale.setScalar(scale);
+      const mat = new THREE.MeshLambertMaterial({ color: colorHex, flatShading: true });
+      const lineMat = new THREE.MeshBasicMaterial({ color: SU_MINIMAL_CONFIG.colors.headLine });
+
+      const torso = new THREE.Mesh(new THREE.BoxGeometry(0.27, 0.54, 0.16), mat);
+      torso.position.set(0, 1.09, 0);
+      root.add(torso);
+
+      const headPivot = new THREE.Group();
+      headPivot.position.set(0, 1.49, 0);
+      const headSphere = new THREE.Mesh(new THREE.SphereGeometry(0.12, 12, 8), mat);
+      headPivot.add(headSphere);
+
+      const dirLine = new THREE.Mesh(new THREE.BoxGeometry(0.022, 0.022, 0.25), lineMat);
+      dirLine.position.set(0, 0, 0.23);
+      headPivot.add(dirLine);
+      root.add(headPivot);
+
+      function makeLimb(radius, len, px, py, pz) {
+        const piv = new THREE.Group();
+        piv.position.set(px, py, pz);
+        const mesh = new THREE.Mesh(new THREE.CylinderGeometry(radius, radius * 0.85, len, 8, 1), mat);
+        mesh.position.set(0, -len * 0.5, 0);
+        piv.add(mesh);
+        root.add(piv);
+        return piv;
+      }
+
+      const armL = makeLimb(0.042, 0.50,  0.175, 1.32, 0);
+      const armR = makeLimb(0.042, 0.50, -0.175, 1.32, 0);
+      const legL = makeLimb(0.056, 0.82,  0.095, 0.82, 0);
+      const legR = makeLimb(0.056, 0.82, -0.095, 0.82, 0);
+
+      return { root, torso, headPivot, armL, armR, legL, legR };
+    }
+
+    const borisActor = createSuMinimalCharacter(SU_MINIMAL_CONFIG.colors.boris, 1.0);
+    sceneMid.add(borisActor.root);
+
+    const followerActors = SU_MINIMAL_CONFIG.colors.followers.map((col, idx) => {
+      const actor = createSuMinimalCharacter(col, 0.97);
+      sceneBg.add(actor.root);
+      return actor;
+    });
+
+    // 极简步枪（严格 3 个基础体：枪托方块 + 机匣方块 + 枪管圆柱）
+    const gunGroup = new THREE.Group();
+    const gunMat = new THREE.MeshLambertMaterial({ color: SU_MINIMAL_CONFIG.colors.gun, flatShading: true });
+    const muzzleMat = new THREE.MeshBasicMaterial({ color: SU_MINIMAL_CONFIG.colors.gunMuzzle });
+
+    const stockBox = new THREE.Mesh(new THREE.BoxGeometry(0.050, 0.088, 0.24), gunMat);
+    stockBox.position.set(0, -0.018, -0.08);
+    const receiverBox = new THREE.Mesh(new THREE.BoxGeometry(0.056, 0.082, 0.26), gunMat);
+    receiverBox.position.set(0, 0.0, 0.16);
+    const barrelCyl = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.026, 0.026, 0.44, 12, 1),
+      [gunMat, muzzleMat, gunMat]
+    );
+    barrelCyl.rotation.x = Math.PI / 2;
+    barrelCyl.position.set(0, 0.012, 0.48);
+    gunGroup.add(stockBox, receiverBox, barrelCyl);
+    sceneFg.add(gunGroup);
+
+    const camera = new THREE.PerspectiveCamera(32.0, 1280 / 720, 0.12, 40.0);
+
+    function renderAtTime(t) {
+      const st = evaluateAtTime(t);
+      const b = st.boris;
+
+      // 更新鲍里斯
+      borisActor.root.position.set(b.x, b.bob, b.z);
+      borisActor.headPivot.rotation.set(b.headPitch, b.headYaw, 0, 'YXZ');
+      borisActor.legL.rotation.x = -0.35 * b.str;
+      borisActor.legR.rotation.x =  0.35 * b.str;
+      borisActor.armL.rotation.set(-0.85, 0.22, -0.18);
+      borisActor.armR.rotation.set(-0.78, -0.15, 0.15);
+
+      // 更新步枪 (3基础体)
+      gunGroup.position.set(b.gunPos[0], b.gunPos[1], b.gunPos[2]);
+      gunGroup.rotation.set(-b.gunRot[0] * Math.PI / 180, b.gunRot[1] * Math.PI / 180, 0, 'YXZ');
+
+      // 更新后方四人
+      st.followers.forEach((f, idx) => {
+        const act = followerActors[idx];
+        act.root.position.set(f.x, f.bob, f.z);
+        act.headPivot.rotation.set(0.05, f.headYaw, 0, 'YXZ');
+        act.legL.rotation.x = -0.30 * f.str;
+        act.legR.rotation.x =  0.30 * f.str;
+        act.armL.rotation.x =  0.22 * f.str;
+        act.armR.rotation.x = -0.22 * f.str;
+      });
+
+      // 更新摄影机
+      camera.fov = st.camera.fov;
+      camera.position.set(...st.camera.pos);
+      camera.lookAt(...st.camera.target);
+      camera.updateMatrixWorld();
+
+      rendererBg.render(sceneBg, camera);
+      rendererMid.render(sceneMid, camera);
+      rendererFg.render(sceneFg, camera);
+
+      // 合成三层（10-14s 轻微清晰度变化示意从鲍里斯脸部移焦到枪口）
+      const uFocus = st.camera.focusShift;
+      const blurBg = (0.8 + 1.8 * uFocus).toFixed(2);
+      const blurMid = (2.4 * uFocus).toFixed(2);
+      const blurFg = (1.3 * (1.0 - uFocus)).toFixed(2);
+
+      ctx2d.clearRect(0, 0, 1280, 720);
+      ctx2d.filter = `blur(${blurBg}px)`;
+      ctx2d.drawImage(rendererBg.domElement, 0, 0);
+      ctx2d.filter = blurMid > 0.15 ? `blur(${blurMid}px)` : 'none';
+      ctx2d.drawImage(rendererMid.domElement, 0, 0);
+      ctx2d.filter = blurFg > 0.15 ? `blur(${blurFg}px)` : 'none';
+      ctx2d.drawImage(rendererFg.domElement, 0, 0);
+      ctx2d.filter = 'none';
+    }
+
+    // 播放控制
+    const btnPlayPause = document.getElementById('btnPlayPause');
+    const btnReplay = document.getElementById('btnReplay');
+    const timeSlider = document.getElementById('timeSlider');
+    const timeReadout = document.getElementById('timeReadout');
+
+    let playing = true;
+    let currentT = 0.0;
+    let lastWall = performance.now();
+
+    function syncUI(t) {
+      timeSlider.value = t.toFixed(4);
+      timeReadout.textContent = `${t.toFixed(2)}s / 15.00s`;
+    }
+
+    btnPlayPause.addEventListener('click', () => {
+      if (!playing && currentT >= 14.95) {
+        currentT = 0.0;
+      }
+      playing = !playing;
+      btnPlayPause.textContent = playing ? '暂停' : '播放';
+      lastWall = performance.now();
+    });
+
+    btnReplay.addEventListener('click', () => {
+      currentT = 0.0;
+      playing = true;
+      btnPlayPause.textContent = '暂停';
+      lastWall = performance.now();
+      renderAtTime(currentT);
+      syncUI(currentT);
+    });
+
+    timeSlider.addEventListener('input', () => {
+      playing = false;
+      btnPlayPause.textContent = '播放';
+      currentT = parseFloat(timeSlider.value) || 0.0;
+      renderAtTime(currentT);
+      syncUI(currentT);
+    });
+
+    function tick(now) {
+      if (playing) {
+        const dt = Math.min(0.1, (now - lastWall) / 1000.0);
+        lastWall = now;
+        currentT += dt;
+        if (currentT >= 14.9583) {
+          currentT = 14.9583;
+          playing = false;
+          btnPlayPause.textContent = '播放';
+        }
+        renderAtTime(currentT);
+        syncUI(currentT);
+      } else {
+        lastWall = now;
+      }
+      requestAnimationFrame(tick);
+    }
+
+    window.renderAtTime = renderAtTime;
+    renderAtTime(0.0);
+    syncUI(0.0);
+    requestAnimationFrame(tick);
+  </script>
+</body>
+</html>

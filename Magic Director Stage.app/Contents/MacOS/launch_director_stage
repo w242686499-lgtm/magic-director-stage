@@ -1,0 +1,34 @@
+#!/bin/bash
+APP_ROOT="$(cd "$(dirname "$0")/../../.." && pwd)"
+if [ ! -f "$APP_ROOT/server.py" ] && [ -f "/Users/wangmu/Desktop/MagicDirectorStage_导演台完整软件/server.py" ]; then
+  APP_ROOT="/Users/wangmu/Desktop/MagicDirectorStage_导演台完整软件"
+fi
+cd "$APP_ROOT"
+PORT=8765
+
+if lsof -iTCP:$PORT -sTCP:LISTEN -t >/dev/null 2>&1; then
+  open "http://127.0.0.1:$PORT/"
+  exit 0
+fi
+
+PYTHON_BIN=""
+for cand in \
+  "$APP_ROOT/.venv/bin/python3" \
+  "/Users/wangmu/.gemini/antigravity/scratch/scene75_blockout/.venv/bin/python3" \
+  "/opt/homebrew/bin/python3" \
+  "/usr/local/bin/python3" \
+  "/usr/bin/python3"; do
+  if [ -x "$cand" ] && "$cand" -c "import numpy, PIL, imageio_ffmpeg" >/dev/null 2>&1; then
+    PYTHON_BIN="$cand"
+    break
+  fi
+done
+
+if [ -z "$PYTHON_BIN" ]; then
+  open -a Terminal "$APP_ROOT/双击启动导演台.command"
+  exit 0
+fi
+
+nohup "$PYTHON_BIN" "$APP_ROOT/server.py" $PORT > "$APP_ROOT/server.log" 2>&1 &
+sleep 1.2
+open "http://127.0.0.1:$PORT/"

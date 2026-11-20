@@ -1,0 +1,28 @@
+# Python & virtualenv
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# macOS, local runtime & logs
+.DS_Store
+.system_check
+*.log
+.project-save-*.tmp
+
+# User project data (never tracked so git pull never overwrites anyone's local scenes)
+saved_projects.json
+saved_projects*.json
+
+# Large local media, exports, ML models, backups & zip bundles
+exports/
+models/
+ref_videos/
+scenes_backup/
+01_最新成品_雪林车队极简方块预演/
+02_历史归档与工程备份/
+static/index.backup_*.html
+*.zip
+*.mp4
+*.mov
+*.mkv
