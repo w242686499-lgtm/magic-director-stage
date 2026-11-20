@@ -5469,8 +5469,8 @@
         </div>
       </div>
       <div class="sc-tabs-bar" id="shortcutsTabsBar" role="tablist">
-        <button type="button" class="sc-tab-item active" data-sc-tab="common" role="tab" aria-selected="true">常用</button>
-        <button type="button" class="sc-tab-item" data-sc-tab="camera" role="tab" aria-selected="false">视图与摄影机</button>
+        <button type="button" class="sc-tab-item active" data-sc-tab="camera" role="tab" aria-selected="true">视图与摄影机</button>
+        <button type="button" class="sc-tab-item" data-sc-tab="common" role="tab" aria-selected="false">常用</button>
         <button type="button" class="sc-tab-item" data-sc-tab="object" role="tab" aria-selected="false">对象</button>
         <button type="button" class="sc-tab-item" data-sc-tab="animation" role="tab" aria-selected="false">动画</button>
       </div>
@@ -20466,7 +20466,7 @@
       { id: "kf_clear_all", group: "关键帧", label: "清空本镜全部帧", kbd: "⇧X", danger: true, run: () => clearAllTimelineKeyframes() },
     ];
 
-    let activeShortcutsTab = "common";
+    let activeShortcutsTab = "camera";
 
     const SHORTCUTS_TAB_LAYOUT = [
       {
@@ -33393,6 +33393,29 @@
       return sc;
     }
 
+    function syncWorkViewToDirectorCamera() {
+      if (!workCamera || !workOrbit || !directorCamera || !camOrbit) return;
+      const camPos = directorCamera.position.clone();
+      const targetPos = camOrbit.target.clone();
+      const backDir = camPos.clone().sub(targetPos);
+      const dist = backDir.length();
+      if (dist > 0.01) {
+        backDir.divideScalar(dist);
+        // 沿导演摄影机后方微退并略微抬高，既保持与右视口基本一致的观察方向，又避开钻进黄色摄影机视锥线框内部
+        const pullBack = Math.max(2.2, Math.min(7.5, dist * 0.18));
+        const liftY = Math.max(0.6, Math.min(2.2, dist * 0.06));
+        workCamera.position.copy(camPos).addScaledVector(backDir, pullBack);
+        workCamera.position.y += liftY;
+      } else {
+        workCamera.position.copy(camPos).add(new THREE.Vector3(0, 1.2, 2.8));
+      }
+      workOrbit.target.copy(targetPos);
+      workCamera.fov = 45;
+      workCamera.updateProjectionMatrix();
+      workCamera.up.set(0, 1, 0);
+      workOrbit.update();
+    }
+
     function applyLoadedSceneDict(loadedScene, statusMsg = "", isBlankNew = false) {
       if (typeof endTimelineGesture === "function") endTimelineGesture(false, "load_scene");
       soloActiveState = null;
@@ -33433,9 +33456,6 @@
         selectedObjId = null;
         activeTimelineTrackId = "__camera__";
         transformControl.detach();
-        workCamera.position.set(2.8, 1.75, 3.2);
-        workOrbit.target.set(0, 0.35, 0);
-        workOrbit.update();
       }
 
       rebuildThreeScene();
@@ -33452,22 +33472,14 @@
         } else {
           selectedObjId = null;
           activeTimelineTrackId = "__camera__";
-          const cp0 = sceneData.camera?.pos || [0, 1.5, 4];
-          const ct0 = sceneData.camera?.target || [0, 0.5, 0];
-          if ((cp0[1] || 0) > 25) {
-            workOrbit.target.set(0, 1.5, -10);
-            workCamera.position.set(16, 26, 48);
-          } else {
-            workOrbit.target.set(ct0[0] || 0, Math.max(0.3, ct0[1] || 0.5), ct0[2] || 0);
-            workCamera.position.set(5.5, 3.8, 7.5);
-          }
-          workOrbit.update();
         }
+        syncWorkViewToDirectorCamera();
         renderSceneOutliner();
         attachGizmoToSelection();
         renderTimelineUI();
         updateDirectorCamRigVisual();
       } else {
+        syncWorkViewToDirectorCamera();
         renderSceneOutliner();
         renderTimelineUI();
         updateDirectorCamRigVisual();
@@ -34943,16 +34955,8 @@
         } else {
           selectedObjId = null;
           activeTimelineTrackId = "__camera__";
-          if (sceneData.camera?.target) {
-            const ct0 = sceneData.camera.target;
-            const cp0 = sceneData.camera.pos || [0, 2, 4];
-            workOrbit.target.set(ct0[0] || 0, Math.min(2.5, ct0[1] || 0.5), ct0[2] || 0);
-            if ((cp0[1] || 0) > 25) {
-              workCamera.position.set(16, 26, 48);
-            }
-            workOrbit.update();
-          }
         }
+        syncWorkViewToDirectorCamera();
         interactionMode = "browse";
         cameraEditing = false;
         activeTransformTool = "none";
