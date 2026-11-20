@@ -2569,18 +2569,20 @@
       color:#B8C1CE;
     }
 
-    /* 顶部非阻塞可执行快捷键“一张纸”全览面板 (#shortcutsDrawer) */
+    /* 顶部非阻塞极简快捷键抽屉 (#shortcutsDrawer · Tab 分类 + 同类合并三栏表) */
     .shortcuts-drawer {
       position:fixed;
-      top:56px;
+      top:52px;
       left:50%;
       transform:translateX(-50%);
-      width:min(1140px, calc(100vw - 24px));
-      max-height:calc(100vh - 68px);
-      background:#1B1E23;
-      border:1px solid #353C46;
-      border-radius:10px;
-      box-shadow:0 20px 52px rgba(0,0,0,0.76);
+      width:min(760px, calc(100vw - 24px));
+      max-height:min(470px, 56vh);
+      background:rgba(21, 23, 28, 0.96);
+      backdrop-filter:blur(14px);
+      -webkit-backdrop-filter:blur(14px);
+      border:1px solid rgba(255, 255, 255, 0.10);
+      border-radius:12px;
+      box-shadow:0 20px 56px rgba(0, 0, 0, 0.72);
       z-index:145;
       display:none;
       flex-direction:column;
@@ -2591,52 +2593,98 @@
     .sc-drawer-header,
     .shortcuts-drawer-header {
       display:flex;
-      align-items:center;
-      justify-content:space-between;
-      flex-wrap:wrap;
+      flex-direction:column;
       gap:10px;
-      padding:10px 14px;
-      background:#141619;
-      border-bottom:1px solid #353C46;
+      padding:14px 20px 0;
+      background:transparent;
+      border-bottom:1px solid rgba(255, 255, 255, 0.11);
       flex-shrink:0;
     }
     .sc-drawer-top-row {
       display:flex;
       align-items:center;
       justify-content:space-between;
-      gap:8px;
+      gap:12px;
+      flex-wrap:wrap;
     }
-    .sc-drawer-ctx-row {
+    .sc-drawer-title-group {
       display:flex;
       align-items:center;
-      justify-content:space-between;
-      gap:8px;
+      gap:10px;
+      min-width:0;
+    }
+    .sc-drawer-main-title {
+      font-size:19px;
+      font-weight:700;
+      letter-spacing:-0.01em;
+      color:#F2F5FA;
+      line-height:1.15;
     }
     .sc-ctx-pill {
       display:inline-flex;
       align-items:center;
       gap:5px;
       padding:2px 8px;
-      border-radius:4px;
-      background:#242931;
-      border:1px solid #353C46;
+      border-radius:999px;
+      background:rgba(255, 255, 255, 0.05);
+      border:1px solid rgba(255, 255, 255, 0.09);
       font-size:11px;
-      color:#65D496;
-      max-width:320px;
+      color:#7AD9A3;
+      max-width:240px;
       overflow:hidden;
       text-overflow:ellipsis;
       white-space:nowrap;
     }
     .sc-search-input {
-      width:260px;
-      max-width:45vw;
+      width:210px;
+      max-width:42vw;
       height:26px;
-      padding:0 9px;
+      padding:0 10px;
       font-size:12px;
-      background:#1B1E23 !important;
-      border:1px solid #353C46 !important;
-      border-radius:5px !important;
+      background:rgba(255, 255, 255, 0.05) !important;
+      border:1px solid rgba(255, 255, 255, 0.11) !important;
+      border-radius:6px !important;
       color:#E7EBF0 !important;
+    }
+    .sc-search-input:focus {
+      outline:none;
+      border-color:#4EA1FF !important;
+      background:rgba(255, 255, 255, 0.07) !important;
+    }
+    .sc-tabs-bar {
+      display:flex;
+      align-items:center;
+      gap:22px;
+      margin-top:2px;
+    }
+    .sc-tab-item {
+      position:relative;
+      padding:6px 2px 9px;
+      background:transparent;
+      border:none;
+      color:#9AA3B2;
+      font-size:13.5px;
+      font-weight:500;
+      cursor:pointer;
+      transition:color 0.14s ease;
+      user-select:none;
+    }
+    .sc-tab-item:hover {
+      color:#E7EBF0;
+    }
+    .sc-tab-item.active {
+      color:#4EA1FF;
+      font-weight:600;
+    }
+    .sc-tab-item.active::after {
+      content:"";
+      position:absolute;
+      left:0;
+      right:0;
+      bottom:-1px;
+      height:2px;
+      background:#4EA1FF;
+      border-radius:2px 2px 0 0;
     }
     .sc-drawer-body,
     .shortcuts-drawer-body {
@@ -2646,132 +2694,158 @@
       overflow-x:hidden;
       overscroll-behavior:contain;
       -webkit-overflow-scrolling:touch;
-      padding:12px 14px 14px;
-      display:grid;
-      grid-template-columns:repeat(3, minmax(0, 1fr));
-      gap:10px 14px;
-      align-items:start;
-    }
-    @media (max-width: 960px) {
-      .sc-drawer-body,
-      .shortcuts-drawer-body {
-        grid-template-columns:repeat(2, minmax(0, 1fr));
-      }
-    }
-    @media (max-width: 640px) {
-      .sc-drawer-body,
-      .shortcuts-drawer-body {
-        grid-template-columns:1fr;
-      }
-    }
-    .sc-group-block {
+      padding:10px 20px 14px;
       display:flex;
       flex-direction:column;
-      gap:6px;
-      background:rgba(20, 22, 25, 0.55);
-      border:1px solid rgba(53, 60, 70, 0.75);
-      border-radius:8px;
-      padding:8px 10px;
+      gap:4px;
     }
-    .sc-group-title {
+    .sc-section-caption {
+      font-size:11.5px;
+      font-weight:500;
+      color:#7D8696;
+      padding:10px 2px 5px;
+      letter-spacing:0.01em;
+    }
+    .sc-section-caption:first-child {
+      padding-top:4px;
+    }
+    .sc-table-row {
+      display:grid;
+      grid-template-columns:minmax(108px, 27%) minmax(175px, 38%) 1fr;
+      align-items:center;
+      gap:12px;
+      padding:8px 4px;
+      border-bottom:1px solid rgba(255, 255, 255, 0.075);
+      border-radius:4px;
+      transition:background 0.12s ease;
+    }
+    .sc-table-row:hover {
+      background:rgba(255, 255, 255, 0.028);
+    }
+    .sc-table-row:last-child {
+      border-bottom:none;
+    }
+    .sc-row-title {
+      font-size:13.5px;
+      font-weight:600;
+      color:#EEF2F7;
+      line-height:1.3;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .sc-row-keys-col {
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+      min-width:0;
+    }
+    .sc-keycap-group {
+      display:flex;
+      align-items:center;
+      flex-wrap:wrap;
+      gap:6px;
+    }
+    .sc-keycap-sep {
+      font-size:12px;
+      color:#6E7787;
+      user-select:none;
+      padding:0 1px;
+    }
+    .sc-keycap-btn {
+      min-width:28px;
+      height:25px;
+      padding:0 8px;
+      border-radius:6px;
+      background:#323640;
+      border:1px solid rgba(255, 255, 255, 0.12);
+      border-bottom-color:rgba(0, 0, 0, 0.45);
+      color:#F1F5F9;
+      font-family:"SF Mono", Menlo, ui-monospace, monospace;
       font-size:11.5px;
       font-weight:600;
-      color:#5B9DFF;
-      padding:0 2px 3px;
-      border-bottom:1px solid rgba(53, 60, 70, 0.6);
-      display:flex;
+      display:inline-flex;
       align-items:center;
-      justify-content:space-between;
-    }
-    .sc-actions-grid {
-      display:grid;
-      grid-template-columns:repeat(2, minmax(0, 1fr));
-      gap:4px 6px;
-    }
-    .sc-action-btn {
-      min-height:30px;
-      padding:4px 8px;
-      border-radius:6px;
-      background:rgba(255,255,255,0.035);
-      border:1px solid rgba(255,255,255,0.08);
-      color:#E7EBF0;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:5px;
+      justify-content:center;
       cursor:pointer;
       user-select:none;
       -webkit-user-select:none;
       touch-action:manipulation;
-      text-align:left;
-      transition:background 0.1s ease, border-color 0.1s ease;
+      transition:background 0.1s ease, border-color 0.1s ease, color 0.1s ease, transform 0.06s ease;
+      white-space:nowrap;
     }
-    .sc-action-btn:hover:not(.is-disabled) {
-      background:#2E3540;
-      border-color:#4A5464;
+    .sc-keycap-btn:hover:not(.is-disabled) {
+      background:#424856;
+      border-color:rgba(255, 255, 255, 0.28);
+      color:#FFFFFF;
     }
-    .sc-action-btn:active:not(.is-disabled),
-    .sc-action-btn.is-pressed,
-    .sc-action-btn.is-active-hold {
-      background:rgba(91, 157, 255, 0.26);
-      border-color:#5B9DFF;
+    .sc-keycap-btn:active:not(.is-disabled),
+    .sc-keycap-btn.is-pressed,
+    .sc-keycap-btn.is-active-hold {
+      background:rgba(78, 161, 255, 0.28);
+      border-color:#4EA1FF;
+      color:#FFFFFF;
+      transform:translateY(1px);
     }
-    .sc-action-btn.is-active {
-      background:rgba(91, 157, 255, 0.18);
-      border-color:#5B9DFF;
+    .sc-keycap-btn.is-active {
+      background:rgba(78, 161, 255, 0.22);
+      border-color:#4EA1FF;
+      color:#93C5FD;
     }
-    .sc-action-btn.is-danger {
-      color:#E16B6B;
-      border-color:rgba(225, 107, 107, 0.38);
+    .sc-keycap-btn.is-danger {
+      color:#F28B8B;
+      border-color:rgba(225, 107, 107, 0.34);
+      background:rgba(225, 107, 107, 0.10);
     }
-    .sc-action-btn.is-danger:hover:not(.is-disabled) {
-      background:rgba(225, 107, 107, 0.14);
+    .sc-keycap-btn.is-danger:hover:not(.is-disabled) {
+      background:rgba(225, 107, 107, 0.22);
       border-color:#E16B6B;
+      color:#FFD4D4;
     }
-    .sc-action-btn.is-disabled {
-      opacity:0.42;
+    .sc-keycap-btn.is-disabled {
+      opacity:0.38;
       cursor:not-allowed;
     }
-    .sc-btn-left {
-      display:flex;
-      flex-direction:column;
-      gap:1px;
-      min-width:0;
-      flex:1;
-    }
-    .sc-btn-label {
-      font-size:11.5px;
-      font-weight:500;
+    .sc-row-subnote {
+      font-size:11px;
+      color:#7D8696;
       line-height:1.25;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
     }
-    .sc-btn-sub {
-      font-size:10px;
-      color:#9CA6B4;
-      line-height:1.2;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
+    .sc-row-desc {
+      font-size:13px;
+      color:#A2ACB9;
+      line-height:1.35;
     }
-    .sc-btn-kbd {
-      font-family:"SF Mono",Menlo,monospace;
-      font-size:10.5px;
-      font-weight:600;
-      padding:1px 5px;
-      min-width:20px;
-      height:19px;
-      display:inline-flex;
+    .sc-drawer-footer {
+      padding:8px 20px 10px;
+      border-top:1px solid rgba(255, 255, 255, 0.07);
+      font-size:11px;
+      color:#6F7888;
+      display:flex;
       align-items:center;
-      justify-content:center;
-      border-radius:4px;
-      background:linear-gradient(180deg, #2d323e 0%, #1e222b 100%);
-      border:1px solid rgba(255,255,255,0.2);
-      border-bottom-width:2px;
-      color:#f8fafc;
+      justify-content:space-between;
       flex-shrink:0;
-      white-space:nowrap;
+      background:rgba(16, 18, 22, 0.55);
+    }
+    .sc-empty-hint {
+      padding:28px 0;
+      text-align:center;
+      font-size:12.5px;
+      color:#7D8696;
+    }
+    @media (max-width: 640px) {
+      .sc-table-row {
+        grid-template-columns:1fr;
+        gap:5px;
+      }
+      .sc-drawer-header,
+      .shortcuts-drawer-header {
+        padding:12px 14px 0;
+      }
+      .sc-drawer-body,
+      .shortcuts-drawer-body {
+        padding:8px 14px 12px;
+      }
     }
     .kf-insp-input {
       width:100%;
@@ -3428,6 +3502,41 @@
             <div id="btnMenuDuplicateCurrentShot"></div>
           </div>
 
+          <!-- 修改画幅比 -->
+          <div class="cascade-item" id="editAspectRatioParent" title="切换当前镜头与导出视频的画幅比例">
+            <span class="menu-row-left">
+              <svg class="menu-icon" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M7 9h2v2H7zM15 13h2v2h-2z"/></svg>
+              <span>修改画幅比</span>
+            </span>
+            <span style="display:inline-flex;align-items:center;gap:4px;">
+              <span id="editAspectCurrentLabel" style="font-size:10.5px;color:#9CA6B4;font-family:monospace;">2.39:1</span>
+              <span class="menu-sub-arrow">▸</span>
+            </span>
+            <div class="cascade-sub-panel" id="editAspectRatioSub" style="width:206px;">
+              <div class="cascade-item menu-aspect-item" data-menu-aspect="2.39:1" title="切换为 2.39:1 电影宽银幕">
+                <span class="menu-row-left"><span class="menu-check">✓</span><span>2.39:1 宽银幕</span></span>
+              </div>
+              <div class="cascade-item menu-aspect-item" data-menu-aspect="2.35:1" title="切换为 2.35:1 宽银幕 (1280×544)">
+                <span class="menu-row-left"><span class="menu-check"></span><span>2.35:1 宽银幕</span></span>
+              </div>
+              <div class="cascade-item menu-aspect-item" data-menu-aspect="2.33:1" title="切换为 2.33:1 宽银幕 (21:9)">
+                <span class="menu-row-left"><span class="menu-check"></span><span>2.33:1 宽银幕</span></span>
+              </div>
+              <div class="cascade-item menu-aspect-item" data-menu-aspect="16:9" title="切换为 16:9 标准横屏">
+                <span class="menu-row-left"><span class="menu-check"></span><span>16:9 横屏</span></span>
+              </div>
+              <div class="cascade-item menu-aspect-item" data-menu-aspect="9:16" title="切换为 9:16 竖屏">
+                <span class="menu-row-left"><span class="menu-check"></span><span>9:16 竖屏</span></span>
+              </div>
+              <div class="cascade-item menu-aspect-item" data-menu-aspect="4:3" title="切换为 4:3 经典画幅">
+                <span class="menu-row-left"><span class="menu-check"></span><span>4:3 经典</span></span>
+              </div>
+              <div class="cascade-item menu-aspect-item" data-menu-aspect="1:1" title="切换为 1:1 方画幅">
+                <span class="menu-row-left"><span class="menu-check"></span><span>1:1 方画幅</span></span>
+              </div>
+            </div>
+          </div>
+
           <!-- 导入 -->
           <div class="cascade-item" id="menuImportParent" title="导入工程 JSON、参考视频或已支持的场景格式">
             <span class="menu-row-left">
@@ -3499,294 +3608,9 @@
         </div>
       </div>
 
-      <!-- 2. 编辑 -->
-      <div class="top-menu-wrap" data-menubar-item="edit">
-        <button class="top-menu-btn" data-menu-target="menuEdit" title="撤销重做、对象编辑、选择与锁定隐藏状态">编辑 <span class="menu-caret">▾</span></button>
-        <div class="top-dropdown" id="menuEdit" style="width:220px;">
-          <button class="menu-row-item" id="btnUndo" disabled title="暂无可撤销的操作">
-            <span class="menu-row-left">
-              <svg class="menu-icon" viewBox="0 0 24 24"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></svg>
-              <span>撤销</span>
-            </span>
-            <span class="menu-shortcut">⌘Z</span>
-          </button>
-          <button class="menu-row-item" id="btnRedo" disabled title="暂无可重做的操作">
-            <span class="menu-row-left">
-              <svg class="menu-icon" viewBox="0 0 24 24"><path d="M21 7v6h-6"/><path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3l3 2.7"/></svg>
-              <span>重做</span>
-            </span>
-            <span class="menu-shortcut">⇧⌘Z</span>
-          </button>
-
-          <div class="menu-divider"></div>
-
-          <!-- 对象 -->
-          <div class="cascade-item" id="editObjectParent" title="对当前选中对象执行复制、粘贴、生成副本、重命名或删除">
-            <span class="menu-row-left">
-              <svg class="menu-icon" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
-              <span>对象</span>
-            </span>
-            <span class="menu-sub-arrow">▸</span>
-            <div class="cascade-sub-panel" id="editObjectSub" style="width:236px;">
-              <div class="cascade-item" id="btnCopyObjectMenu" title="复制当前选中对象到对象剪贴板（视口/对象列表 ⌘/Ctrl+C；区别于时间轴复制帧）">
-                <span class="menu-row-left"><svg class="menu-icon" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V4H4v12h4"/></svg><span>复制对象</span></span>
-                <span class="menu-shortcut">⌘C</span>
-              </div>
-              <div class="cascade-item" id="btnPasteObjectMenu" title="从对象剪贴板粘贴对象（视口/对象列表 ⌘/Ctrl+V；区别于时间轴粘贴帧）">
-                <span class="menu-row-left"><svg class="menu-icon" viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg><span>粘贴对象</span></span>
-                <span class="menu-shortcut">⌘V</span>
-              </div>
-              <div class="cascade-item" id="btnDuplicateSelected" title="直接生成当前选中对象及动画的副本并施加小幅偏移 (Shift+D)">
-                <span class="menu-row-left"><svg class="menu-icon" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span>生成副本</span></span>
-                <span class="menu-shortcut">⇧D</span>
-              </div>
-              <div class="cascade-item" id="btnDuplicateKeepBindingMenu" title="复制已绑定道具时保留原人物挂点跟随关系">
-                <span class="menu-row-left"><svg class="menu-icon" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg><span>保留绑定复制</span></span>
-                <span class="menu-shortcut"></span>
-              </div>
-              <div class="menu-divider"></div>
-              <div class="cascade-item" id="btnRenameSelected" title="重命名当前选中对象 (F2)">
-                <span class="menu-row-left"><svg class="menu-icon" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg><span>重命名…</span></span>
-                <span class="menu-shortcut">F2</span>
-              </div>
-              <div class="cascade-item" id="btnDeleteSelectedMenu" title="删除当前选中对象 (Delete)" style="color:#E16B6B;">
-                <span class="menu-row-left"><svg class="menu-icon" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg><span>删除对象</span></span>
-                <span class="menu-shortcut">Del</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- 选择 -->
-          <div class="cascade-item" id="editSelectParent" title="全选、取消选择或聚焦选中对象">
-            <span class="menu-row-left">
-              <svg class="menu-icon" viewBox="0 0 24 24"><path d="M3 3h6M15 3h6v6M3 3v6M3 15v6h6M21 15v6h-6"/></svg>
-              <span>选择</span>
-            </span>
-            <span class="menu-sub-arrow">▸</span>
-            <div class="cascade-sub-panel" id="editSelectSub" style="width:216px;">
-              <div class="cascade-item" id="btnMenuBoxSelect" title="激活/退出左视口矩形框选工具（按住 Shift 可追加框选）">
-                <span class="menu-row-left"><span class="menu-check" id="chkMenuBoxSelect"></span><svg class="menu-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="15" height="15" rx="1.5" stroke-dasharray="3 2.5"/><path d="M16 16h6M19 13v6"/></svg><span>框选工具</span></span>
-                <span class="menu-shortcut">B</span>
-              </div>
-              <div class="menu-divider"></div>
-              <div class="cascade-item" id="btnMenuSelectAll" title="选中场景中全部未锁定的可编辑对象">
-                <span class="menu-row-left"><svg class="menu-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><polyline points="9 12 11 14 15 10"/></svg><span>全选</span></span>
-                <span class="menu-shortcut">⌘A</span>
-              </div>
-              <div class="cascade-item" id="btnMenuDeselectAll" title="取消当前对象与关键帧选择">
-                <span class="menu-row-left"><svg class="menu-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" stroke-dasharray="3 3"/><line x1="9" y1="9" x2="15" y2="15"/><line x1="15" y1="9" x2="9" y2="15"/></svg><span>取消选择</span></span>
-                <span class="menu-shortcut">⌥A</span>
-              </div>
-              <div class="cascade-item" id="btnEditFocusSelected" title="将左视口视角聚焦到当前选中对象">
-                <span class="menu-row-left"><svg class="menu-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg><span>聚焦选中</span></span>
-                <span class="menu-shortcut">F</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- 编组 / 整体移动 -->
-          <div class="cascade-item" id="editGroupParent" title="创建持久布景组、进入组内编辑、移出成员或解组（保持世界位置不变）">
-            <span class="menu-row-left">
-              <svg class="menu-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="8" y="13" width="8" height="8" rx="1"/></svg>
-              <span>编组（整体移动）</span>
-            </span>
-            <span class="menu-sub-arrow">▸</span>
-            <div class="cascade-sub-panel" id="editGroupSub" style="width:242px;">
-              <div class="cascade-item" id="btnMenuGroupSelected" title="将所选对象/建筑/道具合并为可持久选择、整体移动的编组">
-                <span class="menu-row-left"><svg class="menu-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="13" width="8" height="8" rx="1"/><path d="M13 7h4v4M11 17H7v-4"/></svg><span>创建编组</span></span>
-                <span class="menu-shortcut">⌘G</span>
-              </div>
-              <div class="cascade-item" id="btnMenuUngroupSelected" title="解组并保留全部成员世界位置、内部部件与动画">
-                <span class="menu-row-left"><svg class="menu-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><line x1="9" y1="15" x2="15" y2="9"/></svg><span>解组</span></span>
-                <span class="menu-shortcut">⇧⌘G</span>
-              </div>
-              <div class="menu-divider"></div>
-              <div class="cascade-item" id="btnMenuEnterGroup" title="进入当前选中编组内部进行成员级编辑">
-                <span class="menu-row-left"><svg class="menu-icon" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg><span>进入组内编辑</span></span>
-                <span class="menu-shortcut">Enter</span>
-              </div>
-              <div class="cascade-item" id="btnMenuExitGroup" title="退出当前组内编辑，回到上层编组或场景根层级">
-                <span class="menu-row-left"><svg class="menu-icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg><span>退出组层级</span></span>
-                <span class="menu-shortcut">⇧⌥G</span>
-              </div>
-              <div class="cascade-item" id="btnMenuRemoveFromGroup" title="将当前选中成员从其直接父组移出（保持世界位置不变）">
-                <span class="menu-row-left"><svg class="menu-icon" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg><span>移出父组</span></span>
-              </div>
-            </div>
-          </div>
-
-          <!-- 状态（锁定防误改 / 显隐） -->
-          <div class="cascade-item" id="editStateParent" title="锁定防误改、解锁、显隐、独显或标记关键保护对象">
-            <span class="menu-row-left">
-              <svg class="menu-icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-              <span>状态（锁定防误改）</span>
-            </span>
-            <span class="menu-sub-arrow">▸</span>
-            <div class="cascade-sub-panel" id="editStateSub" style="width:254px;">
-              <div class="cascade-item" id="btnMenuToggleLockSelected" title="切换锁定状态（混合状态下优先统一锁定；仅全部锁定时解锁）">
-                <span class="menu-row-left"><span class="menu-check" id="chkLockSelectedObj"></span><svg class="menu-icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><span id="lblLockSelectedObj">锁定选中对象</span></span>
-                <span class="menu-shortcut">L</span>
-              </div>
-              <div class="cascade-item" id="btnMenuLockAllSelected" title="明确锁定当前选区中的全部对象/组（不翻转已锁定项）">
-                <span class="menu-row-left"><span class="menu-check"></span><svg class="menu-icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><span>锁定所选（防误改）</span></span>
-              </div>
-              <div class="cascade-item" id="btnMenuUnlockAllSelected" title="明确解锁当前选区中的全部对象/组">
-                <span class="menu-row-left"><span class="menu-check"></span><svg class="menu-icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg><span>解锁所选</span></span>
-              </div>
-              <div class="cascade-item" id="btnMenuToggleProtectedSelected" title="标记或取消「关键，必须保留」：自动稀疏与预算裁剪绝不删除">
-                <span class="menu-row-left"><span class="menu-check" id="chkProtectedSelectedObj"></span><svg class="menu-icon" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span id="lblProtectedSelectedObj">关键，必须保留</span></span>
-              </div>
-              <div class="cascade-item" id="btnMenuLockPropsToggle" title="切换环境布景默认防误触锁定">
-                <span class="menu-row-left"><span class="menu-check" id="chkLockProps">✓</span><svg class="menu-icon" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><span>锁定环境布景</span></span>
-              </div>
-              <div class="menu-divider"></div>
-              <div class="cascade-item" id="btnMenuShowAllObjects" title="幂等恢复显示全部被手动隐藏的对象及组合子部件（若处于独显则先退出独显）">
-                <span class="menu-row-left"><span class="menu-check" id="chkShowAllObjects"></span><svg class="menu-icon" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg><span id="lblShowAllObjects">显示全部对象</span></span>
-                <span class="menu-shortcut">⌥⇧H</span>
-              </div>
-              <div class="cascade-item" id="btnMenuToggleHideSelectedChar" title="切换当前选中对象的隐藏/显示状态（支持人物、道具、组合体及多选）">
-                <span class="menu-row-left"><span class="menu-check" id="chkHideSelectedChar"></span><svg class="menu-icon" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><line x1="1" y1="1" x2="23" y2="23"/></svg><span id="lblHideSelectedChar">隐藏选中对象</span></span>
-                <span class="menu-shortcut">V</span>
-              </div>
-              <div class="cascade-item" id="btnMenuSoloSelected" title="仅显示当前选中对象（及绑定子道具），再次点击退出独显并恢复原显隐状态">
-                <span class="menu-row-left"><span class="menu-check" id="chkSoloSelectedObj"></span><svg class="menu-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/></svg><span id="lblSoloSelectedObj">隐藏其他对象（独显）</span></span>
-                <span class="menu-shortcut">⌥H</span>
-              </div>
-              <div class="cascade-item" id="btnMenuToggleHideAllChars" title="切换全部人物的隐藏/显示状态（仅作用于人物角色）">
-                <span class="menu-row-left"><span class="menu-check" id="chkHideAllChars"></span><svg class="menu-icon" viewBox="0 0 24 24"><circle cx="12" cy="7" r="4"/><path d="M5.5 21a6.5 6.5 0 0 1 13 0"/></svg><span id="lblHideAllChars">隐藏全部人物</span></span>
-                <span class="menu-shortcut">⇧V</span>
-              </div>
-              <div id="menuEditCharVisList"></div>
-            </div>
-          </div>
-
-          <div class="menu-divider"></div>
-
-          <!-- 道具绑定 (权威单一绑定入口，合并原枪人一起移动与绑定到人物) -->
-          <div class="cascade-item" id="editPropBindParent" title="将枪械或道具绑定到人物挂点、吸附握持点、切换双手持枪或解除绑定">
-            <span class="menu-row-left">
-              <svg class="menu-icon" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-              <span>道具绑定</span>
-            </span>
-            <span class="menu-sub-arrow">▸</span>
-            <div class="cascade-sub-panel" id="editPropBindSub" style="width:242px;">
-              <div class="cascade-item" id="btnMenuMultiSnapBindNow" title="多选人物与道具后按 U 一键吸附并绑定跟随（再按 U 或 Shift+U 解除绑定）">
-                <span class="menu-row-left"><svg class="menu-icon" viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4"/><circle cx="12" cy="12" r="3"/></svg><span>吸附多选人物道具</span></span>
-                <span class="menu-shortcut">U</span>
-              </div>
-              <div class="cascade-item" id="btnMenuBindToCharModal" title="打开绑定到人物参数弹窗（选择目标人物、部位挂点与绑定方式）">
-                <span class="menu-row-left"><svg class="menu-icon" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg><span>绑定到人物…</span></span>
-              </div>
-              <div class="cascade-item" id="btnMenuChangeBindModal" title="更换绑定目标人物或挂点部位">
-                <span class="menu-row-left"><svg class="menu-icon" viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg><span>更换绑定…</span></span>
-              </div>
-              <div class="cascade-item" id="btnMenuSnapGripNow" title="将道具握持点立即吸附对齐到目标人物手部挂点">
-                <span class="menu-row-left"><svg class="menu-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg><span>吸附到握持点</span></span>
-              </div>
-              <div class="cascade-item" id="btnMenuUnbindPropNow" title="解除绑定并保留当前时刻世界位置、朝向与尺寸 (Shift+U)" style="color:#F3A852;">
-                <span class="menu-row-left"><svg class="menu-icon" viewBox="0 0 24 24"><line x1="2" y1="2" x2="22" y2="22"/><path d="M15 9h3a5 5 0 0 1 3.54 8.54"/><path d="M9 15H6a5 5 0 0 1-3.54-8.54"/></svg><span>解除绑定</span></span>
-                <span class="menu-shortcut">⇧U</span>
-              </div>
-              <div class="menu-divider"></div>
-              <div class="cascade-item" id="btnMenuToggleTwoHanded" title="切换单向双手持枪（主手驱动枪械，副手自动解算IK跟随前护木）">
-                <span class="menu-row-left"><span class="menu-check" id="chkMenuTwoHanded"></span><span>双手持枪开关</span></span>
-              </div>
-              <div class="cascade-item" id="btnMenuBindPropsModal" title="打开绑定属性与高级局部偏移/握持点微调面板">
-                <span class="menu-row-left"><svg class="menu-icon" viewBox="0 0 24 24"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/></svg><span>绑定属性…</span></span>
-              </div>
-            </div>
-          </div>
-
-          <!-- 持枪姿态 -->
-          <div class="cascade-item" id="editGunPoseParent" title="切换当前人物或当前枪所关联人物的持枪姿态">
-            <span class="menu-row-left">
-              <svg class="menu-icon" viewBox="0 0 24 24"><circle cx="12" cy="7" r="3"/><path d="M6 21v-4a4 4 0 0 1 4-4h4l4 2"/></svg>
-              <span>持枪姿态</span>
-            </span>
-            <span class="menu-sub-arrow">▸</span>
-            <div class="cascade-sub-panel" id="editGunPoseSub" style="width:236px;">
-              <div id="menuGunPoseTargetHint" style="padding:3px 8px;font-size:10.5px;color:#9CA6B4;border-bottom:1px solid #353C46;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">目标：未选中人物或持枪对象</div>
-              <div class="cascade-item menu-gun-pose-item" data-gun-pose="rifle_aim_cheek" title="右手握枪柄贴右胸前、枪托抵右肩窝、左手托前护木贴腮瞄准">
-                <span class="menu-row-left"><span class="menu-check" data-gun-pose-chk="rifle_aim_cheek"></span><span>抵肩瞄准</span></span>
-              </div>
-              <div class="cascade-item menu-gun-pose-item" data-gun-pose="rifle_aim_tree_cover" title="身体略微前倾侧探、双手稳托步枪从掩体树干旁探出瞄准">
-                <span class="menu-row-left"><span class="menu-check" data-gun-pose-chk="rifle_aim_tree_cover"></span><span>掩体探身</span></span>
-              </div>
-              <div class="cascade-item menu-gun-pose-item" data-gun-pose="rifle_low_ready" title="枪托抵肩、枪口略微压低朝前下方戒备">
-                <span class="menu-row-left"><span class="menu-check" data-gun-pose-chk="rifle_low_ready"></span><span>胸前低姿</span></span>
-              </div>
-              <div class="cascade-item menu-gun-pose-item" data-gun-pose="rifle_crouch_aim" title="重心下沉半蹲屈膝、上身前倾抵肩稳固瞄准">
-                <span class="menu-row-left"><span class="menu-check" data-gun-pose-chk="rifle_crouch_aim"></span><span>战术半蹲</span></span>
-              </div>
-              <div class="cascade-item menu-gun-pose-item" data-gun-pose="rifle_flinch_duck" title="受惊或遇袭后坐力下缩肩屈膝、把步枪收回胸前护身">
-                <span class="menu-row-left"><span class="menu-check" data-gun-pose-chk="rifle_flinch_duck"></span><span>受惊收枪</span></span>
-              </div>
-              <div class="cascade-item menu-gun-pose-item" data-gun-pose="rifle_patrol_carry" title="放松行进姿态，双手在胸腹前自然横持步枪">
-                <span class="menu-row-left"><span class="menu-check" data-gun-pose-chk="rifle_patrol_carry"></span><span>双手横持</span></span>
-              </div>
-            </div>
-          </div>
-
-          <!-- 动画编辑 -->
-          <div class="cascade-item" id="editAnimPolicyParent" title="编辑有动画人物时的坐标与关键帧写入策略">
-            <span class="menu-row-left">
-              <svg class="menu-icon" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-              <span>动画编辑</span>
-            </span>
-            <span class="menu-sub-arrow">▸</span>
-            <div class="cascade-sub-panel" id="editAnimPolicySub" style="width:216px;">
-              <div class="cascade-item" id="menuPolicyBase" title="只改人物基础状态，不修改已有关键帧">
-                <span class="menu-row-left"><span class="menu-check" id="chkEditPolicyBase"></span><span>基础状态</span></span>
-              </div>
-              <div class="cascade-item" id="menuPolicyCurrent" title="在当前整数帧新增或更新关键帧">
-                <span class="menu-row-left"><span class="menu-check" id="chkEditPolicyCurrent">✓</span><span>修改当前帧</span></span>
-              </div>
-              <div class="cascade-item" id="menuPolicyShift" title="同步平移基础位置与整段关键帧轨迹，保留动作节奏">
-                <span class="menu-row-left"><span class="menu-check" id="chkEditPolicyShift"></span><span>整段平移</span></span>
-              </div>
-            </div>
-          </div>
-
-          <!-- 更改画幅比 -->
-          <div class="cascade-item" id="editAspectRatioParent" title="切换当前镜头与导出视频的画幅比例">
-            <span class="menu-row-left">
-              <svg class="menu-icon" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M7 9h2v2H7zM15 13h2v2h-2z"/></svg>
-              <span>更改画幅比</span>
-            </span>
-            <span style="display:inline-flex;align-items:center;gap:4px;">
-              <span id="editAspectCurrentLabel" style="font-size:10.5px;color:#9CA6B4;font-family:monospace;">2.39:1</span>
-              <span class="menu-sub-arrow">▸</span>
-            </span>
-            <div class="cascade-sub-panel" id="editAspectRatioSub" style="width:206px;">
-              <div class="cascade-item menu-aspect-item" data-menu-aspect="2.39:1" title="切换为 2.39:1 电影宽银幕">
-                <span class="menu-row-left"><span class="menu-check">✓</span><span>2.39:1 宽银幕</span></span>
-              </div>
-              <div class="cascade-item menu-aspect-item" data-menu-aspect="2.35:1" title="切换为 2.35:1 宽银幕 (1280×544)">
-                <span class="menu-row-left"><span class="menu-check"></span><span>2.35:1 宽银幕</span></span>
-              </div>
-              <div class="cascade-item menu-aspect-item" data-menu-aspect="2.33:1" title="切换为 2.33:1 宽银幕 (21:9)">
-                <span class="menu-row-left"><span class="menu-check"></span><span>2.33:1 宽银幕</span></span>
-              </div>
-              <div class="cascade-item menu-aspect-item" data-menu-aspect="16:9" title="切换为 16:9 标准横屏">
-                <span class="menu-row-left"><span class="menu-check"></span><span>16:9 横屏</span></span>
-              </div>
-              <div class="cascade-item menu-aspect-item" data-menu-aspect="9:16" title="切换为 9:16 竖屏">
-                <span class="menu-row-left"><span class="menu-check"></span><span>9:16 竖屏</span></span>
-              </div>
-              <div class="cascade-item menu-aspect-item" data-menu-aspect="4:3" title="切换为 4:3 经典画幅">
-                <span class="menu-row-left"><span class="menu-check"></span><span>4:3 经典</span></span>
-              </div>
-              <div class="cascade-item menu-aspect-item" data-menu-aspect="1:1" title="切换为 1:1 方画幅">
-                <span class="menu-row-left"><span class="menu-check"></span><span>1:1 方画幅</span></span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 3. 添加 -->
+      <!-- 2. 添加 -->
       <div class="top-menu-wrap" data-menubar-item="add">
-        <button class="top-menu-btn" data-menu-target="menuAdd" title="添加物体、人物、车辆、摄影机与场景资产 (快捷键 Shift+A)">添加 <span class="menu-caret">▾</span></button>
+        <button class="top-menu-btn" data-menu-target="menuAdd" title="添加人物/车辆/基础体/场景资产/摄影机，以及持枪姿态与动画编辑 (快捷键 Shift+A)">添加 <span class="menu-caret">▾</span></button>
         <div class="top-dropdown" id="menuAdd" style="width:224px;">
           <!-- 人物 -->
           <div class="cascade-item" id="addCharParent" title="添加球头人偶或全身关节人偶">
@@ -3895,8 +3719,6 @@
             </div>
           </div>
 
-          <div class="menu-divider"></div>
-
           <!-- 摄影机 -->
           <div class="cascade-item" id="addCameraParent" title="在当前场次下增加新摄影机机位（同场多机位共享 3D 舞台）">
             <span class="menu-row-left">
@@ -3917,8 +3739,94 @@
             </div>
           </div>
 
-          <!-- 隐藏保留兼容节点 -->
-          <div style="display:none;">
+          <div class="menu-divider"></div>
+
+          <!-- 持枪姿态 -->
+          <div class="cascade-item" id="editGunPoseParent" title="切换当前人物或当前枪所关联人物的持枪姿态">
+            <span class="menu-row-left">
+              <svg class="menu-icon" viewBox="0 0 24 24"><circle cx="12" cy="7" r="3"/><path d="M6 21v-4a4 4 0 0 1 4-4h4l4 2"/></svg>
+              <span>持枪姿态</span>
+            </span>
+            <span class="menu-sub-arrow">▸</span>
+            <div class="cascade-sub-panel" id="editGunPoseSub" style="width:236px;">
+              <div id="menuGunPoseTargetHint" style="padding:3px 8px;font-size:10.5px;color:#9CA6B4;border-bottom:1px solid #353C46;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">目标：未选中人物或持枪对象</div>
+              <div class="cascade-item menu-gun-pose-item" data-gun-pose="rifle_aim_cheek" title="右手握枪柄贴右胸前、枪托抵右肩窝、左手托前护木贴腮瞄准">
+                <span class="menu-row-left"><span class="menu-check" data-gun-pose-chk="rifle_aim_cheek"></span><span>抵肩瞄准</span></span>
+              </div>
+              <div class="cascade-item menu-gun-pose-item" data-gun-pose="rifle_aim_tree_cover" title="身体略微前倾侧探、双手稳托步枪从掩体树干旁探出瞄准">
+                <span class="menu-row-left"><span class="menu-check" data-gun-pose-chk="rifle_aim_tree_cover"></span><span>掩体探身</span></span>
+              </div>
+              <div class="cascade-item menu-gun-pose-item" data-gun-pose="rifle_low_ready" title="枪托抵肩、枪口略微压低朝前下方戒备">
+                <span class="menu-row-left"><span class="menu-check" data-gun-pose-chk="rifle_low_ready"></span><span>胸前低姿</span></span>
+              </div>
+              <div class="cascade-item menu-gun-pose-item" data-gun-pose="rifle_crouch_aim" title="重心下沉半蹲屈膝、上身前倾抵肩稳固瞄准">
+                <span class="menu-row-left"><span class="menu-check" data-gun-pose-chk="rifle_crouch_aim"></span><span>战术半蹲</span></span>
+              </div>
+              <div class="cascade-item menu-gun-pose-item" data-gun-pose="rifle_flinch_duck" title="受惊或遇袭后坐力下缩肩屈膝、把步枪收回胸前护身">
+                <span class="menu-row-left"><span class="menu-check" data-gun-pose-chk="rifle_flinch_duck"></span><span>受惊收枪</span></span>
+              </div>
+              <div class="cascade-item menu-gun-pose-item" data-gun-pose="rifle_patrol_carry" title="放松行进姿态，双手在胸腹前自然横持步枪">
+                <span class="menu-row-left"><span class="menu-check" data-gun-pose-chk="rifle_patrol_carry"></span><span>双手横持</span></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 动画编辑 -->
+          <div class="cascade-item" id="editAnimPolicyParent" title="编辑有动画人物时的坐标与关键帧写入策略">
+            <span class="menu-row-left">
+              <svg class="menu-icon" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+              <span>动画编辑</span>
+            </span>
+            <span class="menu-sub-arrow">▸</span>
+            <div class="cascade-sub-panel" id="editAnimPolicySub" style="width:216px;">
+              <div class="cascade-item" id="menuPolicyBase" title="只改人物基础状态，不修改已有关键帧">
+                <span class="menu-row-left"><span class="menu-check" id="chkEditPolicyBase"></span><span>基础状态</span></span>
+              </div>
+              <div class="cascade-item" id="menuPolicyCurrent" title="在当前整数帧新增或更新关键帧">
+                <span class="menu-row-left"><span class="menu-check" id="chkEditPolicyCurrent">✓</span><span>修改当前帧</span></span>
+              </div>
+              <div class="cascade-item" id="menuPolicyShift" title="同步平移基础位置与整段关键帧轨迹，保留动作节奏">
+                <span class="menu-row-left"><span class="menu-check" id="chkEditPolicyShift"></span><span>整段平移</span></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 隐藏保留兼容节点（已从顶栏可见菜单移除，但保留内部快捷键/状态钩子无报错） -->
+          <div style="display:none;" id="menuEditLegacyHiddenCompat">
+            <button id="btnUndo" disabled></button>
+            <button id="btnRedo" disabled></button>
+            <div id="btnCopyObjectMenu"></div>
+            <div id="btnPasteObjectMenu"></div>
+            <div id="btnDuplicateSelected"></div>
+            <div id="btnDuplicateKeepBindingMenu"></div>
+            <div id="btnRenameSelected"></div>
+            <div id="btnDeleteSelectedMenu"></div>
+            <div id="btnMenuBoxSelect"><span id="chkMenuBoxSelect"></span></div>
+            <div id="btnMenuSelectAll"></div>
+            <div id="btnMenuDeselectAll"></div>
+            <div id="btnEditFocusSelected"></div>
+            <div id="btnMenuGroupSelected"></div>
+            <div id="btnMenuUngroupSelected"></div>
+            <div id="btnMenuEnterGroup"></div>
+            <div id="btnMenuExitGroup"></div>
+            <div id="btnMenuRemoveFromGroup"></div>
+            <div id="btnMenuToggleLockSelected"><span id="chkLockSelectedObj"></span><span id="lblLockSelectedObj"></span></div>
+            <div id="btnMenuLockAllSelected"></div>
+            <div id="btnMenuUnlockAllSelected"></div>
+            <div id="btnMenuToggleProtectedSelected"><span id="chkProtectedSelectedObj"></span><span id="lblProtectedSelectedObj"></span></div>
+            <div id="btnMenuLockPropsToggle"><span id="chkLockProps">✓</span></div>
+            <div id="btnMenuShowAllObjects"><span id="chkShowAllObjects"></span><span id="lblShowAllObjects"></span></div>
+            <div id="btnMenuToggleHideSelectedChar"><span id="chkHideSelectedChar"></span><span id="lblHideSelectedChar"></span></div>
+            <div id="btnMenuSoloSelected"><span id="chkSoloSelectedObj"></span><span id="lblSoloSelectedObj"></span></div>
+            <div id="btnMenuToggleHideAllChars"><span id="chkHideAllChars"></span></div>
+            <div id="menuEditCharVisList"></div>
+            <div id="btnMenuMultiSnapBindNow"></div>
+            <div id="btnMenuBindToCharModal"></div>
+            <div id="btnMenuChangeBindModal"></div>
+            <div id="btnMenuSnapGripNow"></div>
+            <div id="btnMenuUnbindPropNow"></div>
+            <div id="btnMenuToggleTwoHanded"><span id="chkMenuTwoHanded"></span></div>
+            <div id="btnMenuBindPropsModal"></div>
             <div id="menuPose">
               <span id="btnSitOnBox"></span>
               <button class="pose-btn" data-pose="standing"></button>
@@ -4100,45 +4008,10 @@
         </div>
       </div>
 
-      <!-- 5. 动画 -->
+      <!-- 4. 动画（已移除顶部冗余项，保留关键帧/插值/时间调整/播放子菜单） -->
       <div class="top-menu-wrap" data-menubar-item="anim">
-        <button class="top-menu-btn" data-menu-target="menuAnim" title="关键帧录制、复制粘贴、插值模式、匀速时间调整与播放控制">动画 <span class="menu-caret">▾</span></button>
+        <button class="top-menu-btn" data-menu-target="menuAnim" title="关键帧、插值模式、时间调整与播放控制">动画 <span class="menu-caret">▾</span></button>
         <div class="top-dropdown" id="menuAnim" style="width:232px;">
-          <button class="menu-row-item" id="btnMenuRecordActiveKf" title="在当前整数帧记录当前选中对象或摄影机的关键帧 (I / K)">
-            <span class="menu-row-left">
-              <svg class="menu-icon" viewBox="0 0 24 24"><polygon points="12 2 22 12 12 22 2 12"/></svg>
-              <span>录关键帧</span>
-            </span>
-            <span class="menu-shortcut">I / K</span>
-          </button>
-          <button class="menu-row-item" id="btnMenuRecordAllKf" title="当前镜头所有时间轴轨道录帧，跳过锁定轨道；先激活时间轴，按 Shift+K。可一次撤销。">
-            <span class="menu-row-left">所有轨道录帧</span><span class="menu-shortcut">Shift+K</span>
-          </button>
-          <button class="menu-row-item" id="btnMenuClearActiveTrackKf" style="color:#E16B6B" title="仅清空当前操作轨道的所有关键帧（保留对象与当前画面，可撤销）">
-            <span class="menu-row-left">清空当前轨道关键帧</span><span class="menu-shortcut">⌥X</span>
-          </button>
-          <button class="menu-row-item" id="btnMenuClearAllKf" style="color:#E16B6B" title="删除当前镜头全部关键帧，包含锁定轨道；保留对象与当前画面，可撤销。时间轴内 Shift+X。">
-            <span class="menu-row-left">删除全部关键帧（当前镜头）</span><span class="menu-shortcut">Shift+X</span>
-          </button>
-          <button class="menu-row-item" id="btnSimplifyShotKeyframes" title="按动作变化精简当前镜头各轨道，每10秒最多5个；保留起止，可撤销，请预览后保存">
-            <span class="menu-row-left">精简关键帧（≤5个/10秒）</span>
-          </button>
-          <button class="menu-row-item" id="btnMenuAutoRecordToggle" title="开启后：在视口或属性栏完成一次变换时自动更新/写入当前帧">
-            <span class="menu-row-left">
-              <span class="menu-check" id="chkAutoRecord"></span>
-              <svg class="menu-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4" fill="currentColor"/></svg>
-              <span>自动录帧开关</span>
-            </span>
-          </button>
-          <button class="menu-row-item" id="btnMenuOpenCamSpeedCurve" title="选中摄影机并打开底部「速度曲线」编辑页签（保持空间轨迹不变，基于弧长控制推进速率）">
-            <span class="menu-row-left">
-              <svg class="menu-icon" viewBox="0 0 24 24"><path d="M3 18c4-1 6-11 11-11 3 0 5 4 7 4"/><circle cx="14" cy="7" r="2"/></svg>
-              <span>摄影机速度曲线</span>
-            </span>
-          </button>
-
-          <div class="menu-divider"></div>
-
           <!-- 关键帧 -->
           <div class="cascade-item" id="animKfParent" title="复制、粘贴、删除关键帧或跳转到上一/下一关键帧">
             <span class="menu-row-left">
@@ -4272,7 +4145,14 @@
           </div>
 
           <!-- 隐藏保留兼容节点 -->
-          <div style="display:none;">
+          <div style="display:none;" id="menuAnimLegacyHiddenCompat">
+            <button id="btnMenuRecordActiveKf"></button>
+            <button id="btnMenuRecordAllKf"></button>
+            <button id="btnMenuClearActiveTrackKf"></button>
+            <button id="btnMenuClearAllKf"></button>
+            <button id="btnSimplifyShotKeyframes"></button>
+            <button id="btnMenuAutoRecordToggle"><span id="chkAutoRecord"></span></button>
+            <button id="btnMenuOpenCamSpeedCurve"></button>
             <button class="anim-policy-item" data-policy="base_only"><span id="chkPolicyBase"></span></button>
             <button class="anim-policy-item" data-policy="current_frame"><span id="chkPolicyCurrent">✓</span></button>
             <button class="anim-policy-item" data-policy="shift_all"><span id="chkPolicyShift"></span></button>
@@ -4311,87 +4191,19 @@
         </div>
       </div>
 
-      <!-- 6. 导出 -->
-      <div class="top-menu-wrap" data-menubar-item="export">
-        <button class="top-menu-btn" data-menu-target="menuRender" title="导出 MP4 预演视频、截图、首尾帧对照图及工程交接文件">导出 <span class="menu-caret">▾</span></button>
-        <div class="top-dropdown" id="menuRender" style="width:224px;">
-          <button class="menu-row-item" id="btnMenuExportVideoDialog" title="打开视频导出参数面板（选择画幅比、渲染风格并默认录屏导出 MP4）">
-            <span class="menu-row-left">
-              <svg class="menu-icon" viewBox="0 0 24 24"><rect x="2" y="5" width="15" height="14" rx="2"/><polygon points="17 10 22 7 22 17 17 14"/></svg>
-              <span>视频…</span>
-            </span>
-            <span class="menu-shortcut">MP4</span>
-          </button>
-          <button class="menu-row-item" id="btnMenuOfflinePythonExport" title="使用后端 Python 离线渲染导出 MP4（需构图确认）">
-            <span class="menu-row-left">
-              <svg class="menu-icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M8 21h8M12 18v3"/></svg>
-              <span>后端离线渲染 MP4…</span>
-            </span>
-          </button>
-
-          <!-- 截图 -->
-          <div class="cascade-item" id="exportScreenshotParent" title="将当前摄影机画面保存为 PNG 或复制到剪贴板">
-            <span class="menu-row-left">
-              <svg class="menu-icon" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-              <span>截图</span>
-            </span>
-            <span class="menu-sub-arrow">▸</span>
-            <div class="cascade-sub-panel" id="exportScreenshotSub" style="width:208px;">
-              <div class="cascade-item" id="btnCaptureViewportPng" title="将右视口摄影机画面保存到桌面 (.png)">
-                <span class="menu-row-left"><svg class="menu-icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg><span>保存到桌面</span></span>
-                <span class="menu-shortcut">5</span>
-              </div>
-              <div class="cascade-item" id="btnCaptureClipboardPng" title="将右视口摄影机画面复制到系统剪贴板">
-                <span class="menu-row-left"><svg class="menu-icon" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span>复制到剪贴板</span></span>
-                <span class="menu-shortcut">4</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- 对照图 -->
-          <div class="cascade-item" id="exportCompareParent" title="按需生成并导出首尾帧对照图">
-            <span class="menu-row-left">
-              <svg class="menu-icon" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="3" x2="12" y2="21"/></svg>
-              <span>对照图</span>
-            </span>
-            <span class="menu-sub-arrow">▸</span>
-            <div class="cascade-sub-panel" id="exportCompareSub" style="width:214px;">
-              <div class="cascade-item" id="btnExportFirstLastCompare" title="按需渲染并导出当前镜头的首帧与末帧对照图">
-                <span class="menu-row-left"><svg class="menu-icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="12" y1="4" x2="12" y2="20"/></svg><span>首帧与末帧</span></span>
-              </div>
-              <div class="cascade-item" id="btnExportCurrentCompare" title="导出当前帧的原片与白模对照图">
-                <span class="menu-row-left"><svg class="menu-icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8" cy="12" r="2"/><circle cx="16" cy="12" r="2"/></svg><span>当前帧对照图</span></span>
-              </div>
-              <div class="cascade-item" id="btnVerify5Frames" title="生成 0%/25%/50%/75%/100% 五帧校验对照图">
-                <span class="menu-row-left"><svg class="menu-icon" viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><span>五帧同帧校验</span></span>
-              </div>
-            </div>
-          </div>
-
-          <!-- 交接 -->
-          <div class="cascade-item" id="exportHandoffParent" title="导出工程 JSON 或 Python 脚本用于外部交接">
-            <span class="menu-row-left">
-              <svg class="menu-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-              <span>交接</span>
-            </span>
-            <span class="menu-sub-arrow">▸</span>
-            <div class="cascade-sub-panel" id="exportHandoffSub" style="width:214px;">
-              <div class="cascade-item" id="btnExportProjectJson" title="导出完整工程 JSON 文件 (.json)">
-                <span class="menu-row-left"><svg class="menu-icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg><span>工程 JSON</span></span>
-                <span class="menu-shortcut">⇧⌘S</span>
-              </div>
-              <div class="cascade-item" id="btnExportCurrentSceneJson" title="单独导出当前场次 JSON 文件 (.json)">
-                <span class="menu-row-left"><svg class="menu-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg><span>当前场次 JSON</span></span>
-              </div>
-              <div class="cascade-item" id="btnExportPythonScriptFile" title="生成并下载当前镜头的 Python 导演脚本 (.py)">
-                <span class="menu-row-left"><svg class="menu-icon" viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg><span>Python 脚本</span></span>
-                <span class="menu-shortcut">.py</span>
-              </div>
-            </div>
-          </div>
-
-          <button id="btnMenuExportVideo" style="display:none;"></button>
-        </div>
+      <!-- 原「导出」顶栏菜单已移除，以下隐藏兼容节点仅保留快捷键与内部钩子无报错 -->
+      <div style="display:none;" id="menuRenderLegacyHiddenCompat">
+        <button id="btnMenuExportVideoDialog"></button>
+        <button id="btnMenuOfflinePythonExport"></button>
+        <div id="btnCaptureViewportPng"></div>
+        <div id="btnCaptureClipboardPng"></div>
+        <div id="btnExportFirstLastCompare"></div>
+        <div id="btnExportCurrentCompare"></div>
+        <div id="btnVerify5Frames"></div>
+        <div id="btnExportProjectJson"></div>
+        <div id="btnExportCurrentSceneJson"></div>
+        <div id="btnExportPythonScriptFile"></div>
+        <button id="btnMenuExportVideo"></button>
       </div>
 
       <div style="margin-left:auto;display:flex;align-items:center;gap:6px;">
@@ -4535,6 +4347,22 @@
         <div class="tool-tip-desc">在左视口编辑摄影机机位，右视口只读预览</div>
       </div>
     </button>
+
+    <div class="tool-shelf-sep"></div>
+
+    <!-- 7. 编组 / 解组：虚线组合外框＋双关联方块 -->
+    <button class="tool-shelf-btn" id="toolShelfGroup" data-shelf-tool="group" aria-label="编组 / 解组">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <rect x="2.8" y="2.8" width="18.4" height="18.4" rx="2.5" stroke-dasharray="3 2.2" />
+        <rect x="6.5" y="6.5" width="5.5" height="5.5" rx="1" />
+        <rect x="12" y="12" width="5.5" height="5.5" rx="1" />
+        <path d="M13.5 8.5h2v2M10.5 15.5h-2v-2" />
+      </svg>
+      <div class="tool-shelf-tip">
+        <div class="tool-tip-head"><span id="toolShelfGroupTipTitle">编组（整体移动）</span><kbd id="toolShelfGroupTipKbd">⌘G</kbd></div>
+        <div class="tool-tip-desc" id="toolShelfGroupTipDesc">多选对象点击创建编组；选中已编组对象再点可一键解组 (⇧⌘G)</div>
+      </div>
+    </button>
   </aside>
 
   <!-- 六、右侧对象列表与上下文属性面板 (Outliner + 对象/关键帧上下文属性区，默认隐藏，点按顶部“属性面板”或时间轴“更多”展开) -->
@@ -4547,13 +4375,6 @@
           <button class="btn active" id="btnToggleWorkMode" style="padding:1px 6px;font-size:11px;min-height:22px;" title="切换全局布景保护（布景锁定）与编辑解锁；临时关闭不清除对象自身锁">布景锁定</button>
           <button class="btn" id="btnDeleteSelected" style="padding:1px 6px;font-size:11px;min-height:22px;color:#E16B6B !important;" title="删除选中对象 (Del)">删除</button>
         </div>
-      </div>
-      <!-- 编组与锁定防误改快捷栏 -->
-      <div id="outlinerGroupQuickBar" style="display:flex;align-items:center;flex-wrap:wrap;gap:3px;padding:3px 4px;background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.06);border-radius:4px;margin-bottom:3px;">
-        <button class="btn" id="btnOutlinerGroup" style="padding:1px 6px;font-size:11px;min-height:20px;" title="编组 / 整体移动 (⌘/Ctrl+G)：将所选对象建组，保持相对位置不变">建组</button>
-        <button class="btn" id="btnOutlinerUngroup" style="padding:1px 6px;font-size:11px;min-height:20px;" title="解组 (⇧⌘/Ctrl+G)：保留成员世界位置与内部模型">解组</button>
-        <button class="btn" id="btnOutlinerLockSel" style="padding:1px 6px;font-size:11px;min-height:20px;" title="锁定所选（防误改，禁止移动/旋转/缩放/删除）">锁所选</button>
-        <button class="btn" id="btnOutlinerUnlockSel" style="padding:1px 6px;font-size:11px;min-height:20px;" title="解锁所选对象或组（保留子成员独立锁）">解所选</button>
       </div>
       <!-- 组内编辑面包屑栏（仅进入组层级后显示） -->
       <div id="outlinerGroupBreadcrumb" style="display:none;align-items:center;justify-content:space-between;gap:4px;padding:3px 6px;background:rgba(59,130,246,0.14);border:1px solid rgba(91,157,255,0.35);border-radius:4px;margin-bottom:3px;font-size:11px;">
@@ -5624,19 +5445,31 @@
     </div>
   </div>
 
-  <!-- 触屏/鼠标可直接执行的“一张纸”全览快捷键面板 -->
-  <div class="shortcuts-drawer" id="shortcutsDrawer" aria-label="快捷键与动作一览表">
+  <!-- 顶部下拉极简快捷键抽屉（Tab 分类 + 同类合并 + 纯净快捷键表，点击/按住键帽可直接执行） -->
+  <div class="shortcuts-drawer" id="shortcutsDrawer" aria-label="快捷键一览表">
     <div class="sc-drawer-header shortcuts-drawer-header">
-      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-        <span style="font-size:14px;font-weight:600;color:#E7EBF0;">键盘快捷键与动作一览（点击直接执行）</span>
-        <span class="sc-ctx-pill" id="shortcutsTargetContextBadge" title="当前动作执行的目标上下文">对象：未选中</span>
+      <div class="sc-drawer-top-row">
+        <div class="sc-drawer-title-group">
+          <span class="sc-drawer-main-title">快捷键</span>
+          <span class="sc-ctx-pill" id="shortcutsTargetContextBadge" title="当前动作执行的目标上下文">对象：未选中</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <input type="text" class="sc-search-input" id="shortcutsSearchInput" placeholder="搜索快捷键或动作（如 WASD、K、复制）…" />
+          <button class="btn" id="btnCloseShortcutsDrawer" style="height:26px;padding:0 10px;">Esc</button>
+        </div>
       </div>
-      <div style="display:flex;align-items:center;gap:8px;">
-        <input type="text" class="sc-search-input" id="shortcutsSearchInput" placeholder="搜索动作或快捷键（如 录帧、K、复制、姿态、WASD）…" />
-        <button class="btn" id="btnCloseShortcutsDrawer" style="height:26px;padding:0 10px;">关闭 (Esc)</button>
+      <div class="sc-tabs-bar" id="shortcutsTabsBar" role="tablist">
+        <button type="button" class="sc-tab-item active" data-sc-tab="common" role="tab" aria-selected="true">常用</button>
+        <button type="button" class="sc-tab-item" data-sc-tab="camera" role="tab" aria-selected="false">视图与摄影机</button>
+        <button type="button" class="sc-tab-item" data-sc-tab="object" role="tab" aria-selected="false">对象</button>
+        <button type="button" class="sc-tab-item" data-sc-tab="animation" role="tab" aria-selected="false">动画</button>
       </div>
     </div>
     <div class="sc-drawer-body shortcuts-drawer-body" id="shortcutsDrawerBody"></div>
+    <div class="sc-drawer-footer">
+      <span>点击键帽可直接执行 · 方向与焦距键帽按住连续生效</span>
+      <span id="shortcutsFooterHint">同类成对操作已合并为一行</span>
+    </div>
   </div>
 
   <!-- 场次与镜头 Finder 文件夹风格浏览器弹窗 -->
@@ -16865,6 +16698,37 @@
         }
       });
 
+      // 同步左侧工具栏「编组 / 解组」按钮状态
+      const grpShelfBtn = document.getElementById("toolShelfGroup");
+      if (grpShelfBtn) {
+        const selObjsNow = typeof selectedObjIds !== "undefined" && typeof getSceneObjById === "function"
+          ? Array.from(selectedObjIds).map((id) => getSceneObjById(id)).filter(Boolean)
+          : [];
+        const allSelectedAreGroups = selObjsNow.length > 0 && typeof isSceneGroupObj === "function" && selObjsNow.every((o) => isSceneGroupObj(o));
+        const inGroupCtx = Boolean(typeof activeGroupContextId !== "undefined" && activeGroupContextId);
+        const grpActive = allSelectedAreGroups || inGroupCtx;
+        grpShelfBtn.classList.toggle("active", grpActive);
+        if (grpActive) {
+          grpShelfBtn.style.color = "#5B9DFF";
+          grpShelfBtn.style.borderColor = "#5B9DFF";
+          grpShelfBtn.style.background = "linear-gradient(0deg, rgba(91, 157, 255, 0.16), rgba(91, 157, 255, 0.16)), #1B1E23";
+        } else {
+          grpShelfBtn.style.color = "";
+          grpShelfBtn.style.borderColor = "";
+          grpShelfBtn.style.background = "";
+        }
+        const tipTitle = document.getElementById("toolShelfGroupTipTitle");
+        const tipKbd = document.getElementById("toolShelfGroupTipKbd");
+        const tipDesc = document.getElementById("toolShelfGroupTipDesc");
+        if (tipTitle) tipTitle.textContent = allSelectedAreGroups ? "解组（释放成员）" : "编组（整体移动）";
+        if (tipKbd) tipKbd.textContent = allSelectedAreGroups ? "⇧⌘G" : "⌘G";
+        if (tipDesc) {
+          tipDesc.textContent = allSelectedAreGroups
+            ? "点击立即解组并保留所有成员世界位置（按住 Shift 也可解组）"
+            : "多选对象点击创建编组；选中已编组对象再点可一键解组 (⇧⌘G)";
+        }
+      }
+
       // 同步顶部第二行选中对象徽标
       const ctxSel = document.getElementById("ctxSelectedBadge");
       if (ctxSel) {
@@ -19806,7 +19670,7 @@
       const dd = targetId ? document.getElementById(targetId) : null;
       if (!dd) return;
       closeAllTopMenus();
-      if (targetId === "menuEdit") {
+      if (targetId === "menuEdit" || targetId === "menuAdd") {
         if (typeof updateEditMenuCharacterVisibilityUI === "function") updateEditMenuCharacterVisibilityUI();
         if (typeof updateEditMenuBindingAndPoseUI === "function") updateEditMenuBindingAndPoseUI();
         if (typeof syncAnimEditPolicyCheckmarks === "function") syncAnimEditPolicyCheckmarks();
@@ -20584,118 +20448,374 @@
       { id: "kf_clear_all", group: "关键帧", label: "清空本镜全部帧", kbd: "⇧X", danger: true, run: () => clearAllTimelineKeyframes() },
     ];
 
+    let activeShortcutsTab = "common";
+
+    const SHORTCUTS_TAB_LAYOUT = [
+      {
+        tab: "common",
+        label: "常用",
+        sections: [
+          {
+            caption: "模式与变换工具",
+            rows: [
+              { title: "切换模式", ids: ["mode_browse", "mode_object", "mode_ik", "mode_camera"], sep: "space", desc: "浏览 / 物体 / 姿态 / 摄影机" },
+              { title: "变换工具", ids: ["tool_move", "tool_rotate", "tool_scale"], sep: "space", desc: "移动 / 旋转 / 缩放" },
+              { title: "框选 / 取消", ids: ["tool_box_select", "escape_browse"], sep: "slash", desc: "框选工具 / 取消拖动并返回浏览" },
+            ],
+          },
+          {
+            caption: "高频编辑与视图",
+            rows: [
+              { title: "撤销 / 重做", ids: ["edit_undo", "edit_redo"], sep: "slash", desc: "撤销 / 重做上一步" },
+              { title: "界面视图", ids: ["ui_toggle_right", "ui_focus_previz"], sep: "slash", desc: "展开收起右侧栏 / 专注预演模式" },
+              { title: "快速打帧", ids: ["kf_record_cam", "kf_record_obj"], sep: "slash", desc: "摄影机打帧 / 选中对象打帧" },
+            ],
+          },
+        ],
+      },
+      {
+        tab: "camera",
+        label: "视图与摄影机",
+        sections: [
+          {
+            caption: "方向操作按住连续生效",
+            rows: [
+              { title: "机位移动", ids: ["nav_w", "nav_a", "nav_s", "nav_d"], sep: "space", desc: "前 / 左 / 后 / 右" },
+              { title: "升高 / 降低", ids: ["nav_q", "nav_e"], sep: "slash", desc: "垂直移动" },
+              { title: "转动视角", ids: ["nav_up", "nav_down", "nav_left", "nav_right"], sep: "space", desc: "上仰 / 下俯 / 左摇 / 右摇" },
+              { title: "调整焦距", ids: ["cam_focal_wider", "cam_focal_tighter"], sep: "slash", desc: "变广 / 变窄" },
+              { title: "焦距跳档", ids: ["cam_focal_step_wider", "cam_focal_step_tighter"], sep: "slash", desc: "广角 / 长焦" },
+              { title: "定位视图", ids: ["view_focus", "view_frame_all"], sep: "slash", desc: "聚焦选中 / 显示全部" },
+            ],
+          },
+          {
+            caption: "截图与录制",
+            rows: [
+              { title: "摄影机截图", ids: ["cam_snap_clip", "cam_snap_desk"], sep: "slash", desc: "剪贴板 / 存到桌面" },
+              { title: "录制与导出", ids: ["cam_screen_record", "fast_gpu_export"], sep: "slash", desc: "摄影机画面录屏 / 极速 GPU 直出", dynamicDesc: true },
+            ],
+          },
+        ],
+      },
+      {
+        tab: "object",
+        label: "对象",
+        sections: [
+          {
+            caption: "添加与复制",
+            rows: [
+              { title: "添加菜单", ids: ["obj_add_menu"], sep: "slash", desc: "打开物体 / 人物 / 摄影机菜单" },
+              { title: "复制 / 粘贴", ids: ["obj_copy", "obj_paste"], sep: "slash", desc: "复制 / 粘贴选中对象（视口）" },
+              { title: "生成副本", ids: ["obj_duplicate"], sep: "slash", desc: "快速生成选中对象副本" },
+            ],
+          },
+          {
+            caption: "显隐、锁定与编组",
+            rows: [
+              { title: "显隐与独显", ids: ["obj_toggle_hide", "obj_solo", "obj_show_all"], sep: "slash", desc: "隐藏选中 / 独显 / 显示全部对象" },
+              { title: "人物显隐", ids: ["obj_toggle_hide_all"], sep: "slash", desc: "隐藏 / 显示全部人物" },
+              { title: "锁定 / 解锁", ids: ["obj_toggle_lock"], sep: "slash", desc: "切换防误改锁定状态" },
+              { title: "编组 / 解组", ids: ["obj_group", "obj_ungroup"], sep: "slash", desc: "创建编组 / 解组（保留世界位置）" },
+              { title: "进出组编辑", ids: ["obj_enter_group", "obj_exit_group"], sep: "slash", desc: "进入组内编辑 / 退出当前组层级" },
+              { title: "删除对象", ids: ["obj_delete"], sep: "slash", desc: "删除选中对象（视口）" },
+            ],
+          },
+        ],
+      },
+      {
+        tab: "animation",
+        label: "动画",
+        sections: [
+          {
+            caption: "关键帧录制与编辑",
+            rows: [
+              { title: "打关键帧", ids: ["kf_record_cam", "kf_record_obj", "kf_record_all"], sep: "slash", desc: "摄影机 / 选中对象 / 全轨录帧" },
+              { title: "复制 / 粘贴帧", ids: ["kf_copy", "kf_paste"], sep: "slash", desc: "复制 / 粘贴关键帧（时间轴）" },
+              {
+                title: "移动选中帧",
+                ids: ["kf_nudge_l1", "kf_nudge_r1"],
+                shiftIds: { kf_nudge_l1: "kf_nudge_l5", kf_nudge_r1: "kf_nudge_r5" },
+                coveredIds: ["kf_nudge_l5", "kf_nudge_r5"],
+                subnote: "按住 Shift：移动 5 帧",
+                sep: "slash",
+                desc: "左右移动 1 帧",
+              },
+              { title: "删除 / 清空帧", ids: ["kf_delete_selected", "kf_clear_track", "kf_clear_all"], sep: "slash", desc: "删选中帧 / 清空当前轨 / 清空本镜" },
+            ],
+          },
+        ],
+      },
+    ];
+
+    function bindShortcutKeycapAction(btn, act, shiftAct = null) {
+      if (act.holdKey) {
+        const hk = act.holdKey;
+        const releaseHoldKey = () => {
+          btn.classList.remove("is-active-hold", "is-active");
+          if (pressedKeys.has(hk)) {
+            pressedKeys.delete(hk);
+            if (cameraMovedByKeys && pressedKeys.size === 0) {
+              cameraMovedByKeys = false;
+              syncPythonCodeFromScene();
+            }
+          }
+        };
+        btn.addEventListener("pointerdown", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          btn.classList.add("is-active-hold", "is-active");
+          pressedKeys.add(hk);
+          updateCameraKeyboardNavigation(0.06);
+          syncPythonCodeFromScene();
+        });
+        btn.addEventListener("pointerup", releaseHoldKey);
+        btn.addEventListener("pointercancel", releaseHoldKey);
+        btn.addEventListener("pointerleave", releaseHoldKey);
+      } else if (act.holdFocalDir) {
+        let fTimer = null;
+        const releaseFocal = () => {
+          if (fTimer) {
+            clearInterval(fTimer);
+            activeShortcutHoldTimers.delete(fTimer);
+            fTimer = null;
+          }
+          btn.classList.remove("is-active-hold", "is-active");
+        };
+        btn.addEventListener("pointerdown", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          btn.classList.add("is-active-hold", "is-active");
+          stepFocalLengthByShortcut(act.holdFocalDir, false);
+          fTimer = setInterval(() => {
+            stepFocalLengthByShortcut(act.holdFocalDir, false);
+          }, 95);
+          activeShortcutHoldTimers.add(fTimer);
+        });
+        btn.addEventListener("pointerup", releaseFocal);
+        btn.addEventListener("pointercancel", releaseFocal);
+        btn.addEventListener("pointerleave", releaseFocal);
+      } else {
+        btn.addEventListener("pointerdown", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+        });
+        btn.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const targetAct = (e.shiftKey && shiftAct) ? shiftAct : act;
+          if (targetAct.isDisabled && targetAct.isDisabled()) return;
+          if (targetAct.run) targetAct.run();
+          renderShortcutsDrawerItems();
+        });
+      }
+    }
+
     function renderShortcutsDrawerItems() {
       if (!shortcutsDrawerBody) return;
       updateShortcutsContextBadge();
       const query = String(shortcutsSearchInput?.value || "").trim().toLowerCase();
       shortcutsDrawerBody.innerHTML = "";
-      const groupOrder = ["模式与工具", "视角与摄影机", "对象", "关键帧"];
 
-      groupOrder.forEach((groupName) => {
-        const items = APP_SHORTCUT_ACTIONS.filter((act) => {
-          if (act.group !== groupName) return false;
-          if (!query) return true;
-          return (
-            act.label.toLowerCase().includes(query) ||
-            (act.kbd && act.kbd.toLowerCase().includes(query)) ||
-            act.group.toLowerCase().includes(query)
-          );
+      // 同步 Tab 栏激活态
+      document.querySelectorAll("#shortcutsTabsBar .sc-tab-item").forEach((tabBtn) => {
+        const isOn = !query && tabBtn.dataset.scTab === activeShortcutsTab;
+        tabBtn.classList.toggle("active", isOn);
+        tabBtn.setAttribute("aria-selected", String(isOn));
+      });
+
+      const actionById = new Map();
+      APP_SHORTCUT_ACTIONS.forEach((act) => {
+        if (act && act.id) actionById.set(act.id, act);
+      });
+
+      // 记录所有已在合并布局里覆盖的动作 id，用于兜底展示未来插件动态注册的带快捷键动作
+      const coveredIdSet = new Set();
+      SHORTCUTS_TAB_LAYOUT.forEach((tDef) => {
+        tDef.sections.forEach((sec) => {
+          sec.rows.forEach((row) => {
+            (row.ids || []).forEach((id) => coveredIdSet.add(id));
+            (row.coveredIds || []).forEach((id) => coveredIdSet.add(id));
+          });
         });
-        if (items.length === 0) return;
+      });
 
-        const grpEl = document.createElement("div");
-        grpEl.className = "sc-group-block shortcuts-group";
-        const titleEl = document.createElement("div");
-        titleEl.className = "sc-group-title shortcuts-group-title";
-        titleEl.textContent = groupName;
-        grpEl.appendChild(titleEl);
+      const groupToTabMap = {
+        "模式与工具": "common",
+        "视角与摄影机": "camera",
+        "对象": "object",
+        "关键帧": "animation",
+      };
 
-        const gridEl = document.createElement("div");
-        gridEl.className = "sc-actions-grid shortcuts-action-grid";
+      const tabsToRender = query
+        ? SHORTCUTS_TAB_LAYOUT
+        : SHORTCUTS_TAB_LAYOUT.filter((t) => t.tab === activeShortcutsTab);
 
-        items.forEach((act) => {
-          const btn = document.createElement("button");
-          btn.type = "button";
-          btn.className = "sc-action-btn";
-          btn.dataset.actionId = act.id;
-          const activeNow = Boolean(act.isActive && act.isActive());
-          const disabledNow = Boolean(act.isDisabled && act.isDisabled());
-          if (activeNow) btn.classList.add("is-active");
-          if (act.danger) btn.classList.add("is-danger");
-          if (disabledNow) btn.classList.add("is-disabled");
+      let totalRenderedRows = 0;
 
-          btn.innerHTML = `
-            <span class="sc-btn-label sc-action-label" title="${act.label}">${act.label}</span>
-            ${act.kbd ? `<span class="sc-btn-kbd sc-action-kbd">${act.kbd}</span>` : ""}
-          `;
+      tabsToRender.forEach((tabDef) => {
+        const resolvedSections = [];
 
-          if (act.holdKey) {
-            const hk = act.holdKey;
-            const releaseHoldKey = () => {
-              btn.classList.remove("is-active-hold", "is-active");
-              if (pressedKeys.has(hk)) {
-                pressedKeys.delete(hk);
-                if (cameraMovedByKeys && pressedKeys.size === 0) {
-                  cameraMovedByKeys = false;
-                  syncPythonCodeFromScene();
-                }
-              }
-            };
-            btn.addEventListener("pointerdown", (e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              btn.classList.add("is-active-hold", "is-active");
-              pressedKeys.add(hk);
-              updateCameraKeyboardNavigation(0.06);
-              syncPythonCodeFromScene();
-            });
-            btn.addEventListener("pointerup", releaseHoldKey);
-            btn.addEventListener("pointercancel", releaseHoldKey);
-            btn.addEventListener("pointerleave", releaseHoldKey);
-          } else if (act.holdFocalDir) {
-            let fTimer = null;
-            const releaseFocal = () => {
-              if (fTimer) {
-                clearInterval(fTimer);
-                activeShortcutHoldTimers.delete(fTimer);
-                fTimer = null;
-              }
-              btn.classList.remove("is-active-hold", "is-active");
-            };
-            btn.addEventListener("pointerdown", (e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              btn.classList.add("is-active-hold", "is-active");
-              stepFocalLengthByShortcut(act.holdFocalDir, false);
-              fTimer = setInterval(() => {
-                stepFocalLengthByShortcut(act.holdFocalDir, false);
-              }, 95);
-              activeShortcutHoldTimers.add(fTimer);
-            });
-            btn.addEventListener("pointerup", releaseFocal);
-            btn.addEventListener("pointercancel", releaseFocal);
-            btn.addEventListener("pointerleave", releaseFocal);
-          } else {
-            // 保持点按前的上下文（选中对象、关键帧、播放头与视口焦点）
-            btn.addEventListener("pointerdown", (e) => {
-              e.preventDefault();
-              e.stopPropagation();
-            });
-            btn.addEventListener("click", (e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              if (act.run) act.run();
-              renderShortcutsDrawerItems();
+        tabDef.sections.forEach((sec) => {
+          const rowsOut = [];
+          sec.rows.forEach((row) => {
+            // 纯净快捷键表：仅保留存在且有快捷键 kbd 的动作
+            const acts = (row.ids || [])
+              .map((id) => actionById.get(id))
+              .filter((a) => a && String(a.kbd || "").trim() !== "");
+            if (acts.length === 0) return;
+
+            const extraSearchActs = (row.coveredIds || [])
+              .map((id) => actionById.get(id))
+              .filter((a) => a && String(a.kbd || "").trim() !== "");
+
+            let descText = row.desc || "";
+            if (row.dynamicDesc && acts.length < (row.ids || []).length) {
+              descText = acts.map((a) => a.label).join(" / ");
+            }
+
+            if (query) {
+              const haystack = [
+                tabDef.label,
+                sec.caption || "",
+                row.title || "",
+                descText,
+                row.subnote || "",
+                ...acts.map((a) => `${a.label} ${a.kbd}`),
+                ...extraSearchActs.map((a) => `${a.label} ${a.kbd}`),
+              ].join(" ").toLowerCase();
+              if (!haystack.includes(query)) return;
+            }
+
+            rowsOut.push({ row, acts, descText });
+          });
+
+          if (rowsOut.length > 0) {
+            resolvedSections.push({
+              caption: query ? `${tabDef.label} · ${sec.caption}` : sec.caption,
+              rowsOut,
             });
           }
-
-          gridEl.appendChild(btn);
         });
 
-        grpEl.appendChild(gridEl);
-        shortcutsDrawerBody.appendChild(grpEl);
+        // 动态插件扩展兜底：若存在带快捷键但尚未编排的新动作，追加到对应分类末尾
+        const extraPluginActs = APP_SHORTCUT_ACTIONS.filter((act) => {
+          if (!act || !act.id || coveredIdSet.has(act.id)) return false;
+          if (!String(act.kbd || "").trim()) return false;
+          const mappedTab = groupToTabMap[act.group] || "common";
+          if (mappedTab !== tabDef.tab) return false;
+          if (!query) return true;
+          return `${tabDef.label} ${act.label} ${act.kbd}`.toLowerCase().includes(query);
+        });
+        if (extraPluginActs.length > 0) {
+          resolvedSections.push({
+            caption: query ? `${tabDef.label} · 扩展快捷键` : "扩展快捷键",
+            rowsOut: extraPluginActs.map((act) => ({
+              row: { title: act.label, sep: "slash" },
+              acts: [act],
+              descText: act.label,
+            })),
+          });
+        }
+
+        resolvedSections.forEach((secData) => {
+          if (secData.caption) {
+            const capEl = document.createElement("div");
+            capEl.className = "sc-section-caption";
+            capEl.textContent = secData.caption;
+            shortcutsDrawerBody.appendChild(capEl);
+          }
+
+          secData.rowsOut.forEach(({ row, acts, descText }) => {
+            totalRenderedRows++;
+            const rowEl = document.createElement("div");
+            rowEl.className = "sc-table-row";
+
+            const titleEl = document.createElement("div");
+            titleEl.className = "sc-row-title";
+            titleEl.textContent = row.title;
+            titleEl.title = row.title;
+
+            const keysCol = document.createElement("div");
+            keysCol.className = "sc-row-keys-col";
+
+            const keyGroup = document.createElement("div");
+            keyGroup.className = "sc-keycap-group";
+
+            acts.forEach((act, idx) => {
+              if (idx > 0 && row.sep === "slash") {
+                const sepEl = document.createElement("span");
+                sepEl.className = "sc-keycap-sep";
+                sepEl.textContent = "/";
+                keyGroup.appendChild(sepEl);
+              }
+              const btn = document.createElement("button");
+              btn.type = "button";
+              btn.className = "sc-keycap-btn sc-action-btn";
+              btn.dataset.actionId = act.id;
+              btn.textContent = act.kbd;
+              btn.title = `${act.label} (${act.kbd})${act.holdKey || act.holdFocalDir ? " · 按住连续生效" : " · 点击直接执行"}`;
+
+              const activeNow = Boolean(act.isActive && act.isActive());
+              const disabledNow = Boolean(act.isDisabled && act.isDisabled());
+              if (activeNow) btn.classList.add("is-active");
+              if (act.danger) btn.classList.add("is-danger");
+              if (disabledNow) btn.classList.add("is-disabled");
+
+              const shiftId = row.shiftIds && row.shiftIds[act.id];
+              const shiftAct = shiftId ? actionById.get(shiftId) : null;
+              bindShortcutKeycapAction(btn, act, shiftAct);
+              keyGroup.appendChild(btn);
+            });
+
+            keysCol.appendChild(keyGroup);
+
+            if (row.subnote) {
+              const subEl = document.createElement("div");
+              subEl.className = "sc-row-subnote";
+              subEl.textContent = row.subnote;
+              keysCol.appendChild(subEl);
+            }
+
+            const descEl = document.createElement("div");
+            descEl.className = "sc-row-desc";
+            descEl.textContent = descText;
+
+            rowEl.appendChild(titleEl);
+            rowEl.appendChild(keysCol);
+            rowEl.appendChild(descEl);
+            shortcutsDrawerBody.appendChild(rowEl);
+          });
+        });
       });
+
+      if (totalRenderedRows === 0) {
+        const emptyEl = document.createElement("div");
+        emptyEl.className = "sc-empty-hint";
+        emptyEl.textContent = query ? `未找到与「${query}」匹配的快捷键` : "当前分类暂无快捷键";
+        shortcutsDrawerBody.appendChild(emptyEl);
+      }
+
+      const footerHint = document.getElementById("shortcutsFooterHint");
+      if (footerHint) {
+        footerHint.textContent = query
+          ? `共找到 ${totalRenderedRows} 组匹配快捷键`
+          : "同类成对操作已合并为一行";
+      }
     }
+
+    document.querySelectorAll("#shortcutsTabsBar .sc-tab-item").forEach((tabBtn) => {
+      tabBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const nextTab = tabBtn.dataset.scTab;
+        if (!nextTab) return;
+        activeShortcutsTab = nextTab;
+        if (shortcutsSearchInput && shortcutsSearchInput.value) {
+          shortcutsSearchInput.value = "";
+        }
+        renderShortcutsDrawerItems();
+      });
+    });
 
     function toggleShortcutsDrawer(forceOpen = null) {
       if (!shortcutsDrawer) return;
@@ -21020,6 +21140,21 @@
     document.getElementById("toolShelfCamera")?.addEventListener("click", () => {
       if (getUnifiedActiveModeKey() === "camera") activateUnifiedMode("browse");
       else activateUnifiedMode("camera");
+    });
+    document.getElementById("toolShelfGroup")?.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (typeof syncSelectedSetFromPrimary === "function") syncSelectedSetFromPrimary();
+      const selObjs = typeof selectedObjIds !== "undefined" && typeof getSceneObjById === "function"
+        ? Array.from(selectedObjIds).map((id) => getSceneObjById(id)).filter(Boolean)
+        : [];
+      const allAreGroups = selObjs.length > 0 && typeof isSceneGroupObj === "function" && selObjs.every((o) => isSceneGroupObj(o));
+      if (e.shiftKey || allAreGroups) {
+        ungroupSelectedGroups();
+      } else {
+        groupSelectedObjects();
+      }
+      updateInteractionStatus();
     });
 
     // 绑定顶部第二行四模式切换器 (#ctxModeGroup)
