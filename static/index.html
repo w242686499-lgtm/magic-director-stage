@@ -3485,6 +3485,13 @@
               </div>
             </div>
           </div>
+          <button class="menu-row-item" id="btnExportCurrentSceneJson" title="单独导出当前场次（含本场全部镜头）JSON 文件 (.json)">
+            <span class="menu-row-left">
+              <svg class="menu-icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              <span>导出单一场景</span>
+            </span>
+            <span class="menu-shortcut">.json</span>
+          </button>
 
           <div class="menu-divider"></div>
 
@@ -4201,13 +4208,16 @@
         <div id="btnExportCurrentCompare"></div>
         <div id="btnVerify5Frames"></div>
         <div id="btnExportProjectJson"></div>
-        <div id="btnExportCurrentSceneJson"></div>
         <div id="btnExportPythonScriptFile"></div>
         <button id="btnMenuExportVideo"></button>
       </div>
 
       <div style="margin-left:auto;display:flex;align-items:center;gap:6px;">
         <button id="btnOpenVideoReproBar" style="display:none;"></button>
+        <button class="top-menu-btn" id="btnHotUpdateApp" style="display:inline-flex;align-items:center;gap:5px;border:1px solid #353C46 !important;background:#1B1E23 !important;" title="从 GitHub 拉取最新代码并热刷新界面（不会覆盖你的本地工程 saved_projects.json）">
+          <svg class="menu-icon" viewBox="0 0 24 24" style="width:14px;height:14px;"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+          <span id="btnHotUpdateAppLabel">热更新</span>
+        </button>
         <button class="top-menu-btn" id="btnTopShortcutsDrawer" style="display:inline-flex;align-items:center;gap:5px;border:1px solid #353C46 !important;background:#1B1E23 !important;" title="打开/收起触屏可直接点按执行的快捷键面板 (`)">
           <svg class="menu-icon" viewBox="0 0 24 24" style="width:14px;height:14px;"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="6" y1="8" x2="6" y2="8"/><line x1="10" y1="8" x2="10" y2="8"/><line x1="14" y1="8" x2="14" y2="8"/><line x1="18" y1="8" x2="18" y2="8"/><line x1="6" y1="12" x2="6" y2="12"/><line x1="10" y1="12" x2="10" y2="12"/><line x1="14" y1="12" x2="14" y2="12"/><line x1="18" y1="12" x2="18" y2="12"/><line x1="8" y1="16" x2="16" y2="16"/></svg>
           <span>快捷键</span>
@@ -16116,21 +16126,25 @@
 
       // 统一挂载公共枢轴代理 activeDragProxy：支持单对象、布景组及任意跨资产多选
       if (activeTransformTool !== "none" && norm.rootIds.length > 0) {
-        const pivotInfo = computeSelectionPivotAndAxes(norm.rootIds, transformPivotMode, transformSpaceMode, currentTime);
-        activeDragProxy.position.copy(pivotInfo.position);
-        activeDragProxy.quaternion.copy(pivotInfo.quaternion);
-        activeDragProxy.scale.set(1, 1, 1);
         const hasCharRotateOnly = activeTransformTool === "rotate" && norm.rootIds.some((rid) => {
           const ro = getSceneObjById(rid);
           if (!ro) return false;
           if (ro.type === "character") return true;
           return isSceneGroupObj(ro) && getGroupDescendantIds(ro.id, false).some((cid) => getSceneObjById(cid)?.type === "character");
         });
+        // 单选物体在缩放模式(T)下始终对齐物体自身局部轴向，使红(X)/绿(Y)/蓝(Z)手柄严格对应单独修改长/高/宽而不产生剪切
+        const effectiveGizmoSpace = (activeTransformTool === "scale" && norm.rootIds.length === 1)
+          ? "local"
+          : (hasCharRotateOnly ? "world" : transformSpaceMode);
+        const pivotInfo = computeSelectionPivotAndAxes(norm.rootIds, transformPivotMode, effectiveGizmoSpace, currentTime);
+        activeDragProxy.position.copy(pivotInfo.position);
+        activeDragProxy.quaternion.copy(pivotInfo.quaternion);
+        activeDragProxy.scale.set(1, 1, 1);
         // 含人物的选区仅允许绕世界 Y 轴朝向旋转：隐藏 X/Z/E 环，防止 X/Z/E 抢占点击后被倾斜保护拦截而导致转不动
         transformControl.showX = !hasCharRotateOnly;
         transformControl.showY = true;
         transformControl.showZ = !hasCharRotateOnly;
-        transformControl.setSpace(hasCharRotateOnly ? "world" : transformSpaceMode);
+        transformControl.setSpace(effectiveGizmoSpace);
         transformControl.setMode(activeTransformTool);
         transformControl.attach(activeDragProxy);
       }
@@ -17293,7 +17307,9 @@
           if (typeof transformControl.cancelDrag === "function") transformControl.cancelDrag(false);
           return;
         }
-        const pivotInfo = computeSelectionPivotAndAxes(norm.rootIds, transformPivotMode, transformSpaceMode, currentTime);
+        const dragModeNow = transformControl.getMode();
+        const effectiveDragSpace = (dragModeNow === "scale" && norm.rootIds.length === 1) ? "local" : transformSpaceMode;
+        const pivotInfo = computeSelectionPivotAndAxes(norm.rootIds, transformPivotMode, effectiveDragSpace, currentTime);
         const matStart = new THREE.Matrix4().compose(
           activeDragProxy.position.clone(),
           activeDragProxy.quaternion.clone(),
@@ -17744,15 +17760,17 @@
             }
           }
 
-          // 2) 非均匀缩放剪切保护：多选/编组/人物/含旋转选区禁止静默剪切，统一限制为等比缩放并提示
+          // 2) 非均匀缩放剪切保护：单选非人物物体/编组沿自身局部轴向自由单独缩放宽(X)/高(Y)/深(Z)；仅多选复合旋转选区或人物限制为等比缩放
           if (dragMode === "scale") {
             const sx = activeDragProxy.scale.x;
             const sy = activeDragProxy.scale.y;
             const sz = activeDragProxy.scale.z;
             if (!_isUniformScale3([sx, sy, sz])) {
-              const needsUniform = bState.roots.length > 1 || bState.roots.some((r) =>
-                r.obj.type === "character" || isSceneGroupObj(r.obj) || !_isNearIdentityRot(r.worldStart.rot)
-              );
+              const needsUniform =
+                (bState.roots.length > 1 && bState.roots.some((r) =>
+                  r.obj.type === "character" || isSceneGroupObj(r.obj) || !_isNearIdentityRot(r.worldStart.rot)
+                )) ||
+                (bState.roots.length === 1 && bState.roots[0].obj.type === "character");
               if (needsUniform) {
                 const diffs = [
                   { axis: 0, v: sx, d: Math.abs(sx - 1) },
@@ -17763,7 +17781,7 @@
                 activeDragProxy.scale.set(u, u, u);
                 if (performance.now() - bState.lastWarnTs > 1200) {
                   bState.lastWarnTs = performance.now();
-                  logStatus("⚠️ 为避免多层/旋转布景产生剪切变形，当前复合选区已限制为等比缩放", true);
+                  logStatus("⚠️ 人物或复合旋转多选区已限制为等比缩放", true);
                 }
               }
             }
@@ -20869,6 +20887,68 @@
       else updateCameraGateLayout();
     }
     document.getElementById("btnToggleRightSidebar")?.addEventListener("click", () => toggleRightSidebar());
+
+    let _hotUpdateInProgress = false;
+    async function triggerHotUpdateFromGithub() {
+      if (_hotUpdateInProgress) return;
+      _hotUpdateInProgress = true;
+      const btn = document.getElementById("btnHotUpdateApp");
+      const lbl = document.getElementById("btnHotUpdateAppLabel");
+      if (btn) btn.disabled = true;
+      if (lbl) lbl.textContent = "检查更新…";
+      try {
+        // 先保存当前未落盘的镜头改动，确保热刷新前后工程 100% 无损
+        if (typeof _commitActiveShotBeforeCameraSwitch === "function") {
+          const curSc = (projectBank?.scenes || []).find((s) => s.id === projectBank?.activeSceneId);
+          if (curSc) _commitActiveShotBeforeCameraSwitch(curSc);
+        }
+        if (typeof persistProjectBank === "function") {
+          await persistProjectBank();
+        }
+        logStatus("🔄 正在从 GitHub 检查并拉取最新热更新（本地工程已自动保护）…");
+        const resp = await fetch("/api/hot_update", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({}),
+        });
+        const data = await resp.json().catch(() => ({ ok: false, error: `HTTP ${resp.status}` }));
+        if (!data.ok) {
+          throw new Error(data.error || "热更新失败");
+        }
+        if (data.already_latest) {
+          logStatus(`✅ ${data.message || "已是最新版本"}`);
+          if (lbl) lbl.textContent = "已是最新";
+          setTimeout(() => {
+            if (lbl) lbl.textContent = "热更新";
+            if (btn) btn.disabled = false;
+            _hotUpdateInProgress = false;
+          }, 1800);
+          return;
+        }
+        if (lbl) lbl.textContent = data.restart_scheduled ? "重启服务…" : "刷新中…";
+        logStatus(`🎉 ${data.message || "热更新完成"}，正在热刷新界面…`);
+        if (data.restart_scheduled) {
+          // 等待后端 os.execv 重启就绪后再刷新页面
+          await new Promise((r) => setTimeout(r, 900));
+          for (let i = 0; i < 25; i++) {
+            try {
+              const ping = await fetch("/api/projects", { cache: "no-store" });
+              if (ping.ok) break;
+            } catch {}
+            await new Promise((r) => setTimeout(r, 400));
+          }
+        } else {
+          await new Promise((r) => setTimeout(r, 450));
+        }
+        window.location.reload();
+      } catch (err) {
+        logStatus(`❌ 热更新失败：${err?.message || err}`, true);
+        if (lbl) lbl.textContent = "热更新";
+        if (btn) btn.disabled = false;
+        _hotUpdateInProgress = false;
+      }
+    }
+    document.getElementById("btnHotUpdateApp")?.addEventListener("click", () => triggerHotUpdateFromGithub());
     ["btnMenuToggleRightSidebar", "btnMenuToggleRightPanel"].forEach((id) => {
       document.getElementById(id)?.addEventListener("click", () => {
         toggleRightSidebar();
@@ -32684,7 +32764,9 @@
 
       const isMulti = selectedObjIds.size > 1;
       if (isMulti) {
-        const pivotInfo = computeSelectionPivotAndAxes(norm.rootIds, transformPivotMode, transformSpaceMode, currentTime);
+        const dragModeNow = transformControl.getMode();
+        const effectiveDragSpace = (dragModeNow === "scale" && norm.rootIds.length === 1) ? "local" : transformSpaceMode;
+        const pivotInfo = computeSelectionPivotAndAxes(norm.rootIds, transformPivotMode, effectiveDragSpace, currentTime);
         const deltaPos = [
           newPos[0] - pivotInfo.posArr[0],
           newPos[1] - pivotInfo.posArr[1],
@@ -32926,7 +33008,9 @@
 
       const isMulti = selectedObjIds.size > 1;
       if (isMulti || (selObj.type !== "character" && (isSceneGroupObj(selObj) || getParentGroupObj(selObj) || selObj.layout_ref))) {
-        const pivotInfo = computeSelectionPivotAndAxes(norm.rootIds, transformPivotMode, transformSpaceMode, currentTime);
+        const dragModeNow = transformControl.getMode();
+        const effectiveDragSpace = (dragModeNow === "scale" && norm.rootIds.length === 1) ? "local" : transformSpaceMode;
+        const pivotInfo = computeSelectionPivotAndAxes(norm.rootIds, transformPivotMode, effectiveDragSpace, currentTime);
         applyPivotMatrixDeltaToSelection(
           pivotInfo.posArr,
           [0, dRotY, 0],
@@ -33035,7 +33119,9 @@
 
       const isMulti = selectedObjIds.size > 1;
       if (isMulti || isSceneGroupObj(selObj) || getParentGroupObj(selObj) || selObj.layout_ref) {
-        const pivotInfo = computeSelectionPivotAndAxes(norm.rootIds, transformPivotMode, transformSpaceMode, currentTime);
+        const dragModeNow = transformControl.getMode();
+        const effectiveDragSpace = (dragModeNow === "scale" && norm.rootIds.length === 1) ? "local" : transformSpaceMode;
+        const pivotInfo = computeSelectionPivotAndAxes(norm.rootIds, transformPivotMode, effectiveDragSpace, currentTime);
         const res = applyPivotMatrixDeltaToSelection(
           pivotInfo.posArr,
           [0, 0, 0],

@@ -1749,7 +1749,168 @@ class DirectorHandler(BaseHTTPRequestHandler):
                 self._send_json({"ok": False, "error": str(e)}, 200)
             return
 
+        if path == "/api/hot_update":
+            try:
+                res = perform_hot_update_from_github()
+                self._send_json(res, 200)
+                if res.get("ok") and res.get("restart_scheduled"):
+                    def _delayed_restart():
+                        import sys
+                        time.sleep(0.6)
+                        try:
+                            os.execv(sys.executable, [sys.executable] + sys.argv)
+                        except Exception as exc:
+                            print(f"[hot_update] restart failed: {exc}", flush=True)
+                    threading.Thread(target=_delayed_restart, daemon=True).start()
+            except Exception as e:
+                self._send_json({"ok": False, "error": str(e), "traceback": traceback.format_exc()}, 200)
+            return
+
         self._send_json({"ok": False, "error": f"Unknown endpoint: {path}"}, 404)
+
+
+GITHUB_HOT_UPDATE_ZIP_URL = "https://github.com/w242686499-lgtm/magic-director-stage/archive/refs/heads/main.zip"
+_HOT_UPDATE_PROTECTED_TOP = {
+    ".git", ".venv", "__pycache__", "exports", "models", "ref_videos", "scenes_backup",
+    "01_最新成品_雪林车队极简方块预演", "02_历史归档与工程备份",
+    "saved_projects.json", ".DS_Store", ".system_check", "server.log",
+}
+
+
+def _is_protected_user_path(rel_path: str) -> bool:
+    norm = rel_path.replace("\\", "/").lstrip("./")
+    if not norm:
+        return True
+    parts = norm.split("/")
+    top = parts[0]
+    if top in _HOT_UPDATE_PROTECTED_TOP:
+        return True
+    base = parts[-1]
+    if base.startswith("saved_projects") and base.endswith(".json"):
+        return True
+    if base.endswith((".log", ".mp4", ".mov", ".mkv", ".zip", ".tmp")):
+        return True
+    return False
+
+
+def perform_hot_update_from_github() -> dict:
+    """Pull latest updates from GitHub without ever touching local saved_projects.json or user media."""
+    git_dir = os.path.join(BASE_DIR, ".git")
+    if os.path.isdir(git_dir):
+        def _run_git(*args, timeout=25):
+            return subprocess.run(
+                ["git", *args],
+                cwd=BASE_DIR,
+                capture_output=True,
+                text=True,
+                timeout=timeout,
+            )
+
+        old_head = _run_git("rev-parse", "--short", "HEAD").stdout.strip() or "unknown"
+        fetch_res = _run_git("fetch", "origin", "main", timeout=25)
+        if fetch_res.returncode != 0:
+            err = (fetch_res.stderr or fetch_res.stdout or "git fetch 失败").strip()
+            return {"ok": False, "error": f"拉取 GitHub 失败：{err}"}
+
+        behind_res = _run_git("rev-list", "--count", "HEAD..origin/main")
+        behind_cnt = int((behind_res.stdout or "0").strip() or "0") if behind_res.returncode == 0 else 0
+        if behind_cnt <= 0:
+            return {
+                "ok": True,
+                "updated": False,
+                "already_latest": True,
+                "mode": "git",
+                "commit": old_head,
+                "changed_files": [],
+                "py_changed": False,
+                "restart_scheduled": False,
+                "message": f"已是最新版本 ({old_head})",
+            }
+
+        pull_res = _run_git("pull", "--ff-only", "origin", "main", timeout=30)
+        if pull_res.returncode != 0:
+            pull_res = _run_git("pull", "--rebase", "--autostash", "origin", "main", timeout=30)
+        if pull_res.returncode != 0:
+            err = (pull_res.stderr or pull_res.stdout or "git pull 失败").strip()
+            return {"ok": False, "error": f"合并更新失败（你的工程未受影响）：{err}"}
+
+        new_head = _run_git("rev-parse", "--short", "HEAD").stdout.strip() or old_head
+        diff_res = _run_git("diff", "--name-only", old_head, new_head)
+        changed_files = [ln.strip() for ln in (diff_res.stdout or "").splitlines() if ln.strip()]
+        py_changed = any(f.endswith(".py") for f in changed_files)
+        return {
+            "ok": True,
+            "updated": True,
+            "already_latest": False,
+            "mode": "git",
+            "old_commit": old_head,
+            "commit": new_head,
+            "changed_files": changed_files,
+            "py_changed": py_changed,
+            "restart_scheduled": py_changed,
+            "message": f"已更新 {old_head} → {new_head}（{len(changed_files)} 个文件）",
+        }
+
+    # Non-git ZIP installation fallback: download main.zip and overwrite only non-protected code files
+    import urllib.request
+    import zipfile
+
+    tmp_dir = tempfile.mkdtemp(prefix="mds_hot_update_")
+    try:
+        zip_path = os.path.join(tmp_dir, "main.zip")
+        req = urllib.request.Request(GITHUB_HOT_UPDATE_ZIP_URL, headers={"User-Agent": "MagicDirectorStage-Updater"})
+        with urllib.request.urlopen(req, timeout=30) as resp, open(zip_path, "wb") as out_f:
+            shutil.copyfileobj(resp, out_f)
+        changed_files = []
+        with zipfile.ZipFile(zip_path, "r") as zf:
+            for info in zf.infolist():
+                if info.is_dir():
+                    continue
+                parts = info.filename.split("/", 1)
+                if len(parts) < 2 or not parts[1]:
+                    continue
+                rel = parts[1]
+                if _is_protected_user_path(rel):
+                    continue
+                dst = os.path.join(BASE_DIR, rel)
+                data = zf.read(info.filename)
+                if os.path.exists(dst):
+                    try:
+                        with open(dst, "rb") as existing_f:
+                            if existing_f.read() == data:
+                                continue
+                    except Exception:
+                        pass
+                os.makedirs(os.path.dirname(dst), exist_ok=True)
+                with open(dst, "wb") as wf:
+                    wf.write(data)
+                changed_files.append(rel)
+        if not changed_files:
+            return {
+                "ok": True,
+                "updated": False,
+                "already_latest": True,
+                "mode": "zip",
+                "commit": "main",
+                "changed_files": [],
+                "py_changed": False,
+                "restart_scheduled": False,
+                "message": "已是最新版本（无需更新）",
+            }
+        py_changed = any(f.endswith(".py") for f in changed_files)
+        return {
+            "ok": True,
+            "updated": True,
+            "already_latest": False,
+            "mode": "zip",
+            "commit": "main",
+            "changed_files": changed_files,
+            "py_changed": py_changed,
+            "restart_scheduled": py_changed,
+            "message": f"已从 GitHub 热更新 {len(changed_files)} 个程序文件",
+        }
+    finally:
+        shutil.rmtree(tmp_dir, ignore_errors=True)
 
 
 def run_server(port: int = 8765):
