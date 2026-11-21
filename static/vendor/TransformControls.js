@@ -469,7 +469,7 @@ class TransformControls extends Object3D {
 
 			this._offset.copy( this.pointEnd ).sub( this.pointStart );
 
-			const ROTATION_SPEED = 20 / this.worldPosition.distanceTo( _tempVector.setFromMatrixPosition( this.camera.matrixWorld ) );
+			const ROTATION_SPEED = 12 / this.worldPosition.distanceTo( _tempVector.setFromMatrixPosition( this.camera.matrixWorld ) );
 
 			let _inPlaneRotation = false;
 
@@ -844,18 +844,26 @@ function onPointerCancel( event ) {
 function intersectObjectWithRay( object, raycaster, includeInvisible ) {
 
 	const allIntersections = raycaster.intersectObject( object, true );
+	let fallbackHit = false;
 
 	for ( let i = 0; i < allIntersections.length; i ++ ) {
 
-		if ( allIntersections[ i ].object.visible || includeInvisible ) {
+		const hit = allIntersections[ i ];
+		if ( hit.object.visible || includeInvisible ) {
 
-			return allIntersections[ i ];
+			// Prioritize explicit single-axis rings (X/Y/Z) over the center XYZE trackball sphere so edge-on rings like green Y are easy to grab.
+			const nm = hit.object.name;
+			if ( nm === 'XYZE' ) {
+				if ( ! fallbackHit ) fallbackHit = hit;
+				continue;
+			}
+			return hit;
 
 		}
 
 	}
 
-	return false;
+	return fallbackHit;
 
 }
 
@@ -1090,17 +1098,17 @@ class TransformControlsGizmo extends Object3D {
 		};
 
 		const pickerRotate = {
-			XYZE: [
-				[ new Mesh( new SphereGeometry( 0.25, 10, 8 ), matInvisible ) ]
-			],
 			X: [
-				[ new Mesh( new TorusGeometry( 0.5, 0.1, 4, 24 ), matInvisible ), [ 0, 0, 0 ], [ 0, - Math.PI / 2, - Math.PI / 2 ]],
+				[ new Mesh( new TorusGeometry( 0.5, 0.11, 4, 24 ), matInvisible ), [ 0, 0, 0 ], [ 0, - Math.PI / 2, - Math.PI / 2 ]],
 			],
 			Y: [
-				[ new Mesh( new TorusGeometry( 0.5, 0.1, 4, 24 ), matInvisible ), [ 0, 0, 0 ], [ Math.PI / 2, 0, 0 ]],
+				[ new Mesh( new TorusGeometry( 0.5, 0.16, 6, 28 ), matInvisible ), [ 0, 0, 0 ], [ Math.PI / 2, 0, 0 ]],
 			],
 			Z: [
-				[ new Mesh( new TorusGeometry( 0.5, 0.1, 4, 24 ), matInvisible ), [ 0, 0, 0 ], [ 0, 0, - Math.PI / 2 ]],
+				[ new Mesh( new TorusGeometry( 0.5, 0.11, 4, 24 ), matInvisible ), [ 0, 0, 0 ], [ 0, 0, - Math.PI / 2 ]],
+			],
+			XYZE: [
+				[ new Mesh( new SphereGeometry( 0.20, 10, 8 ), matInvisible ) ]
 			],
 			E: [
 				[ new Mesh( new TorusGeometry( 0.75, 0.1, 2, 24 ), matInvisible ) ]

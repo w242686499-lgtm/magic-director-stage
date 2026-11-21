@@ -103,6 +103,23 @@ PRESET_IK_POSES: Dict[str, Dict[str, Any]] = {
         },
         "pins": {"foot_L": True, "foot_R": True, "hand_L": False, "hand_R": False},
     },
+    "sitting_one_leg_forward": {
+        "name": "坐地单腿朝前 (Ground Sit One-Leg Forward)",
+        "targets": {
+            "pelvis": [0.0, 0.14, -0.08],
+            "chest": [0.0, 0.57, -0.10],
+            "head_target": [0.0, 0.84, 0.65],
+            "hand_L": [0.17, 0.44, 0.28],
+            "hand_R": [-0.24, 0.05, -0.16],
+            "foot_L": [0.15, 0.04, 0.34],
+            "foot_R": [-0.14, 0.06, 0.72],
+            "knee_L_pole": [0.17, 0.52, 0.42],
+            "knee_R_pole": [-0.14, 0.24, 0.42],
+            "elbow_L_pole": [0.38, 0.42, -0.02],
+            "elbow_R_pole": [-0.38, 0.32, -0.26],
+        },
+        "pins": {"foot_L": True, "foot_R": True, "hand_L": False, "hand_R": True},
+    },
     "sitting_relaxed": {
         "name": "二郎腿慵懒坐姿 (Crossed-Leg Sit)",
         "targets": {
@@ -577,13 +594,22 @@ def _clamp_shoulder_offset(raw: Any) -> np.ndarray:
 
 
 def solve_mannequin_ik(char_dict: Dict[str, Any]) -> Dict[str, Any]:
-    """Solve anatomy in local space, then apply the same affine transform as Three.js."""
+    """Solve anatomy in local space, then apply the same 3-axis XYZ Euler + scale affine transform as Three.js."""
     canonical = dict(char_dict, pos=[0, 0, 0], rot=[0, 0, 0], scale=[1, 1, 1])
     result = _solve_mannequin_ik_base(canonical)
     sx, sy, sz = _get_char_scale_xyz(char_dict)
-    yaw = math.radians(float(char_dict.get("rot", [0, 0, 0])[1]))
-    c, s = math.cos(yaw), math.sin(yaw)
-    affine = np.array([[c, 0, s], [0, 1, 0], [-s, 0, c]]) @ np.diag([sx, sy, sz])
+    rot_arr = char_dict.get("rot", [0, 0, 0]) or [0, 0, 0]
+    rx = math.radians(float(rot_arr[0] if len(rot_arr) > 0 else 0.0))
+    ry = math.radians(float(rot_arr[1] if len(rot_arr) > 1 else 0.0))
+    rz = math.radians(float(rot_arr[2] if len(rot_arr) > 2 else 0.0))
+    cx, sx_r = math.cos(rx), math.sin(rx)
+    cy, sy_r = math.cos(ry), math.sin(ry)
+    cz, sz_r = math.cos(rz), math.sin(rz)
+    Rx = np.array([[1.0, 0.0, 0.0], [0.0, cx, -sx_r], [0.0, sx_r, cx]], dtype=np.float64)
+    Ry = np.array([[cy, 0.0, sy_r], [0.0, 1.0, 0.0], [-sy_r, 0.0, cy]], dtype=np.float64)
+    Rz = np.array([[cz, -sz_r, 0.0], [sz_r, cz, 0.0], [0.0, 0.0, 1.0]], dtype=np.float64)
+    R_xyz = Rx @ Ry @ Rz
+    affine = R_xyz @ np.diag([sx, sy, sz])
     origin = np.asarray(char_dict.get("pos", [0, 0, 0]), dtype=np.float64)
     result["joints"] = {key: affine @ point + origin for key, point in result["joints"].items()}
     for key in ("spine_dir", "side_L", "side_chest", "look_dir", "head_left", "head_up"):

@@ -3442,7 +3442,7 @@
 
       <!-- 1. 工程 -->
       <div class="top-menu-wrap" data-menubar-item="project">
-        <button class="top-menu-btn" data-menu-target="menuOpen" title="工程文件、场次镜头、导入、Python脚本与帮助">工程 <span class="menu-caret">▾</span></button>
+        <button class="top-menu-btn" data-menu-target="menuOpen" title="工程文件、场次镜头、切换摄影机、导入与帮助">工程 <span class="menu-caret">▾</span></button>
         <div class="top-dropdown" id="menuOpen" style="width:236px;">
           <button class="menu-row-item" id="btnTopNewBlankScene" title="清空当前舞台并创建空白工程">
             <span class="menu-row-left">
@@ -3569,24 +3569,17 @@
             </div>
           </div>
 
-          <!-- 脚本 -->
-          <div class="cascade-item" id="menuScriptParent" title="查看、生成与执行 Python 导演脚本">
+          <!-- 切换摄影机（当前场次多机位快速切换） -->
+          <div class="cascade-item" id="menuProjectSwitchCamParent" title="在当前场次的不同摄影机机位间切换（自动保存当前机位改动）">
             <span class="menu-row-left">
-              <svg class="menu-icon" viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-              <span>脚本</span>
+              <svg class="menu-icon" viewBox="0 0 24 24"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+              <span>切换摄影机</span>
             </span>
-            <span class="menu-sub-arrow">▸</span>
-            <div class="cascade-sub-panel" id="menuScriptSub" style="width:220px;">
-              <div class="cascade-item" id="btnOpenPythonModal" title="打开 Python 导演脚本编辑器弹窗">
-                <span class="menu-row-left"><svg class="menu-icon" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg><span>查看与编辑 Python…</span></span>
-              </div>
-              <div class="cascade-item" id="btnMenuSyncPythonFromScene" title="从当前 3D 场景逆向生成 Python 脚本并打开">
-                <span class="menu-row-left"><svg class="menu-icon" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg><span>从场景生成</span></span>
-              </div>
-              <div class="cascade-item" id="btnMenuRunPythonScript" title="立即执行当前 Python 脚本并更新场景">
-                <span class="menu-row-left"><svg class="menu-icon" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg><span>执行脚本</span></span>
-              </div>
-            </div>
+            <span style="display:inline-flex;align-items:center;gap:4px;">
+              <span id="menuProjectCamCountLabel" style="font-size:10.5px;color:#9CA6B4;font-family:monospace;">机位 1/1</span>
+              <span class="menu-sub-arrow">▸</span>
+            </span>
+            <div class="cascade-sub-panel" id="menuProjectSwitchCamSub" style="width:248px;"></div>
           </div>
 
           <div class="menu-divider"></div>
@@ -3748,52 +3741,29 @@
 
           <div class="menu-divider"></div>
 
-          <!-- 持枪姿态 -->
-          <div class="cascade-item" id="editGunPoseParent" title="切换当前人物或当前枪所关联人物的持枪姿态">
+          <!-- 人偶姿态（常用 5 项预设状态） -->
+          <div class="cascade-item" id="editGunPoseParent" title="一键切换选中人偶的常用姿态（站着 / 坐着 / 单腿朝前坐 / 仰躺 / 蹲着）">
             <span class="menu-row-left">
               <svg class="menu-icon" viewBox="0 0 24 24"><circle cx="12" cy="7" r="3"/><path d="M6 21v-4a4 4 0 0 1 4-4h4l4 2"/></svg>
-              <span>持枪姿态</span>
+              <span>人偶姿态</span>
             </span>
             <span class="menu-sub-arrow">▸</span>
-            <div class="cascade-sub-panel" id="editGunPoseSub" style="width:236px;">
-              <div id="menuGunPoseTargetHint" style="padding:3px 8px;font-size:10.5px;color:#9CA6B4;border-bottom:1px solid #353C46;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">目标：未选中人物或持枪对象</div>
-              <div class="cascade-item menu-gun-pose-item" data-gun-pose="rifle_aim_cheek" title="右手握枪柄贴右胸前、枪托抵右肩窝、左手托前护木贴腮瞄准">
-                <span class="menu-row-left"><span class="menu-check" data-gun-pose-chk="rifle_aim_cheek"></span><span>抵肩瞄准</span></span>
+            <div class="cascade-sub-panel" id="editGunPoseSub" style="width:220px;">
+              <div id="menuGunPoseTargetHint" style="padding:3px 8px;font-size:10.5px;color:#9CA6B4;border-bottom:1px solid #353C46;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">请先选择人物</div>
+              <div class="cascade-item menu-gun-pose-item" data-gun-pose="standing" title="自然直立站姿">
+                <span class="menu-row-left"><span class="menu-check" data-gun-pose-chk="standing"></span><span>站着</span></span>
               </div>
-              <div class="cascade-item menu-gun-pose-item" data-gun-pose="rifle_aim_tree_cover" title="身体略微前倾侧探、双手稳托步枪从掩体树干旁探出瞄准">
-                <span class="menu-row-left"><span class="menu-check" data-gun-pose-chk="rifle_aim_tree_cover"></span><span>掩体探身</span></span>
+              <div class="cascade-item menu-gun-pose-item" data-gun-pose="sitting" title="标准屈膝坐姿">
+                <span class="menu-row-left"><span class="menu-check" data-gun-pose-chk="sitting"></span><span>坐着</span></span>
               </div>
-              <div class="cascade-item menu-gun-pose-item" data-gun-pose="rifle_low_ready" title="枪托抵肩、枪口略微压低朝前下方戒备">
-                <span class="menu-row-left"><span class="menu-check" data-gun-pose-chk="rifle_low_ready"></span><span>胸前低姿</span></span>
+              <div class="cascade-item menu-gun-pose-item" data-gun-pose="sitting_one_leg_forward" title="坐在地上、左腿屈膝立起、右腿朝前平伸">
+                <span class="menu-row-left"><span class="menu-check" data-gun-pose-chk="sitting_one_leg_forward"></span><span>坐地单腿朝前</span></span>
               </div>
-              <div class="cascade-item menu-gun-pose-item" data-gun-pose="rifle_crouch_aim" title="重心下沉半蹲屈膝、上身前倾抵肩稳固瞄准">
-                <span class="menu-row-left"><span class="menu-check" data-gun-pose-chk="rifle_crouch_aim"></span><span>战术半蹲</span></span>
+              <div class="cascade-item menu-gun-pose-item" data-gun-pose="lying_supine" title="仰面平躺姿态">
+                <span class="menu-row-left"><span class="menu-check" data-gun-pose-chk="lying_supine"></span><span>仰躺</span></span>
               </div>
-              <div class="cascade-item menu-gun-pose-item" data-gun-pose="rifle_flinch_duck" title="受惊或遇袭后坐力下缩肩屈膝、把步枪收回胸前护身">
-                <span class="menu-row-left"><span class="menu-check" data-gun-pose-chk="rifle_flinch_duck"></span><span>受惊收枪</span></span>
-              </div>
-              <div class="cascade-item menu-gun-pose-item" data-gun-pose="rifle_patrol_carry" title="放松行进姿态，双手在胸腹前自然横持步枪">
-                <span class="menu-row-left"><span class="menu-check" data-gun-pose-chk="rifle_patrol_carry"></span><span>双手横持</span></span>
-              </div>
-            </div>
-          </div>
-
-          <!-- 动画编辑 -->
-          <div class="cascade-item" id="editAnimPolicyParent" title="编辑有动画人物时的坐标与关键帧写入策略">
-            <span class="menu-row-left">
-              <svg class="menu-icon" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-              <span>动画编辑</span>
-            </span>
-            <span class="menu-sub-arrow">▸</span>
-            <div class="cascade-sub-panel" id="editAnimPolicySub" style="width:216px;">
-              <div class="cascade-item" id="menuPolicyBase" title="只改人物基础状态，不修改已有关键帧">
-                <span class="menu-row-left"><span class="menu-check" id="chkEditPolicyBase"></span><span>基础状态</span></span>
-              </div>
-              <div class="cascade-item" id="menuPolicyCurrent" title="在当前整数帧新增或更新关键帧">
-                <span class="menu-row-left"><span class="menu-check" id="chkEditPolicyCurrent">✓</span><span>修改当前帧</span></span>
-              </div>
-              <div class="cascade-item" id="menuPolicyShift" title="同步平移基础位置与整段关键帧轨迹，保留动作节奏">
-                <span class="menu-row-left"><span class="menu-check" id="chkEditPolicyShift"></span><span>整段平移</span></span>
+              <div class="cascade-item menu-gun-pose-item" data-gun-pose="kneeling" title="蹲着 / 单膝跪地姿态">
+                <span class="menu-row-left"><span class="menu-check" data-gun-pose-chk="kneeling"></span><span>蹲着 / 单膝跪</span></span>
               </div>
             </div>
           </div>
@@ -6533,7 +6503,7 @@
           if (ev) {
             return {
               pos: _arr3(ev.pos, obj.pos || [0, 0, 0]),
-              rot: [0, Number(ev.rotY ?? (obj.rot?.[1] || 0)), 0],
+              rot: [Number(obj.rot?.[0] || 0), Number(ev.rotY ?? (obj.rot?.[1] || 0)), Number(obj.rot?.[2] || 0)],
               scale: [...sc],
               size: [...sc],
               hasKfs: true,
@@ -6542,7 +6512,7 @@
         }
         return {
           pos: _arr3(obj.base_pos || obj.pos, [0, 0, 0]),
-          rot: [0, Number(obj.base_rot_y ?? obj.rot?.[1] ?? 0), 0],
+          rot: _arr3(obj.rot, [0, Number(obj.base_rot_y ?? 0), 0]),
           scale: [...sc],
           size: [...sc],
           hasKfs: false,
@@ -6780,7 +6750,7 @@
           if (ev) {
             return {
               pos: _arr3(ev.pos, obj.pos || [0, 0, 0]),
-              rot: [0, Number(ev.rotY ?? (obj.rot?.[1] || 0)), 0],
+              rot: [Number(obj.rot?.[0] || 0), Number(ev.rotY ?? (obj.rot?.[1] || 0)), Number(obj.rot?.[2] || 0)],
               scale: [...sc],
               size: [...sc],
               hasKfs,
@@ -6789,7 +6759,7 @@
         }
         return {
           pos: _arr3(obj.pos, [0, 0, 0]),
-          rot: [0, Number(obj.rot?.[1] || 0), 0],
+          rot: _arr3(obj.rot, [0, 0, 0]),
           scale: [...sc],
           size: [...sc],
           hasKfs,
@@ -7106,21 +7076,6 @@
       const mTarget = targetWorldMat.clone();
       const targetDec = decomposeTRSMatrixJS(mTarget);
 
-      // 字符仅支持绕 Y 轴朝向旋转（按 YXZ 检查倾斜，避免 rot_y 超 ±90° 时 XYZ 误报 X/Z=180°）
-      if (obj.type === "character") {
-        const qTgt = new THREE.Quaternion();
-        mTarget.decompose(new THREE.Vector3(), qTgt, new THREE.Vector3());
-        const eYXZ = new THREE.Euler().setFromQuaternion(qTgt, "YXZ");
-        const xTilt = Math.abs(THREE.MathUtils.radToDeg(eYXZ.x));
-        const zTilt = Math.abs(THREE.MathUtils.radToDeg(eYXZ.z));
-        if (xTilt > 1.5 && xTilt < 358.5) {
-          return { ok: false, reason: `角色【${obj.name}】不支持倾斜 X/Z 旋转（当前仅支持绕 Y 轴转向）` };
-        }
-        if (zTilt > 1.5 && zTilt < 358.5) {
-          return { ok: false, reason: `角色【${obj.name}】不支持倾斜 X/Z 旋转（当前仅支持绕 Y 轴转向）` };
-        }
-      }
-
       if (typeof _objInitTransformWeakMap !== "undefined") {
         _objInitTransformWeakMap.delete(obj);
       }
@@ -7205,10 +7160,9 @@
         }
         obj.pos = _roundArr3(localDec.pos, 4);
         if (allowRotate) {
-          const localYaw = extractHorizontalYawDegJS(mLocalTarget, obj.rot?.[1]);
-          obj.rot = [0, localYaw, 0];
+          obj.rot = _roundArr3(localDec.rot, 3);
         } else {
-          obj.rot = [0, Number((obj.rot?.[1] || 0).toFixed(2)), 0];
+          obj.rot = _arr3(obj.rot, [0, 0, 0]);
         }
         if (!hasAnim) {
           obj.base_pos = [...obj.pos];
@@ -14016,7 +13970,12 @@
         return solveMannequinIK(effChar);
       }
       group.position.copy(v3(charObj.pos || [0,0,0]));
-      group.rotation.set(0, THREE.MathUtils.degToRad(charObj.rot?.[1] || 0), 0);
+      group.rotation.set(
+        THREE.MathUtils.degToRad(charObj.rot?.[0] || 0),
+        THREE.MathUtils.degToRad(charObj.rot?.[1] || 0),
+        THREE.MathUtils.degToRad(charObj.rot?.[2] || 0),
+        _ROT_ORDER
+      );
       group.scale.set(...getCharScaleXYZ(charObj));
       group.updateMatrixWorld(true);
       return solveMannequinIK(charObj);
@@ -16126,24 +16085,17 @@
 
       // 统一挂载公共枢轴代理 activeDragProxy：支持单对象、布景组及任意跨资产多选
       if (activeTransformTool !== "none" && norm.rootIds.length > 0) {
-        const hasCharRotateOnly = activeTransformTool === "rotate" && norm.rootIds.some((rid) => {
-          const ro = getSceneObjById(rid);
-          if (!ro) return false;
-          if (ro.type === "character") return true;
-          return isSceneGroupObj(ro) && getGroupDescendantIds(ro.id, false).some((cid) => getSceneObjById(cid)?.type === "character");
-        });
         // 单选物体在缩放模式(T)下始终对齐物体自身局部轴向，使红(X)/绿(Y)/蓝(Z)手柄严格对应单独修改长/高/宽而不产生剪切
         const effectiveGizmoSpace = (activeTransformTool === "scale" && norm.rootIds.length === 1)
           ? "local"
-          : (hasCharRotateOnly ? "world" : transformSpaceMode);
+          : transformSpaceMode;
         const pivotInfo = computeSelectionPivotAndAxes(norm.rootIds, transformPivotMode, effectiveGizmoSpace, currentTime);
         activeDragProxy.position.copy(pivotInfo.position);
         activeDragProxy.quaternion.copy(pivotInfo.quaternion);
         activeDragProxy.scale.set(1, 1, 1);
-        // 含人物的选区仅允许绕世界 Y 轴朝向旋转：隐藏 X/Z/E 环，防止 X/Z/E 抢占点击后被倾斜保护拦截而导致转不动
-        transformControl.showX = !hasCharRotateOnly;
+        transformControl.showX = true;
         transformControl.showY = true;
-        transformControl.showZ = !hasCharRotateOnly;
+        transformControl.showZ = true;
         transformControl.setSpace(effectiveGizmoSpace);
         transformControl.setMode(activeTransformTool);
         transformControl.attach(activeDragProxy);
@@ -17738,27 +17690,7 @@
           const bState = batchDragStartState;
           const dragMode = bState.mode;
 
-          // 1) 角色倾斜安全约束：含人物的旋转禁止 X/Z 倾倒
-          if (dragMode === "rotate") {
-            const hasChar = bState.roots.some((r) =>
-              r.obj.type === "character" ||
-              (isSceneGroupObj(r.obj) && getGroupDescendantIds(r.obj.id, false).some((cid) => getSceneObjById(cid)?.type === "character"))
-            );
-            if (hasChar) {
-              const qDelta = activeDragProxy.quaternion.clone().multiply(bState.quatStartInv);
-              const dEu = new THREE.Euler().setFromQuaternion(qDelta, "YXZ");
-              const tiltX = Math.abs(THREE.MathUtils.radToDeg(dEu.x));
-              const tiltZ = Math.abs(THREE.MathUtils.radToDeg(dEu.z));
-              if (tiltX > 1.5 || tiltZ > 1.5) {
-                const qYawOnly = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), dEu.y);
-                activeDragProxy.quaternion.copy(qYawOnly.multiply(bState.quatStart));
-                if (performance.now() - bState.lastWarnTs > 1200) {
-                  bState.lastWarnTs = performance.now();
-                  logStatus("⚠️ 选区含人物：不支持 X/Z 倾斜旋转，已限制为绕 Y 轴朝向旋转", true);
-                }
-              }
-            }
-          }
+          // 1) 人物与物体均已放开 X/Y/Z 三轴自由旋转
 
           // 2) 非均匀缩放剪切保护：单选非人物物体/编组沿自身局部轴向自由单独缩放宽(X)/高(Y)/深(Z)；仅多选复合旋转选区或人物限制为等比缩放
           if (dragMode === "scale") {
@@ -17858,6 +17790,66 @@
                 keyframes: rSnap.origKeyframes,
                 constraints: bState.constraintsOrig,
               });
+              if (dragMode === "rotate") {
+                const mParentInvCh = getGroupParentWorldMatrixJS(obj, currentTime).invert();
+                const mRelocInvCh = composeLayoutRefMatrixJS(obj.layout_ref).invert();
+                const localChDec = decomposeTRSMatrixJS(mRelocInvCh.multiply(mParentInvCh).multiply(nextWorldMat));
+                const fullRot = _roundArr3(localChDec.rot, 3);
+                obj.rot = [...fullRot];
+                if (Array.isArray(obj.keyframes) && obj.keyframes.length > 0) {
+                  const effectivePolicy = autoRecordKeyframe ? "current_frame" : charAnimEditPolicy;
+                  if (effectivePolicy === "current_frame") {
+                    const fps = Math.max(1, Number(sceneData.fps) || 24);
+                    const curFrame = Math.round(currentTime * fps);
+                    const hitKf = obj.keyframes.find((k) => Math.round(Number(k.t || 0) * fps) === curFrame) || obj.keyframes[0];
+                    if (hitKf) {
+                      hitKf.rot = [...fullRot];
+                      hitKf.rot_y = fullRot[1];
+                    }
+                  } else if (effectivePolicy === "shift_all") {
+                    const qOrig = new THREE.Quaternion().setFromEuler(
+                      new THREE.Euler(
+                        THREE.MathUtils.degToRad(rSnap.origRot[0] || 0),
+                        THREE.MathUtils.degToRad(rSnap.origRot[1] || 0),
+                        THREE.MathUtils.degToRad(rSnap.origRot[2] || 0),
+                        _ROT_ORDER
+                      )
+                    );
+                    const qNow = new THREE.Quaternion().setFromEuler(
+                      new THREE.Euler(
+                        THREE.MathUtils.degToRad(fullRot[0]),
+                        THREE.MathUtils.degToRad(fullRot[1]),
+                        THREE.MathUtils.degToRad(fullRot[2]),
+                        _ROT_ORDER
+                      )
+                    );
+                    const qDeltaLocal = qNow.clone().multiply(qOrig.invert());
+                    obj.keyframes.forEach((kf, idx) => {
+                      const okf = rSnap.origKeyframes[idx] || kf;
+                      const oArr = Array.isArray(okf.rot) && okf.rot.length >= 3
+                        ? okf.rot
+                        : [0, Number(okf.rot_y || 0), 0];
+                      const qKf = new THREE.Quaternion().setFromEuler(
+                        new THREE.Euler(
+                          THREE.MathUtils.degToRad(oArr[0] || 0),
+                          THREE.MathUtils.degToRad(oArr[1] || 0),
+                          THREE.MathUtils.degToRad(oArr[2] || 0),
+                          _ROT_ORDER
+                        )
+                      );
+                      const eOut = new THREE.Euler().setFromQuaternion(qDeltaLocal.clone().multiply(qKf), _ROT_ORDER);
+                      kf.rot = _roundArr3([
+                        THREE.MathUtils.radToDeg(eOut.x),
+                        THREE.MathUtils.radToDeg(eOut.y),
+                        THREE.MathUtils.radToDeg(eOut.z),
+                      ], 3);
+                      kf.rot_y = kf.rot[1];
+                    });
+                  }
+                }
+              } else {
+                obj.rot = _arr3(rSnap.origRot, [0, 0, 0]);
+              }
               touchedCharOrVehicleOrBind = true;
               continue;
             }
@@ -19423,9 +19415,7 @@
       }
       activeTransformTool = nextMode;
       if (nextMode !== "none") {
-        if (interactionMode !== "ik" || nextMode === "rotate" || nextMode === "scale") {
-          setInteractionMode("object");
-        }
+        setInteractionMode("object");
         transformControl.setMode(nextMode);
       } else {
         transformControl.detach();
@@ -23501,10 +23491,10 @@
       const hintEl = document.getElementById("menuGunPoseTargetHint");
       if (hintEl) {
         if (charObj) {
-          hintEl.textContent = `作用目标：${charObj.name}${gunObj ? ` · ${gunObj.name}` : "（未绑枪）"}`;
+          hintEl.textContent = `当前目标：${charObj.name}`;
           hintEl.style.color = "#65D496";
         } else {
-          hintEl.textContent = reason || "请先选择人物或已绑定枪械";
+          hintEl.textContent = "请先选择人物";
           hintEl.style.color = "#F3A852";
         }
       }
@@ -23513,8 +23503,8 @@
         btn.disabled = !charObj;
         btn.style.opacity = charObj ? "1" : "0.48";
         btn.title = charObj
-          ? `作用于【${charObj.name}${gunObj ? ` · ${gunObj.name}` : ""}】`
-          : (reason || "请先选择人物或已绑定人物的枪械");
+          ? `作用于【${charObj.name}】`
+          : "请先选择人物";
         const chk = btn.querySelector(".menu-check");
         if (chk) {
           chk.textContent = charObj && charObj.pose_name === poseKey ? "✓" : "";
@@ -23522,21 +23512,39 @@
       });
     }
 
+    const MANNEQUIN_POSE_LABELS = {
+      standing: "站着",
+      sitting: "坐着",
+      sitting_one_leg_forward: "坐地单腿朝前",
+      lying_supine: "仰躺",
+      kneeling: "蹲着 / 单膝跪",
+    };
+
     function applyGunPoseByKey(poseKey) {
       if (!sceneData || !poseKey) return false;
       const { charObj, gunObj, reason } = resolveCharAndGunForPose();
       if (!charObj) {
-        logStatus(`⚠️ 无法应用持枪姿态：${reason}`, true);
+        logStatus("⚠️ 请先选择一个人物，再切换人偶姿态", true);
         return false;
       }
-      const preset = BUILTIN_POSE_PRESETS[poseKey] || presetsData?.[poseKey];
-      if (!preset) return false;
+      const preset = presetsData?.[poseKey] || BUILTIN_POSE_PRESETS[poseKey];
+      if (!preset || !preset.targets) {
+        logStatus(`⚠️ 未找到姿态预设：${poseKey}`, true);
+        return false;
+      }
 
-      pushUndoSnapshot(`持枪姿态: ${charObj.name} -> ${preset.name}`);
+      const poseLabel = MANNEQUIN_POSE_LABELS[poseKey] || preset.name || poseKey;
+      pushUndoSnapshot(`人偶姿态: ${charObj.name} -> ${poseLabel}`);
       charObj.pose_name = poseKey;
       charObj.targets = JSON.parse(JSON.stringify(preset.targets));
       charObj.torso_twist = 0;
       charObj.pins = { ...(preset.pins || { foot_L: true, foot_R: true, hand_L: false, hand_R: false }) };
+
+      let switchedFromPawn = false;
+      if (charObj.body_style === "pawn" && poseKey !== "standing") {
+        charObj.body_style = "mannequin";
+        switchedFromPawn = true;
+      }
 
       if (Array.isArray(charObj.keyframes) && charObj.keyframes.length > 0) {
         const fps = Math.max(1, Number(sceneData.fps) || 24);
@@ -23552,7 +23560,7 @@
         }
       }
 
-      if (gunObj && isPropBoundToCharacter(gunObj)) {
+      if (String(poseKey).startsWith("rifle_") && gunObj && isPropBoundToCharacter(gunObj)) {
         const pb = gunObj.parent_binding;
         const sock = pb.socket || "hand_R";
         if (sock === "hand_R" || sock === "hand_L") {
@@ -23566,15 +23574,19 @@
       }
 
       evaluateBoundPropsAndSecondaryIKAtTime(currentTime);
-      const grp = meshMap.get(charObj.id);
-      if (grp) updateCharacterVisuals(grp, charObj);
+      if (switchedFromPawn) {
+        rebuildThreeScene();
+      } else {
+        const grp = meshMap.get(charObj.id);
+        if (grp) updateCharacterVisuals(grp, charObj);
+      }
       syncIKSpheresToCharacter(false);
       updatePropertyInspectorUI();
       renderTimelineUI();
       syncPythonCodeFromScene();
       updateEditMenuBindingAndPoseUI();
       if (typeof renderShortcutsDrawerItems === "function") renderShortcutsDrawerItems();
-      logStatus(`🔫 已将【${charObj.name}${gunObj ? ` · ${gunObj.name}` : ""}】切换为持枪姿态：${preset.name}`);
+      logStatus(`🧍 已将【${charObj.name}】切换为：${poseLabel}${switchedFromPawn ? "（已自动转为关节人偶以展示肢体姿态）" : ""}`);
       return true;
     }
 
@@ -25906,6 +25918,23 @@
     });
 
     const BUILTIN_POSE_PRESETS = {
+      sitting_one_leg_forward: {
+        name: "坐地单腿朝前 (Ground Sit One-Leg Forward)",
+        targets: {
+          pelvis: [0.0, 0.14, -0.08],
+          chest: [0.0, 0.57, -0.10],
+          head_target: [0.0, 0.84, 0.65],
+          hand_L: [0.17, 0.44, 0.28],
+          hand_R: [-0.24, 0.05, -0.16],
+          foot_L: [0.15, 0.04, 0.34],
+          foot_R: [-0.14, 0.06, 0.72],
+          knee_L_pole: [0.17, 0.52, 0.42],
+          knee_R_pole: [-0.14, 0.24, 0.42],
+          elbow_L_pole: [0.38, 0.42, -0.02],
+          elbow_R_pole: [-0.38, 0.32, -0.26],
+        },
+        pins: { foot_L: true, foot_R: true, hand_L: false, hand_R: true },
+      },
       sitting: {
         name: "坐姿 (Sitting)",
         targets: {
@@ -30010,13 +30039,14 @@
         }
         const initTargs = _charInitTargetsWeakMap.get(obj);
         const ckfs = obj.keyframes;
-        let pos, rotY, lookAt, interpTargets = null, twist = null, kfVisible = null;
+        let pos, rotY, fullRot3 = null, lookAt, interpTargets = null, twist = null, kfVisible = null;
         let activeWalkSeg = null;
         const getKfRotY = (k, fallback = 0) => (k.rot_y !== undefined ? Number(k.rot_y) : (Array.isArray(k.rot) && k.rot.length >= 2 ? Number(k.rot[1]) : fallback));
         const getKfTwist = (k) => (k && k.torso_twist !== undefined && k.torso_twist !== null ? clampTorsoTwist(k.torso_twist) : null);
         if (ckfs.length === 1 || t <= ckfs[0].t) {
           pos = [...ckfs[0].pos];
           rotY = getKfRotY(ckfs[0], obj.rot?.[1] ?? 0);
+          if (Array.isArray(ckfs[0].rot) && ckfs[0].rot.length >= 3) fullRot3 = [...ckfs[0].rot];
           lookAt = ckfs[0].look_at;
           twist = getKfTwist(ckfs[0]);
           if (typeof ckfs[0].visible === "boolean") kfVisible = ckfs[0].visible;
@@ -30025,6 +30055,7 @@
           const last = ckfs[ckfs.length - 1];
           pos = [...last.pos];
           rotY = getKfRotY(last, obj.rot?.[1] ?? 0);
+          if (Array.isArray(last.rot) && last.rot.length >= 3) fullRot3 = [...last.rot];
           lookAt = last.look_at;
           twist = getKfTwist(last);
           if (typeof last.visible === "boolean") kfVisible = last.visible;
@@ -30044,6 +30075,15 @@
               else if (typeof k0.visible === "boolean") kfVisible = k0.visible;
               pos = evCharLive.pos;
               rotY = evCharLive.rotY;
+              if ((Array.isArray(k0.rot) && k0.rot.length >= 3) || (Array.isArray(k1.rot) && k1.rot.length >= 3)) {
+                const a0 = Array.isArray(k0.rot) && k0.rot.length >= 3 ? k0.rot : [0, r0, 0];
+                const a1 = Array.isArray(k1.rot) && k1.rot.length >= 3 ? k1.rot : [0, r1, 0];
+                const q0 = new THREE.Quaternion().setFromEuler(new THREE.Euler(THREE.MathUtils.degToRad(a0[0] || 0), THREE.MathUtils.degToRad(a0[1] || 0), THREE.MathUtils.degToRad(a0[2] || 0), _ROT_ORDER));
+                const q1 = new THREE.Quaternion().setFromEuler(new THREE.Euler(THREE.MathUtils.degToRad(a1[0] || 0), THREE.MathUtils.degToRad(a1[1] || 0), THREE.MathUtils.degToRad(a1[2] || 0), _ROT_ORDER));
+                q0.slerp(q1, Math.max(0, Math.min(1, sRot)));
+                const eI = new THREE.Euler().setFromQuaternion(q0, _ROT_ORDER);
+                fullRot3 = [THREE.MathUtils.radToDeg(eI.x), THREE.MathUtils.radToDeg(eI.y), THREE.MathUtils.radToDeg(eI.z)];
+              }
               const poseRes = evalCharacterPoseSegmentJS(obj, ckfs, i, alpha, sPose, initTargs || obj.targets);
               if (poseRes.targets) interpTargets = poseRes.targets;
               if (poseRes.twist !== null && poseRes.twist !== undefined) twist = poseRes.twist;
@@ -30082,12 +30122,12 @@
             } else {
               _mountedWorldCacheWeakMap.delete(obj);
               obj.pos = [Number(pos[0].toFixed(3)), Number(pos[1].toFixed(3)), Number(pos[2].toFixed(3))];
-              obj.rot = [0, Number((rotY ?? obj.rot[1] ?? 0).toFixed(2)), 0];
+              obj.rot = fullRot3 ? _roundArr3(fullRot3, 3) : [0, Number((rotY ?? obj.rot[1] ?? 0).toFixed(2)), 0];
             }
           } else {
             _mountedWorldCacheWeakMap.delete(obj);
             obj.pos = [Number(pos[0].toFixed(3)), Number(pos[1].toFixed(3)), Number(pos[2].toFixed(3))];
-            obj.rot = [0, Number((rotY ?? obj.rot[1] ?? 0).toFixed(2)), 0];
+            obj.rot = fullRot3 ? _roundArr3(fullRot3, 3) : [0, Number((rotY ?? obj.rot[1] ?? 0).toFixed(2)), 0];
           }
           if (interpTargets) {
             obj.targets = interpTargets;
@@ -34132,6 +34172,57 @@
           saveSubL2.appendChild(saveSceneRow);
         }
       });
+
+      // 同步「工程 → 切换摄影机」子菜单（列出当前场次全部机位 + 快速新增机位）
+      const camSub = document.getElementById("menuProjectSwitchCamSub");
+      const camCountLbl = document.getElementById("menuProjectCamCountLabel");
+      const activeSc = (projectBank.scenes || []).find((s) => s.id === projectBank.activeSceneId);
+      const curShots = Array.isArray(activeSc?.shots) ? activeSc.shots : [];
+      const curShotIdx = Math.max(0, curShots.findIndex((sh) => sh.id === projectBank.activeShotId));
+      if (camCountLbl) {
+        camCountLbl.textContent = curShots.length > 0 ? `机位 ${curShotIdx + 1}/${curShots.length}` : "机位 1/1";
+      }
+      if (camSub) {
+        camSub.innerHTML = "";
+        curShots.forEach((sh, idx) => {
+          const isCur = sh.id === projectBank.activeShotId;
+          const mm = sh.scene?.camera?.focal_mm || fovToFocalMm(sh.scene?.camera?.fov || 37.8);
+          const camItem = document.createElement("div");
+          camItem.className = "cascade-item" + (isCur ? " current-active" : "");
+          camItem.title = sh.name || `机位 ${idx + 1}`;
+          camItem.innerHTML = `
+            <span class="menu-row-left" style="min-width:0;flex:1;">
+              <span class="menu-check">${isCur ? "✓" : ""}</span>
+              <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">机位${idx + 1} · ${sh.name || `机位 ${idx + 1}`}</span>
+            </span>
+            <span class="menu-shortcut">${mm}mm</span>
+          `;
+          camItem.addEventListener("click", (ev) => {
+            ev.stopPropagation();
+            if (!isCur) switchCameraShotQuick(sh.id);
+            else closeAllTopMenus();
+          });
+          camSub.appendChild(camItem);
+        });
+        const div = document.createElement("div");
+        div.className = "menu-divider";
+        camSub.appendChild(div);
+        const addCamItem = document.createElement("div");
+        addCamItem.className = "cascade-item";
+        addCamItem.id = "btnProjectMenuAddCamera";
+        addCamItem.title = "以左视口当前视角在同场新增独立摄影机机位";
+        addCamItem.innerHTML = `
+          <span class="menu-row-left">
+            <svg class="menu-icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <span>新增摄影机（左视口当前视角）</span>
+          </span>
+        `;
+        addCamItem.addEventListener("click", (ev) => {
+          ev.stopPropagation();
+          addNewCameraInScene({ fromWorkView: true, keepKeyframes: false });
+        });
+        camSub.appendChild(addCamItem);
+      }
     }
 
     document.getElementById("btnSaveCurrentShot")?.addEventListener("click", (e) => {
