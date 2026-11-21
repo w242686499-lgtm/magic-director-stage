@@ -3295,6 +3295,138 @@
       text-overflow: ellipsis;
       max-width: 100%;
     }
+    /* Shift+A 2x2 快速添加浮层 */
+    .quick-add-quad-menu {
+      position: fixed;
+      z-index: 4200;
+      display: none;
+      width: 204px;
+      background: rgba(28, 32, 39, 0.94);
+      border: 1px solid rgba(148, 163, 184, 0.28);
+      border-radius: 12px;
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.56);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      overflow: hidden;
+      grid-template-columns: repeat(2, 1fr);
+      user-select: none;
+    }
+    .quick-add-quad-menu.open {
+      display: grid;
+    }
+    .quick-add-cell {
+      appearance: none;
+      border: 0;
+      background: transparent;
+      color: #D5DCE6;
+      padding: 13px 8px 11px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      cursor: pointer;
+      font-size: 11.5px;
+      font-weight: 500;
+      transition: background 0.1s ease, color 0.1s ease;
+    }
+    .quick-add-cell:nth-child(odd) {
+      border-right: 1px solid rgba(148, 163, 184, 0.16);
+    }
+    .quick-add-cell:nth-child(-n+2) {
+      border-bottom: 1px solid rgba(148, 163, 184, 0.16);
+    }
+    .quick-add-cell svg {
+      width: 24px;
+      height: 24px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.65;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .quick-add-cell:hover,
+    .quick-add-cell.is-active {
+      background: rgba(37, 99, 235, 0.28);
+      color: #60A5FA;
+    }
+    /* 高亮对象右键选色浮层 */
+    .obj-color-ctx-menu {
+      position: fixed;
+      z-index: 4250;
+      display: none;
+      width: 196px;
+      padding: 10px;
+      background: rgba(24, 28, 35, 0.96);
+      border: 1px solid rgba(148, 163, 184, 0.30);
+      border-radius: 10px;
+      box-shadow: 0 14px 32px rgba(0, 0, 0, 0.56);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      flex-direction: column;
+      gap: 8px;
+      user-select: none;
+    }
+    .obj-color-ctx-menu.open {
+      display: flex;
+    }
+    .obj-color-ctx-head {
+      font-size: 11.5px;
+      font-weight: 600;
+      color: #D5DCE6;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 6px;
+    }
+    .obj-color-ctx-target {
+      color: #60A5FA;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 112px;
+    }
+    .obj-color-ctx-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 6px;
+    }
+    .obj-color-ctx-dot {
+      width: 24px;
+      height: 24px;
+      border-radius: 999px;
+      border: 1.5px solid rgba(255, 255, 255, 0.22);
+      cursor: pointer;
+      padding: 0;
+      transition: transform 0.1s ease, box-shadow 0.1s ease;
+    }
+    .obj-color-ctx-dot:hover {
+      transform: scale(1.12);
+    }
+    .obj-color-ctx-dot.is-current {
+      border-color: #FFFFFF;
+      box-shadow: 0 0 0 2px #3B82F6;
+    }
+    .obj-color-ctx-custom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding-top: 6px;
+      border-top: 1px solid rgba(148, 163, 184, 0.16);
+      font-size: 11.5px;
+      color: #9CA6B4;
+      cursor: pointer;
+    }
+    .obj-color-ctx-custom input[type="color"] {
+      width: 34px;
+      height: 22px;
+      padding: 0;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      border-radius: 5px;
+      background: transparent;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -5210,6 +5342,58 @@
     <button class="menu-row-item" id="ctxKfScaleFast"><span class="menu-row-left"><span>时间缩放 0.8× (加速)</span></span></button>
     <button class="menu-row-item" id="ctxKfScaleSlow"><span class="menu-row-left"><span>时间缩放 1.25× (减速)</span></span></button>
     <button class="menu-row-item" id="ctxKfOpenInspector"><span class="menu-row-left"><span>展开关键帧属性面板</span></span></button>
+  </div>
+
+  <!-- Shift+A 鼠标位置 2×2 快速添加菜单 -->
+  <div class="quick-add-quad-menu" id="addQuickQuadMenu" role="menu" aria-label="快速添加对象">
+    <button type="button" class="quick-add-cell is-active" data-quick-add="mannequin" title="快捷键 1 · 添加关节人偶">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="12" cy="4.8" r="2.1"/>
+        <path d="M9.2 8.2h5.6l-.8 6.4h-4z"/>
+        <path d="M9.2 8.5L6.5 13.5"/>
+        <path d="M14.8 8.5L17.5 13.5"/>
+        <path d="M10.4 14.6L9.4 21"/>
+        <path d="M13.6 14.6L14.6 21"/>
+      </svg>
+      <span>关节人偶</span>
+    </button>
+    <button type="button" class="quick-add-cell" data-quick-add="pawn" title="快捷键 2 · 添加球头人偶">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="12" cy="5.5" r="2.6"/>
+        <path d="M9.2 9.4h5.6l.9 10.6H8.3z"/>
+        <path d="M9.2 9.8L6.8 14.4"/>
+        <path d="M14.8 9.8L17.2 14.4"/>
+      </svg>
+      <span>球头人偶</span>
+    </button>
+    <button type="button" class="quick-add-cell" data-quick-add="cylinder" title="快捷键 3 · 添加圆柱体">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <ellipse cx="12" cy="6.2" rx="6.2" ry="2.4"/>
+        <path d="M5.8 6.2v11.6c0 1.33 2.78 2.4 6.2 2.4s6.2-1.07 6.2-2.4V6.2"/>
+      </svg>
+      <span>圆柱体</span>
+    </button>
+    <button type="button" class="quick-add-cell" data-quick-add="box" title="快捷键 4 · 添加立方体">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <polygon points="12 3.4 19.2 7.4 19.2 16.6 12 20.6 4.8 16.6 4.8 7.4"/>
+        <polyline points="4.8 7.4 12 11.4 19.2 7.4"/>
+        <line x1="12" y1="11.4" x2="12" y2="20.6"/>
+      </svg>
+      <span>立方体</span>
+    </button>
+  </div>
+
+  <!-- 高亮选中对象右键快捷选色面板 -->
+  <div class="obj-color-ctx-menu" id="objColorContextMenu" role="menu" aria-label="对象颜色选择">
+    <div class="obj-color-ctx-head">
+      <span>设置颜色</span>
+      <span class="obj-color-ctx-target" id="objColorCtxTargetLabel">选中对象</span>
+    </div>
+    <div class="obj-color-ctx-grid" id="objColorCtxGrid"></div>
+    <label class="obj-color-ctx-custom">
+      <span>自定义颜色…</span>
+      <input type="color" id="objColorCtxCustomInput" value="#73A9D8" />
+    </label>
   </div>
 
   <!-- Python 脚本查看与编辑弹窗 -->
@@ -16860,11 +17044,23 @@
       updateInteractionStatus();
     }
 
+    let freeObjectDrag = null;
+    let lastLeftObjClick = null;
+    let rightDownPos = null;
+
     function cancelEditGesture() {
-      if (!editGesture && !directSphereDrag && !isGizmoDragging && !transformControl.dragging) return false;
+      if (!editGesture && !directSphereDrag && !freeObjectDrag && !isGizmoDragging && !transformControl.dragging) return false;
       const gesture = editGesture;
       editGesture = null;
       isGizmoDragging = false;
+      batchDragStartState = null;
+      if (freeObjectDrag) {
+        if (freeObjectDrag.paneDom && freeObjectDrag.pointerId !== undefined && freeObjectDrag.paneDom.hasPointerCapture(freeObjectDrag.pointerId)) {
+          freeObjectDrag.paneDom.releasePointerCapture(freeObjectDrag.pointerId);
+        }
+        freeObjectDrag = null;
+        if (workPaneDom) workPaneDom.style.cursor = "";
+      }
       if (typeof transformControl.cancelDrag === "function") {
         transformControl.cancelDrag(true);
       } else {
@@ -17234,6 +17430,68 @@
     let multiDragStartInfo = null;
     let batchDragStartState = null;
 
+    function captureBatchDragStartState(dragModeNow = transformControl.getMode()) {
+      syncSelectedSetFromPrimary();
+      if (interactionMode === "ik" || isCameraSelection() || selectedPartId || selectedObjIds.size === 0 || !sceneData) {
+        return null;
+      }
+      const norm = normalizeSelectionForTransform(selectedObjIds, currentTime);
+      const perm = checkTransformPermissions(norm.rootIds, "transform");
+      renderLockConflictBanner(perm.ok ? null : perm);
+      if (!perm.ok) {
+        logStatus(`🔒 操作已整体阻止：${perm.summary}`, true);
+        return { abortedByLock: true, perm };
+      }
+      const effectiveDragSpace = (dragModeNow === "scale" && norm.rootIds.length === 1) ? "local" : transformSpaceMode;
+      const pivotInfo = computeSelectionPivotAndAxes(norm.rootIds, transformPivotMode, effectiveDragSpace, currentTime);
+      const matStart = new THREE.Matrix4().compose(
+        activeDragProxy.position.clone(),
+        activeDragProxy.quaternion.clone(),
+        activeDragProxy.scale.clone()
+      );
+      const roots = norm.rootIds.map((rid) => {
+        const obj = getSceneObjById(rid);
+        if (!obj) return null;
+        if ((obj.type === "group" || Array.isArray(obj.parts)) && !Array.isArray(obj.group_base_size) && typeof prepareGroupSizeEdit === "function") {
+          prepareGroupSizeEdit(obj);
+          const gm = meshMap.get(obj.id);
+          if (gm && Array.isArray(obj.group_base_size)) gm.userData.baseSize = [...obj.group_base_size];
+        }
+        const worldStart = evaluateObjectWorldStateJS(obj, currentTime);
+        return {
+          id: rid,
+          obj,
+          worldStart,
+          hasAnim: Array.isArray(obj.keyframes) && obj.keyframes.length > 0,
+          origPos: _arr3(obj.pos, [0, 0, 0]),
+          origRot: _arr3(obj.rot, [0, 0, 0]),
+          origSize: _arr3(obj.size, [1, 1, 1]),
+          origScaleProp: Array.isArray(obj.scale) ? [...obj.scale] : obj.scale,
+          origBasePos: Array.isArray(obj.base_pos) ? [...obj.base_pos] : null,
+          origBaseRotY: obj.base_rot_y,
+          origLayoutRef: obj.layout_ref ? JSON.parse(JSON.stringify(obj.layout_ref)) : null,
+          origKeyframes: JSON.parse(JSON.stringify(obj.keyframes || [])),
+        };
+      }).filter(Boolean);
+      return {
+        abortedByLock: false,
+        abortedByGuard: false,
+        guardMsg: "",
+        lastWarnTs: 0,
+        mode: dragModeNow,
+        space: transformSpaceMode,
+        pivotStart: activeDragProxy.position.clone(),
+        quatStart: activeDragProxy.quaternion.clone(),
+        quatStartInv: activeDragProxy.quaternion.clone().invert(),
+        scaleStart: activeDragProxy.scale.clone(),
+        matStartInv: matStart.clone().invert(),
+        axesQuat: pivotInfo.quaternion.clone(),
+        rootIds: norm.rootIds,
+        roots,
+        constraintsOrig: JSON.parse(JSON.stringify(sceneData.constraints || [])),
+      };
+    }
+
     transformControl.addEventListener("mouseDown", () => {
       isGizmoDragging = false;
       workOrbit.enabled = false;
@@ -17261,66 +17519,9 @@
           constraints: JSON.parse(JSON.stringify(sceneData.constraints || [])),
         };
       }
-      syncSelectedSetFromPrimary();
-      if (interactionMode !== "ik" && !isCameraSelection() && !selectedPartId && selectedObjIds.size > 0 && sceneData) {
-        const norm = normalizeSelectionForTransform(selectedObjIds, currentTime);
-        const perm = checkTransformPermissions(norm.rootIds, "transform");
-        renderLockConflictBanner(perm.ok ? null : perm);
-        if (!perm.ok) {
-          logStatus(`🔒 操作已整体阻止：${perm.summary}`, true);
-          batchDragStartState = { abortedByLock: true, perm };
-          if (typeof transformControl.cancelDrag === "function") transformControl.cancelDrag(false);
-          return;
-        }
-        const dragModeNow = transformControl.getMode();
-        const effectiveDragSpace = (dragModeNow === "scale" && norm.rootIds.length === 1) ? "local" : transformSpaceMode;
-        const pivotInfo = computeSelectionPivotAndAxes(norm.rootIds, transformPivotMode, effectiveDragSpace, currentTime);
-        const matStart = new THREE.Matrix4().compose(
-          activeDragProxy.position.clone(),
-          activeDragProxy.quaternion.clone(),
-          activeDragProxy.scale.clone()
-        );
-        const roots = norm.rootIds.map((rid) => {
-          const obj = getSceneObjById(rid);
-          if (!obj) return null;
-          if ((obj.type === "group" || Array.isArray(obj.parts)) && !Array.isArray(obj.group_base_size) && typeof prepareGroupSizeEdit === "function") {
-            prepareGroupSizeEdit(obj);
-            const gm = meshMap.get(obj.id);
-            if (gm && Array.isArray(obj.group_base_size)) gm.userData.baseSize = [...obj.group_base_size];
-          }
-          const worldStart = evaluateObjectWorldStateJS(obj, currentTime);
-          return {
-            id: rid,
-            obj,
-            worldStart,
-            hasAnim: Array.isArray(obj.keyframes) && obj.keyframes.length > 0,
-            origPos: _arr3(obj.pos, [0, 0, 0]),
-            origRot: _arr3(obj.rot, [0, 0, 0]),
-            origSize: _arr3(obj.size, [1, 1, 1]),
-            origScaleProp: Array.isArray(obj.scale) ? [...obj.scale] : obj.scale,
-            origBasePos: Array.isArray(obj.base_pos) ? [...obj.base_pos] : null,
-            origBaseRotY: obj.base_rot_y,
-            origLayoutRef: obj.layout_ref ? JSON.parse(JSON.stringify(obj.layout_ref)) : null,
-            origKeyframes: JSON.parse(JSON.stringify(obj.keyframes || [])),
-          };
-        }).filter(Boolean);
-        batchDragStartState = {
-          abortedByLock: false,
-          abortedByGuard: false,
-          guardMsg: "",
-          lastWarnTs: 0,
-          mode: transformControl.getMode(),
-          space: transformSpaceMode,
-          pivotStart: activeDragProxy.position.clone(),
-          quatStart: activeDragProxy.quaternion.clone(),
-          quatStartInv: activeDragProxy.quaternion.clone().invert(),
-          scaleStart: activeDragProxy.scale.clone(),
-          matStartInv: matStart.clone().invert(),
-          axesQuat: pivotInfo.quaternion.clone(),
-          rootIds: norm.rootIds,
-          roots,
-          constraintsOrig: JSON.parse(JSON.stringify(sceneData.constraints || [])),
-        };
+      batchDragStartState = captureBatchDragStartState(transformControl.getMode());
+      if (batchDragStartState?.abortedByLock) {
+        if (typeof transformControl.cancelDrag === "function") transformControl.cancelDrag(false);
       }
     });
 
@@ -17401,7 +17602,7 @@
       if (typeof updateMotionSpeedAndInterpUI === "function") updateMotionSpeedAndInterpUI();
     }
 
-    transformControl.addEventListener("mouseUp", () => {
+    function finalizeTransformOrFreeDrag() {
       const hadDrag = isGizmoDragging && !batchDragStartState?.abortedByLock;
       const finishedBatchRoots = batchDragStartState ? [...batchDragStartState.rootIds] : [];
       if (hadDrag) {
@@ -17486,6 +17687,11 @@
           if (notices.length > 0) logStatus(`⚠️ ${notices[0]}`);
         }
       }
+      return hadDrag;
+    }
+
+    transformControl.addEventListener("mouseUp", () => {
+      finalizeTransformOrFreeDrag();
     });
 
     function applyActiveProxyDragChange() {
@@ -17496,8 +17702,8 @@
         if (editingObject && isObjectLocked(editingObject)) return;
       }
       if (![...activeDragProxy.position.toArray(), ...activeDragProxy.scale.toArray()].every(Number.isFinite)) return;
-      // 严禁在未激活 G/R/T 工具时移动主体（仅在激活 G/R/T 或显式开启 IK 拉球模式时允许修改坐标）
-      if (activeTransformTool === "none" && interactionMode !== "ik") return;
+      // 严禁在未激活 G/R/T 工具时移动主体（仅在激活 G/R/T、显式开启 IK 拉球模式或双击自由拖动时允许修改坐标）
+      if (activeTransformTool === "none" && interactionMode !== "ik" && !freeObjectDrag?.active) return;
 
       // 0. 在左工作区直接拖拽【3D 摄影机运镜曲线上的关键帧节点】
       if (typeof selectedObjId === "string" && selectedObjId.startsWith("__cam_kf_")) {
@@ -18432,22 +18638,140 @@
 
     let badgePressConsumed = false;
 
+    function startFreeObjectDrag(e, paneDom, paneCamera, targetObj) {
+      if (!targetObj || isObjectLocked(targetObj) || !sceneData) return false;
+      const rect = paneDom.getBoundingClientRect();
+      if (rect.width < 10 || rect.height < 10) return false;
+
+      if (selectedPartId) {
+        selectedPartId = null;
+      }
+      if (!selectedObjIds.has(targetObj.id) || selectedObjId !== targetObj.id) {
+        setSingleObjectSelection(targetObj.id);
+      } else {
+        attachGizmoToSelection();
+      }
+      if (!activeDragProxy) return false;
+
+      // 即使当前未激活 G/R/T（activeTransformTool === "none"），双击自由拖动也必须把 activeDragProxy 对齐到选区当前世界枢轴
+      const normForDrag = normalizeSelectionForTransform(selectedObjIds, currentTime);
+      if (normForDrag.rootIds.length > 0) {
+        const pivotInfo = computeSelectionPivotAndAxes(normForDrag.rootIds, transformPivotMode, transformSpaceMode, currentTime);
+        activeDragProxy.position.copy(pivotInfo.position);
+        activeDragProxy.quaternion.copy(pivotInfo.quaternion);
+        activeDragProxy.scale.set(1, 1, 1);
+      }
+
+      const batchState = captureBatchDragStartState("translate");
+      if (!batchState || batchState.abortedByLock) return false;
+
+      paneCamera.aspect = rect.width / Math.max(1, rect.height);
+      paneCamera.updateProjectionMatrix();
+      paneCamera.updateMatrixWorld(true);
+      mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+      raycaster.setFromCamera(mouse, paneCamera);
+
+      const viewNormal = new THREE.Vector3();
+      paneCamera.getWorldDirection(viewNormal);
+      const dragPlane = new THREE.Plane().setFromNormalAndCoplanarPoint(viewNormal, activeDragProxy.position);
+      const startHitPt = new THREE.Vector3();
+      if (Math.abs(raycaster.ray.direction.dot(dragPlane.normal)) < 0.001 ||
+          !raycaster.ray.intersectPlane(dragPlane, startHitPt)) {
+        return false;
+      }
+
+      batchDragStartState = batchState;
+      workOrbit.enabled = false;
+      camOrbit.enabled = false;
+      transformControl.enabled = false;
+      freeObjectDrag = {
+        active: true,
+        moved: false,
+        startX: e.clientX,
+        startY: e.clientY,
+        pointerId: e.pointerId,
+        paneDom,
+        paneCamera,
+        dragPlane,
+        startHitPt: startHitPt.clone(),
+        startProxyPos: activeDragProxy.position.clone(),
+        targetName: targetObj.name || targetObj.id,
+      };
+      if (e.pointerId !== undefined) paneDom.setPointerCapture(e.pointerId);
+      paneDom.style.cursor = "grabbing";
+      e.stopImmediatePropagation();
+      e.preventDefault();
+      return true;
+    }
+
+    function finishFreeObjectDrag(e) {
+      if (!freeObjectDrag) return false;
+      if (e && e.pointerId !== undefined && e.pointerId !== freeObjectDrag.pointerId) return false;
+      const drag = freeObjectDrag;
+      const wasMoved = drag.moved;
+      freeObjectDrag = null;
+      if (drag.paneDom && drag.pointerId !== undefined && drag.paneDom.hasPointerCapture(drag.pointerId)) {
+        drag.paneDom.releasePointerCapture(drag.pointerId);
+      }
+      if (workPaneDom) workPaneDom.style.cursor = "";
+      if (wasMoved) {
+        finalizeTransformOrFreeDrag();
+        logStatus(`✅ 已完成自由移动【${drag.targetName}】（高度保持不锁死 · 松手已定稿）`);
+      } else {
+        batchDragStartState = null;
+        isGizmoDragging = false;
+        workOrbit.enabled = true;
+        transformControl.enabled = true;
+      }
+      suppressSelectionUntil = performance.now() + 120;
+      return true;
+    }
+
     function handlePanePointerDown(e, paneDom, paneCamera, isLeftPane) {
       gizmoPointerDownConsumed = false;
       closeAllTopMenus();
+      if (typeof hideQuickAddQuadMenu === "function") hideQuickAddQuadMenu();
+      if (typeof hideObjColorContextMenu === "function") hideObjColorContextMenu();
       hideKeyframeContextMenu();
       timelineFocusActive = false;
       if (document.activeElement && document.activeElement.closest?.("#timelinePanel")) {
         document.activeElement.blur();
       }
       pointerDownPos = { x: e.clientX, y: e.clientY, pointerId: e.pointerId, t: performance.now() };
+      if (e.button === 2 && isLeftPane) {
+        rightDownPos = { x: e.clientX, y: e.clientY, t: performance.now() };
+      }
       if (!isLeftPane) { setActivePane("right"); return; }
       setActivePane(isLeftPane ? "left" : "right", e);
       if (e.button !== 0 || e.ctrlKey || e.metaKey) {
         transformControl.enabled = false;
         return;
       }
-      if (editGesture || directSphereDrag) return;
+      if (editGesture || directSphereDrag || freeObjectDrag) return;
+
+      // 蓝色高亮对象双击第二下按住：直接自由 3D 拖动（低灵敏度 · Y 高度不锁 0），松手即定稿
+      if (!isBoxSelectToolActive && !e.altKey && !e.shiftKey && interactionMode !== "ik" && lastLeftObjClick) {
+        const dblDt = performance.now() - lastLeftObjClick.ts;
+        const dblDist = Math.hypot(e.clientX - lastLeftObjClick.x, e.clientY - lastLeftObjClick.y);
+        if (dblDt <= 400 && dblDist <= 12) {
+          const rectDbl = paneDom.getBoundingClientRect();
+          if (rectDbl.width >= 10 && rectDbl.height >= 10) {
+            const onGizmoAxis = Boolean(transformControl.object && transformControl.axis);
+            if (!onGizmoAxis) {
+              const pickedDbl = pickSelectableSceneObjectAt(e.clientX, e.clientY, rectDbl, paneCamera, true);
+              const dblTarget = pickedDbl?.resolvedObj;
+              if (dblTarget && dblTarget.id === lastLeftObjClick.objId &&
+                  (dblTarget.id === selectedObjId || selectedObjIds.has(dblTarget.id)) &&
+                  !isObjectLocked(dblTarget)) {
+                lastLeftObjClick = null;
+                if (startFreeObjectDrag(e, paneDom, paneCamera, dblTarget)) return;
+              }
+            }
+          }
+        }
+        lastLeftObjClick = null;
+      }
 
       // 框选工具激活时：左键按下进入矩形框选手势（支持 Shift 追加框选、Option/Alt 减选框选）
       if (isBoxSelectToolActive) {
@@ -18645,6 +18969,42 @@
         return;
       }
 
+      if (freeObjectDrag && freeObjectDrag.active && e.pointerId === freeObjectDrag.pointerId) {
+        const moveDist = Math.hypot(e.clientX - freeObjectDrag.startX, e.clientY - freeObjectDrag.startY);
+        if (!freeObjectDrag.moved && moveDist < 3) return;
+        if (!freeObjectDrag.moved) {
+          freeObjectDrag.moved = true;
+          isGizmoDragging = true;
+          beginEditGesture(`双击自由移动 (${freeObjectDrag.targetName})`);
+        }
+        const rect = freeObjectDrag.paneDom.getBoundingClientRect();
+        if (rect.width < 10 || rect.height < 10) return;
+        freeObjectDrag.paneCamera.aspect = rect.width / Math.max(1, rect.height);
+        freeObjectDrag.paneCamera.updateProjectionMatrix();
+        freeObjectDrag.paneCamera.updateMatrixWorld(true);
+        mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+        mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+        raycaster.setFromCamera(mouse, freeObjectDrag.paneCamera);
+        const hitPt = new THREE.Vector3();
+        if (Math.abs(raycaster.ray.direction.dot(freeObjectDrag.dragPlane.normal)) >= 0.001 &&
+            raycaster.ray.intersectPlane(freeObjectDrag.dragPlane, hitPt) &&
+            hitPt.toArray().every(Number.isFinite)) {
+          const rawDelta = hitPt.sub(freeObjectDrag.startHitPt);
+          const fine = e.shiftKey ? 0.35 : 1.0;
+          const xzScale = 0.58 * fine;
+          const yScale = 0.24 * fine;
+          activeDragProxy.position.set(
+            freeObjectDrag.startProxyPos.x + rawDelta.x * xzScale,
+            freeObjectDrag.startProxyPos.y + rawDelta.y * yScale,
+            freeObjectDrag.startProxyPos.z + rawDelta.z * xzScale
+          );
+          applyActiveProxyDragChange();
+          const p = activeDragProxy.position;
+          logStatus(`✋ 自由移动【${freeObjectDrag.targetName}】 [${p.x.toFixed(2)}, ${p.y.toFixed(2)}, ${p.z.toFixed(2)}]（松手定稿 · Shift 更精细 · Esc 取消）`);
+        }
+        return;
+      }
+
       if (!directSphereDrag || !directSphereDrag.active) return;
       if (e.pointerId !== directSphereDrag.pointerId) return;
       const moveDist = Math.hypot(e.clientX - directSphereDrag.startX, e.clientY - directSphereDrag.startY);
@@ -18730,6 +19090,7 @@
 
     window.addEventListener("pointerup", (e) => {
       finishBoxSelectGesture(e);
+      finishFreeObjectDrag(e);
       finishDirectSphereDrag();
     });
     window.addEventListener("pointercancel", () => {
@@ -18841,7 +19202,7 @@
         return;
       }
       if (!isLeftPane || e.button !== 0 || e.ctrlKey || e.metaKey || performance.now() < suppressSelectionUntil) return;
-      if (isGizmoDragging || directSphereDrag) return;
+      if (isGizmoDragging || directSphereDrag || freeObjectDrag) return;
       const clickElapsed = performance.now() - (pointerDownPos.t || 0);
       const maxClickSlop = clickElapsed < 320 ? 9 : 6;
       if (Math.hypot(e.clientX - pointerDownPos.x, e.clientY - pointerDownPos.y) > maxClickSlop) return;
@@ -18933,8 +19294,14 @@
           ? (selectedPartId === hitPartId ? null : hitPartId)
           : null;
         selectSceneObjectKeepMode(clickedObj, nextPartId ? "点击子部件" : "点击选中", nextPartId, false);
+        if (!isObjectLocked(clickedObj)) {
+          lastLeftObjClick = { objId: clickedObj.id, x: e.clientX, y: e.clientY, ts: performance.now() };
+        } else {
+          lastLeftObjClick = null;
+        }
         return;
       }
+      lastLeftObjClick = null;
 
       // 3. 点击空白处：按住 Shift 或 Option 点空白处不清空已有选择；姿态模式下保留当前人物；其它模式取消选中
       if (isShiftMulti || isAltSubtract || interactionMode === "ik") return;
@@ -18959,6 +19326,96 @@
 
     workPaneDom.addEventListener("pointerup", (e) => {
       handlePanePointerUp(e, workPaneDom, workCamera, true);
+    });
+
+    // 高亮选中对象：左视口右键快捷选色浮层
+    const OBJ_CTX_COLOR_SWATCHES = [
+      "#EAEBED", "#B6BCC6", "#6E7682", "#434D38", "#D98178", "#73A9D8",
+      "#79B69C", "#D4B56C", "#A18ACB", "#62B4BC", "#D99C68", "#C984A4",
+    ];
+    const objColorCtxMenuEl = document.getElementById("objColorContextMenu");
+    const objColorCtxGridEl = document.getElementById("objColorCtxGrid");
+    const objColorCtxTargetLabelEl = document.getElementById("objColorCtxTargetLabel");
+    const objColorCtxCustomInputEl = document.getElementById("objColorCtxCustomInput");
+
+    function hideObjColorContextMenu() {
+      if (objColorCtxMenuEl) objColorCtxMenuEl.classList.remove("open");
+    }
+
+    function openObjColorContextMenu(clientX, clientY) {
+      if (!objColorCtxMenuEl || !objColorCtxGridEl || !sceneData) return false;
+      syncSelectedSetFromPrimary();
+      const targetIds = [...selectedObjIds].filter((id) => id && !String(id).startsWith("__"));
+      if (targetIds.length === 0) return false;
+      const primaryObj = sceneData.objects.find((o) => o.id === selectedObjId) || sceneData.objects.find((o) => o.id === targetIds[0]);
+      if (!primaryObj) return false;
+      const curColor = String(primaryObj.color || "#EAEBED").toUpperCase();
+
+      if (objColorCtxTargetLabelEl) {
+        objColorCtxTargetLabelEl.textContent = targetIds.length > 1 ? `已选 ${targetIds.length} 个` : (primaryObj.name || primaryObj.id);
+      }
+      objColorCtxGridEl.innerHTML = "";
+      OBJ_CTX_COLOR_SWATCHES.forEach((hex) => {
+        const dot = document.createElement("button");
+        dot.type = "button";
+        dot.className = "obj-color-ctx-dot" + (curColor === hex.toUpperCase() ? " is-current" : "");
+        dot.style.background = hex;
+        dot.title = hex;
+        dot.addEventListener("click", (ev) => {
+          ev.stopPropagation();
+          applyColorToSelectedObjects(hex, "右键选色");
+          hideObjColorContextMenu();
+        });
+        objColorCtxGridEl.appendChild(dot);
+      });
+      if (objColorCtxCustomInputEl && /^#[0-9A-F]{6}$/.test(curColor)) {
+        objColorCtxCustomInputEl.value = curColor;
+      }
+
+      const menuW = 196;
+      const menuH = 148;
+      const px = Math.max(8, Math.min(window.innerWidth - menuW - 8, Math.round(clientX + 6)));
+      const py = Math.max(8, Math.min(window.innerHeight - menuH - 8, Math.round(clientY + 6)));
+      objColorCtxMenuEl.style.left = `${px}px`;
+      objColorCtxMenuEl.style.top = `${py}px`;
+      objColorCtxMenuEl.classList.add("open");
+      return true;
+    }
+
+    objColorCtxMenuEl?.addEventListener("pointerdown", (e) => e.stopPropagation());
+    objColorCtxCustomInputEl?.addEventListener("input", (e) => {
+      applyColorToSelectedObjects(e.target.value, "右键自定义颜色");
+    });
+    objColorCtxCustomInputEl?.addEventListener("change", (e) => {
+      applyColorToSelectedObjects(e.target.value, "右键自定义颜色");
+      hideObjColorContextMenu();
+    });
+
+    workPaneDom.addEventListener("contextmenu", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (rightDownPos && Math.hypot(e.clientX - rightDownPos.x, e.clientY - rightDownPos.y) > 6) {
+        return;
+      }
+      if (!sceneData) return;
+      syncSelectedSetFromPrimary();
+      let hasEditableSelection = [...selectedObjIds].some((id) => id && !String(id).startsWith("__"));
+      const rect = workPaneDom.getBoundingClientRect();
+      if (rect.width >= 10 && rect.height >= 10) {
+        const picked = pickSelectableSceneObjectAt(e.clientX, e.clientY, rect, workCamera, true);
+        if (picked && picked.resolvedObj && !isObjectLocked(picked.resolvedObj)) {
+          const rObj = picked.resolvedObj;
+          const isBgArch = Boolean(rObj.arch_role || rObj.ground_decal || isStaticArchObj?.(rObj));
+          const alreadySelected = selectedObjIds.has(rObj.id) || selectedObjId === rObj.id;
+          if (!alreadySelected && (!hasEditableSelection || !isBgArch)) {
+            selectSceneObjectKeepMode(rObj, "右键选中", null, false);
+            hasEditableSelection = true;
+          }
+        }
+      }
+      if (hasEditableSelection) {
+        openObjColorContextMenu(e.clientX, e.clientY);
+      }
     });
 
     // 悬停提示与手型光标：控制球 / 头顶名牌 / 可选中的 3D 物体表面即时显示 pointer 光标
@@ -19710,18 +20167,89 @@
       requestAnimationFrame(() => clampDropdownAndSubmenusWithinViewport(dd));
     }
 
+    // Shift+A 鼠标位置 2×2 快速添加浮层与鼠标实时跟踪
+    const lastViewportPointer = { x: window.innerWidth * 0.28, y: window.innerHeight * 0.45 };
+    let quickAddSpawnCache = null;
+    let quickAddActiveIdx = 0;
+    const QUICK_ADD_KINDS = ["mannequin", "pawn", "cylinder", "box"];
+    const addQuickQuadMenuEl = document.getElementById("addQuickQuadMenu");
+
+    window.addEventListener("pointermove", (e) => {
+      lastViewportPointer.x = e.clientX;
+      lastViewportPointer.y = e.clientY;
+    }, true);
+    window.addEventListener("pointerdown", (e) => {
+      lastViewportPointer.x = e.clientX;
+      lastViewportPointer.y = e.clientY;
+      if (addQuickQuadMenuEl?.classList.contains("open") && !e.target.closest?.("#addQuickQuadMenu")) {
+        hideQuickAddQuadMenu();
+      }
+      if (objColorCtxMenuEl?.classList.contains("open") && !e.target.closest?.("#objColorContextMenu")) {
+        hideObjColorContextMenu();
+      }
+    }, true);
+
+    function setQuickAddActiveIndex(idx) {
+      if (!addQuickQuadMenuEl) return;
+      quickAddActiveIdx = Math.max(0, Math.min(QUICK_ADD_KINDS.length - 1, idx));
+      const cells = addQuickQuadMenuEl.querySelectorAll(".quick-add-cell");
+      cells.forEach((cell, i) => cell.classList.toggle("is-active", i === quickAddActiveIdx));
+    }
+
+    function hideQuickAddQuadMenu() {
+      if (addQuickQuadMenuEl) addQuickQuadMenuEl.classList.remove("open");
+      quickAddSpawnCache = null;
+    }
+
+    function executeQuickAddChoice(kind) {
+      const ctx = quickAddSpawnCache || computeCursorAddSpawnPos(lastViewportPointer.x, lastViewportPointer.y);
+      hideQuickAddQuadMenu();
+      const basePos = ctx?.pos || computeViewportCenterSpawnPos();
+      const facingYaw = Number.isFinite(ctx?.facingYawDeg) ? ctx.facingYawDeg : 0;
+      if (kind === "mannequin" || kind === "pawn") {
+        addNewCharacterWithStyle(kind, { basePos, facingYawDeg: facingYaw });
+      } else if (kind === "cylinder") {
+        addNewPrimitive("cylinder", "圆柱体", [0.5, 0.8, 0.5], "#DFE1E3", { basePos });
+      } else if (kind === "box") {
+        addNewPrimitive("box", "立方体", [0.5, 0.5, 0.5], "#EAEBED", { basePos });
+      }
+    }
+
+    if (addQuickQuadMenuEl) {
+      const cells = addQuickQuadMenuEl.querySelectorAll(".quick-add-cell");
+      cells.forEach((cell, i) => {
+        cell.addEventListener("mouseenter", () => setQuickAddActiveIndex(i));
+        cell.addEventListener("click", (ev) => {
+          ev.stopPropagation();
+          executeQuickAddChoice(cell.dataset.quickAdd || QUICK_ADD_KINDS[i]);
+        });
+      });
+      addQuickQuadMenuEl.addEventListener("contextmenu", (ev) => {
+        ev.preventDefault();
+        hideQuickAddQuadMenu();
+      });
+    }
+
     function toggleAddObjectMenuByShortcut() {
-      const addMenu = document.getElementById("menuAdd");
-      const addBtn = document.querySelector('#topbarMenuRoot .top-menu-btn[data-menu-target="menuAdd"]');
-      if (!addMenu || !addBtn) return;
-      if (addMenu.classList.contains("open")) {
-        closeAllTopMenus();
+      if (!addQuickQuadMenuEl) return;
+      if (addQuickQuadMenuEl.classList.contains("open")) {
+        hideQuickAddQuadMenu();
         return;
       }
-      openTopMenuForButton(addBtn);
-      const firstItem = addMenu.querySelector(":scope > .cascade-item");
-      firstItem?.focus?.();
-      logStatus("已打开【添加】菜单（可用 ↑↓→ 选择人物/车辆/基础体/场景资产/摄影机，Esc 关闭）");
+      closeAllTopMenus();
+      if (typeof hideObjColorContextMenu === "function") hideObjColorContextMenu();
+      const px = lastViewportPointer.x;
+      const py = lastViewportPointer.y;
+      quickAddSpawnCache = computeCursorAddSpawnPos(px, py);
+      const menuW = 204;
+      const menuH = 144;
+      const left = Math.max(8, Math.min(window.innerWidth - menuW - 8, Math.round(px - menuW * 0.25)));
+      const top = Math.max(8, Math.min(window.innerHeight - menuH - 8, Math.round(py - 20)));
+      addQuickQuadMenuEl.style.left = `${left}px`;
+      addQuickQuadMenuEl.style.top = `${top}px`;
+      setQuickAddActiveIndex(0);
+      addQuickQuadMenuEl.classList.add("open");
+      logStatus("Shift+A 快速添加：点选 关节人偶 / 球头人偶 / 圆柱体 / 立方体（支持 1-4 快选，Esc 取消）");
     }
 
     document.getElementById("btnMenuShowAllObjects")?.addEventListener("click", (e) => {
@@ -24664,6 +25192,16 @@
         }
         if (boxSelectGesture) { cancelBoxSelectGesture(); e.preventDefault(); return; }
         if (cancelEditGesture()) { e.preventDefault(); return; }
+        if (addQuickQuadMenuEl?.classList.contains("open")) {
+          hideQuickAddQuadMenu();
+          e.preventDefault();
+          return;
+        }
+        if (objColorCtxMenuEl?.classList.contains("open")) {
+          hideObjColorContextMenu();
+          e.preventDefault();
+          return;
+        }
         if (isBoxSelectToolActive) { toggleBoxSelectTool(false); e.preventDefault(); return; }
         closeAllTopMenus();
         hideObjectContextMenu();
@@ -24693,6 +25231,22 @@
       if (isAnyBlockingModalOpenJS()) return;
 
       const key = e.key.toLowerCase();
+
+      if (addQuickQuadMenuEl?.classList.contains("open")) {
+        if (["1", "2", "3", "4"].includes(e.key)) {
+          e.preventDefault();
+          if (!e.repeat) executeQuickAddChoice(QUICK_ADD_KINDS[Number(e.key) - 1]);
+          return;
+        }
+        if (e.key === "ArrowRight") { e.preventDefault(); setQuickAddActiveIndex(quickAddActiveIdx ^ 1); return; }
+        if (e.key === "ArrowLeft") { e.preventDefault(); setQuickAddActiveIndex(quickAddActiveIdx ^ 1); return; }
+        if (e.key === "ArrowDown" || e.key === "ArrowUp") { e.preventDefault(); setQuickAddActiveIndex(quickAddActiveIdx ^ 2); return; }
+        if (e.key === "Enter") {
+          e.preventDefault();
+          if (!e.repeat) executeQuickAddChoice(QUICK_ADD_KINDS[quickAddActiveIdx]);
+          return;
+        }
+      }
 
       if (!e.metaKey && !e.ctrlKey && !e.altKey && e.shiftKey &&
           (timelineFocusActive || document.activeElement?.closest?.("#timelinePanel"))) {
@@ -25374,21 +25928,23 @@
       });
     });
 
-    function addNewPrimitive(type, name, size, color) {
+    function addNewPrimitive(type, name, size, color, opts = {}) {
       if (stageWorkMode === "shoot") {
         setStageWorkMode("edit");
       }
       pushUndoSnapshot(`添加${name}`);
-      const id = `${type}_${Date.now().toString().slice(-3)}`;
+      const id = nextUniqueObjectId(type);
       const count = sceneData.objects.filter((o) => o.type === type).length;
-      const base = computeViewportCenterSpawnPos();
+      const rawBase = Array.isArray(opts?.basePos) ? opts.basePos : computeViewportCenterSpawnPos();
+      const halfH = (size[1] || 0.5) * 0.5;
+      const base = resolveNonOverlappingPropPos(rawBase, Math.max(0.45, Math.min(1.8, Math.max(size[0] || 0.5, size[2] || 0.5) * 0.85)), rawBase[1] + halfH);
       const obj = {
         id,
         name: `${name}_${count + 1}`,
         type,
         pos: [
           base[0],
-          Number((base[1] + (size[1] || 0.5) * 0.5).toFixed(3)),
+          Number((base[1] + halfH).toFixed(3)),
           base[2],
         ],
         size,
@@ -25401,9 +25957,11 @@
       selectedObjIds.add(id);
       setInteractionMode("object");
       rebuildThreeScene();
+      renderSceneOutliner();
+      renderTimelineUI();
       syncPythonCodeFromScene();
       closeAllTopMenus();
-      logStatus(`＋ 已在左视口中心添加 ${obj.name} (${type})`);
+      logStatus(`＋ 已添加 ${obj.name} (${type}) @ [${obj.pos[0].toFixed(2)}, ${obj.pos[1].toFixed(2)}, ${obj.pos[2].toFixed(2)}]`);
     }
 
     document.getElementById("btnAddBox")?.addEventListener("click", () => addNewPrimitive("box", "方体", [0.5, 0.5, 0.5], "#EAEBED"));
@@ -25418,11 +25976,16 @@
       if (!sceneData) return;
       pushUndoSnapshot(`添加场景资产: ${name}`);
       const count = (sceneData.objects || []).filter((o) => o.name && o.name.startsWith(name)).length;
-      const id = `asset_${Date.now().toString().slice(-4)}_${count + 1}`;
-      const base = computeViewportCenterSpawnPos();
+      const id = nextUniqueObjectId("asset");
+      const rawBase = computeViewportCenterSpawnPos();
+      const halfH = (size[1] || 0.5) * 0.5;
+      const elevOffset = (Array.isArray(posOverride) && Number.isFinite(posOverride[1]) && posOverride[1] > halfH + 0.05)
+        ? posOverride[1]
+        : halfH;
+      const base = resolveNonOverlappingPropPos(rawBase, Math.max(0.5, Math.min(2.0, Math.max(size[0] || 0.5, size[2] || 0.5) * 0.75)), rawBase[1] + elevOffset);
       const pos = [
         base[0],
-        Number((base[1] + (size[1] || 0.5) * 0.5).toFixed(3)),
+        Number((base[1] + elevOffset).toFixed(3)),
         base[2],
       ];
       const obj = {
@@ -25622,9 +26185,10 @@
       pushUndoSnapshot("添加 UAZ-469 越野车（含车上4人）");
       const existingUaz = sceneData.objects.filter((o) => o.type === "uaz469");
       const count = existingUaz.length;
-      const id = `uaz_${Date.now().toString().slice(-3)}`;
+      const id = nextUniqueObjectId("uaz");
       const size = [1.78, 2.02, 4.02];
-      const base = computeViewportCenterSpawnPos();
+      const rawBase = computeViewportCenterSpawnPos();
+      const base = resolveNonOverlappingPropPos(rawBase, 2.4, rawBase[1] + size[1] * 0.5);
       const posX = base[0];
       const posY = Number((base[1] + size[1] * 0.5).toFixed(3));
       const posZ = base[2];
@@ -25657,8 +26221,9 @@
       pushUndoSnapshot(`添加${variantName}`);
       const existing = sceneData.objects.filter((o) => o.type === "uaz469");
       const count = existing.length;
-      const id = `veh_${Date.now().toString().slice(-3)}`;
-      const base = computeViewportCenterSpawnPos();
+      const id = nextUniqueObjectId("veh");
+      const rawBase = computeViewportCenterSpawnPos();
+      const base = resolveNonOverlappingPropPos(rawBase, 2.5, rawBase[1] + size[1] * 0.5);
       const vehObj = {
         id,
         name: count === 0 ? variantName : `${variantName} ${count + 1}`,
@@ -25684,68 +26249,151 @@
     document.getElementById("btnAddPickupVehicle")?.addEventListener("click", () => addOtherVehicleVariant("轻型皮卡 (4.4m)", [1.82, 1.88, 4.40], "#4E6172"));
     document.getElementById("btnAddTruckVehicle")?.addEventListener("click", () => addOtherVehicleVariant("军用卡车 (5.6m)", [2.20, 2.55, 5.60], "#4A5546"));
 
-    // 计算左视口（3D 自由工作区）画面正中心的 3D 落点（优先射线命中可见场景表面，其次地面 Y=0 交点，再回退左视口注视目标）
-    function computeViewportCenterSpawnPos() {
-      const cam = typeof workCamera !== "undefined" ? workCamera : directorCamera;
-      const orbitTgt = typeof workOrbit !== "undefined" ? workOrbit.target : (typeof camOrbit !== "undefined" ? camOrbit.target : null);
+    function resolveNonOverlappingPropPos(basePos, minDist = 0.55, testCenterY = null) {
+      const bx = Number(basePos?.[0] || 0);
+      const by = Number(basePos?.[1] || 0);
+      const bz = Number(basePos?.[2] || 0);
+      const cy = testCenterY !== null ? Number(testCenterY) : by;
+      const blockers = (sceneData?.objects || []).filter((o) => {
+        if (!o || o.type === "character" || isObjectHidden(o)) return false;
+        const role = String(o.arch_role || "");
+        if (o.ground_decal || role === "floor" || role === "ground" || role === "wall" || role === "roof") return false;
+        return Array.isArray(o.pos);
+      });
+      const step = Math.max(0.5, Math.min(2.6, minDist));
+      const candidates = [
+        [0, 0], [step, 0], [-step, 0], [0, step], [0, -step],
+        [step, step], [-step, step], [step, -step], [-step, -step],
+        [step * 2, 0], [-step * 2, 0], [0, step * 2], [0, -step * 2],
+      ];
+      for (const [dx, dz] of candidates) {
+        const cx = Number((bx + dx).toFixed(3));
+        const cz = Number((bz + dz).toFixed(3));
+        const hitBlocker = blockers.some((o) => {
+          const op = o.pos || [0, 0, 0];
+          const oh = Number((o.size?.[1] || 0.6) * 0.5);
+          if (Math.abs((op[1] || 0) - cy) > oh + 0.75) return false;
+          return Math.hypot((op[0] || 0) - cx, (op[2] || 0) - cz) < minDist;
+        });
+        if (!hitBlocker) return [cx, by, cz];
+      }
+      return [Number((bx + step).toFixed(3)), by, bz];
+    }
 
-      if (cam && typeof THREE !== "undefined" && typeof objectsRoot !== "undefined") {
-        cam.updateMatrixWorld(true);
+    // 计算鼠标位置（或视口中心）对应的 3D 落点：过滤墙侧/屋顶背面（仅采纳 normal.y >= 0.6 承载面），未命中回退 Y=0 地面或相机前方
+    function computeCursorAddSpawnPos(clientX = null, clientY = null) {
+      let targetCam = typeof workCamera !== "undefined" ? workCamera : directorCamera;
+      let targetOrbit = typeof workOrbit !== "undefined" ? workOrbit.target : (typeof camOrbit !== "undefined" ? camOrbit.target : null);
+      let ndcX = 0;
+      let ndcY = 0;
+
+      if (Number.isFinite(clientX) && Number.isFinite(clientY)) {
+        const wRect = workPaneDom?.getBoundingClientRect?.();
+        const cRect = camPaneDom?.getBoundingClientRect?.();
+        if (wRect && wRect.width > 10 && wRect.height > 10 &&
+            clientX >= wRect.left && clientX <= wRect.right && clientY >= wRect.top && clientY <= wRect.bottom) {
+          targetCam = workCamera;
+          targetOrbit = workOrbit?.target || targetOrbit;
+          ndcX = ((clientX - wRect.left) / wRect.width) * 2 - 1;
+          ndcY = -((clientY - wRect.top) / wRect.height) * 2 + 1;
+        } else if (cRect && cRect.width > 10 && cRect.height > 10 &&
+            clientX >= cRect.left && clientX <= cRect.right && clientY >= cRect.top && clientY <= cRect.bottom) {
+          targetCam = directorCamera;
+          targetOrbit = camOrbit?.target || targetOrbit;
+          ndcX = ((clientX - cRect.left) / cRect.width) * 2 - 1;
+          ndcY = -((clientY - cRect.top) / cRect.height) * 2 + 1;
+        }
+      }
+
+      const calcFacingYawDeg = (spawnArr) => {
+        if (!targetCam) return 0;
+        const dx = (targetCam.position.x || 0) - spawnArr[0];
+        const dz = (targetCam.position.z || 0) - spawnArr[2];
+        if (Math.hypot(dx, dz) < 0.05) return 0;
+        return Number((THREE.MathUtils.radToDeg(Math.atan2(dx, dz))).toFixed(1));
+      };
+
+      if (targetCam && typeof THREE !== "undefined" && typeof objectsRoot !== "undefined") {
+        targetCam.updateMatrixWorld(true);
         const rc = new THREE.Raycaster();
-        rc.setFromCamera(new THREE.Vector2(0, 0), cam);
+        rc.setFromCamera(new THREE.Vector2(ndcX, ndcY), targetCam);
         const pickMeshes = [];
         objectsRoot.traverse((child) => {
           if (!child.isMesh || !child.visible) return;
+          if (child.userData?.isSketchUpEdge || child.userData?.isSceneGroupHelper) return;
           const oid = child.userData?.objId;
           if (oid) {
             const obj = sceneData?.objects?.find((o) => o.id === oid);
-            if (obj && obj.type === "character") return;
+            if (obj && (obj.type === "character" || obj.arch_role === "roof" || obj.arch_role === "ceiling")) return;
           }
           pickMeshes.push(child);
         });
         const hits = rc.intersectObjects(pickMeshes, false);
-        if (hits.length > 0 && Number.isFinite(hits[0].distance) && hits[0].distance < 200) {
-          const pt = hits[0].point;
-          return [Number(pt.x.toFixed(3)), Number(pt.y.toFixed(3)), Number(pt.z.toFixed(3))];
+        for (let i = 0; i < hits.length; i++) {
+          const h = hits[i];
+          if (!Number.isFinite(h.distance) || h.distance < 0.8 || h.distance > 35) continue;
+          if (h.face && h.object) {
+            const worldNorm = h.face.normal.clone().transformDirection(h.object.matrixWorld);
+            if (worldNorm.y < 0.6) continue;
+          }
+          const pt = h.point;
+          const pos = [Number(pt.x.toFixed(3)), Number(Math.max(0, pt.y).toFixed(3)), Number(pt.z.toFixed(3))];
+          return { pos, facingYawDeg: calcFacingYawDeg(pos) };
         }
-        // 未命中实体网格时，求画面中心射线与 Y=0 地面的交点
         const groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
         const groundHit = new THREE.Vector3();
-        if (rc.ray.intersectPlane(groundPlane, groundHit) && groundHit.distanceTo(cam.position) < 80) {
-          return [Number(groundHit.x.toFixed(3)), 0, Number(groundHit.z.toFixed(3))];
+        if (rc.ray.intersectPlane(groundPlane, groundHit) && groundHit.distanceTo(targetCam.position) < 60) {
+          const pos = [Number(groundHit.x.toFixed(3)), 0, Number(groundHit.z.toFixed(3))];
+          return { pos, facingYawDeg: calcFacingYawDeg(pos) };
         }
+        const fwd = new THREE.Vector3();
+        targetCam.getWorldDirection(fwd);
+        fwd.y = 0;
+        if (fwd.lengthSq() > 1e-5) fwd.normalize();
+        else fwd.set(0, 0, -1);
+        const fallbackPt = targetCam.position.clone().addScaledVector(fwd, 3.5);
+        const pos = [Number(fallbackPt.x.toFixed(3)), 0, Number(fallbackPt.z.toFixed(3))];
+        return { pos, facingYawDeg: calcFacingYawDeg(pos) };
       }
-      if (orbitTgt) {
-        return [
-          Number((orbitTgt.x || 0).toFixed(3)),
-          Number(Math.max(0, orbitTgt.y || 0).toFixed(3)),
-          Number((orbitTgt.z || 0).toFixed(3)),
+      if (targetOrbit) {
+        const pos = [
+          Number((targetOrbit.x || 0).toFixed(3)),
+          Number(Math.max(0, targetOrbit.y || 0).toFixed(3)),
+          Number((targetOrbit.z || 0).toFixed(3)),
         ];
+        return { pos, facingYawDeg: calcFacingYawDeg(pos) };
       }
-      return [0, 0, 0];
+      return { pos: [0, 0, 0], facingYawDeg: 0 };
+    }
+
+    function computeViewportCenterSpawnPos() {
+      return computeCursorAddSpawnPos(null, null).pos;
     }
 
     // 添加角色通用方法：支持 "mannequin" (IK 关节人偶) 与 "pawn" (球头人偶)
     const CHAR_STAGE_PALETTE = ["#D98178", "#73A9D8", "#79B69C", "#D4B56C", "#A18ACB", "#62B4BC", "#D99C68", "#C984A4"];
-    function addNewCharacterWithStyle(bodyStyle = "mannequin") {
+    function addNewCharacterWithStyle(bodyStyle = "mannequin", opts = {}) {
       const styleKey = bodyStyle === "pawn" ? "pawn" : "mannequin";
       pushUndoSnapshot(styleKey === "pawn" ? "添加球头人偶" : "添加人物");
       const existingChars = sceneData.objects.filter((o) => o.type === "character");
       const charCount = existingChars.length;
-      const id = `char_${Date.now().toString().slice(-3)}`;
+      const id = nextUniqueObjectId("char");
       const baseTargets = presetsData["standing"]?.targets || FALLBACK_STANDING_TARGETS;
 
-      // 未选中对象（或选中非人物）时，自动落在当前视口画面中心；若已选中人物则以该人物位置为锚点旁侧错开
+      // 显式传入鼠标落点时优先落在鼠标位置；否则未选中人物时落视口中心，选中人物则在其旁侧错开
       const curSelObj = (selectedObjId && !String(selectedObjId).startsWith("__"))
         ? sceneData.objects.find((o) => o.id === selectedObjId)
         : null;
-      const anchor = (curSelObj && curSelObj.type === "character")
-        ? [
-            Number(curSelObj.pos?.[0] || 0),
-            Number(curSelObj.pos?.[1] || 0),
-            Number(curSelObj.pos?.[2] || 0),
-          ]
-        : computeViewportCenterSpawnPos();
+      const anchor = Array.isArray(opts?.basePos)
+        ? [...opts.basePos]
+        : (curSelObj && curSelObj.type === "character")
+          ? [
+              Number(curSelObj.pos?.[0] || 0),
+              Number(curSelObj.pos?.[1] || 0),
+              Number(curSelObj.pos?.[2] || 0),
+            ]
+          : computeViewportCenterSpawnPos();
+      const initRotY = Number.isFinite(opts?.facingYawDeg) ? opts.facingYawDeg : 0;
 
       const candidateOffsets = [
         [0.0, 0.0],
@@ -25788,7 +26436,7 @@
         type: "character",
         body_style: styleKey,
         pos: [posX, posY, posZ],
-        rot: [0, 0, 0],
+        rot: [0, initRotY, 0],
         scale: getDefaultCharacterScale(styleKey),
         color: charColor,
         pose_name: "standing",
@@ -25798,7 +26446,7 @@
           {
             t: Number(currentTime.toFixed(2)),
             pos: [posX, posY, posZ],
-            rot_y: 0,
+            rot_y: initRotY,
             look_at: [...(baseTargets.head_target || [0, 1.56, 0.7])],
             targets: JSON.parse(JSON.stringify(baseTargets)),
           },
