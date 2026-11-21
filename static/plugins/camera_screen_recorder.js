@@ -245,6 +245,7 @@
       recording: false,
       saving: false,
       mode: "full_shot", // "full_shot" | "free"
+      fpsMode: "60",     // "60" | "project"
       hideHud: true,     // 默认不带任何角标与界面，保留纯净摄影机画幅
       saveToDownloads: true,
       saveToDesktop: false,
@@ -303,6 +304,13 @@
         <select class="cam-rec-select" id="selCamRecMode">
           <option value="full_shot" selected>完整本镜 (播完即停)</option>
           <option value="free">手动起止 (自由操作)</option>
+        </select>
+      </label>
+      <label class="cam-rec-opt-row" title="60fps 消除高刷屏幕上的 24fps 步进顿挫感；也可按工程原始帧率导出">
+        <span>导出帧率</span>
+        <select class="cam-rec-select" id="selCamRecFps">
+          <option value="60" selected>60 fps (丝滑流畅)</option>
+          <option value="project">跟随工程帧率</option>
         </select>
       </label>
       <label class="cam-rec-opt-row" title="默认纯净无界面、无文字角标；勾选则在左上角附带焦距与机高">
@@ -369,6 +377,7 @@
     const btnRecLabel = document.getElementById("camRecBtnLabel");
     const btnGear = document.getElementById("btnCamRecSettings");
     const selMode = document.getElementById("selCamRecMode");
+    const selFps = document.getElementById("selCamRecFps");
     const chkHud = document.getElementById("chkCamRecShowHud");
     const chkDownloads = document.getElementById("chkCamRecDownloads");
     const chkDesktop = document.getElementById("chkCamRecDesktop");
@@ -459,10 +468,43 @@
       popover.classList.remove("open");
       btnGear.classList.remove("open");
 
-      const fps = Math.max(12, Math.min(60, Number(D.sceneData?.fps || 24)));
+      const projectFps = Math.max(12, Math.min(60, Number(D.sceneData?.fps || 24)));
+      const explicitFps = Number(customOpts?.fps);
+      const fps = Number.isFinite(explicitFps) && explicitFps > 0
+        ? Math.max(12, Math.min(60, Math.round(explicitFps)))
+        : (state.fpsMode === "project" ? projectFps : 60);
       state.prevLoopState = Boolean(D.isLoopPlayback);
 
       if (state.mode === "full_shot") {
+        // 完整本镜优先走确定性 WebCodecs 逐帧步进直出，彻底消除浏览器实时 MediaRecorder 掉帧/卡顿
+        if (window.__fastGpuExporter && typeof window.__fastGpuExporter.exportVideo === "function") {
+          try {
+            state.saving = true;
+            syncUI();
+            const gpuRes = await window.__fastGpuExporter.exportVideo({
+              fromCameraRecorder: true,
+              fps,
+              hideHud: state.hideHud,
+              saveToDownloads: state.saveToDownloads,
+              saveToDesktop: state.saveToDesktop,
+            });
+            if (gpuRes && gpuRes.ok) {
+              state.lastSavedResult = gpuRes;
+              if (state.openModalOnFinish && gpuRes.video_url && typeof D.openVideoModal === "function") {
+                const modalMeta = `纯净画幅导出 ${gpuRes.width}×${gpuRes.height} | ${gpuRes.fps || fps} FPS | 零掉帧`;
+                const targetWhere = gpuRes.downloads_path || gpuRes.desktop_path || gpuRes.export_path || gpuRes.filename;
+                D.openVideoModal(gpuRes.video_url, modalMeta, targetWhere);
+              }
+              return gpuRes;
+            }
+          } catch (_) {
+            // 若硬件编码不可用则静默回退实时 MediaRecorder 录屏
+          } finally {
+            state.saving = false;
+            syncUI();
+          }
+        }
+
         D.setPlaybackState(false, "cam_rec_prepare");
         if (D.isLoopPlayback) {
           if (typeof D.toggleLoopPlaybackState === "function") D.toggleLoopPlaybackState();
@@ -687,6 +729,9 @@
     selMode?.addEventListener("change", () => {
       state.mode = selMode.value === "free" ? "free" : "full_shot";
     });
+    selFps?.addEventListener("change", () => {
+      state.fpsMode = selFps.value === "project" ? "project" : "60";
+    });
     chkHud?.addEventListener("change", () => {
       state.hideHud = !chkHud.checked;
     });
@@ -725,6 +770,11 @@
       set mode(v) {
         state.mode = v === "free" ? "free" : "full_shot";
         if (selMode) selMode.value = state.mode;
+      },
+      get fpsMode() { return state.fpsMode; },
+      set fpsMode(v) {
+        state.fpsMode = v === "project" ? "project" : "60";
+        if (selFps) selFps.value = state.fpsMode;
       },
       get hideHud() { return state.hideHud; },
       set hideHud(v) {

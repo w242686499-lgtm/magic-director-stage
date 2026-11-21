@@ -3303,7 +3303,6 @@
   <!-- Blender 风格双视口交互层 (左：3D 自由工作视口；右：1:1 真实视频取景框视口) -->
   <div class="viewport-panes-layer" id="viewportPanesLayer">
     <div class="vp-pane-dom active-left" id="workPaneDom" style="left:0;width:52%;">
-      <div class="vp-header-badge" id="workPaneBadge">左视口 · 自由三维工作区</div>
       <div class="viewport-box-select-rect" id="viewportBoxSelectRect"></div>
       <div class="xyz-axis-legend" id="xyzAxisLegend">
         <span>计量: 米(m) · 厘米(cm)</span>
@@ -3314,7 +3313,6 @@
     </div>
     <div class="split-divider" id="splitDivider" style="left:52%;" title="左右拖动调整 Blender 分屏比例"></div>
     <div class="vp-pane-dom" id="camPaneDom" style="left:52%;width:48%;">
-      <div class="vp-header-badge" id="camPaneBadge">右视口 · 摄影机预览（只读）</div>
       <button class="touch-cam-toggle-btn collapsed" id="btnToggleTouchCamPad" title="展开/收起触屏运镜面板（右视口支持双指捏合变焦）" aria-label="触屏运镜">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <polyline points="9 5 12 2 15 5"></polyline>
@@ -4223,7 +4221,6 @@
       <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
         <button id="btnOpenVideoReproTop" style="display:none;"></button>
         <button class="btn" id="btnToggleRightSidebar" title="展开/收起右侧对象与属性面板 (快捷键 N)">属性面板</button>
-        <button class="btn primary" id="btnExportVideo" title="默认录屏导出当前镜头纯净 H.264 MP4（无界面、强制无线条，按场景名存至下载文件夹）">导出视频</button>
       </div>
     </div>
   </div>
@@ -4969,31 +4966,15 @@
           <button class="tl-icon-btn active" id="btnToggleLoop" title="循环播放开关：开启后到达末帧自动回到起点">
             <svg viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
           </button>
-          <button class="tl-icon-btn" id="btnTogglePlayRange" title="启用/编辑自定义播放范围 (起止帧)">
-            <svg viewBox="0 0 24 24"><path d="M4 6v12M20 6v12M8 12h8"/><polyline points="10 9 7 12 10 15"/><polyline points="14 9 17 12 14 15"/></svg>
-          </button>
           <div class="tl-sec-group" id="tlPlayRangeInputsWrap" style="display:none;gap:3px;" title="播放范围：起始帧 — 结束帧">
             <input type="number" class="tl-sec-input" id="tlRangeStartFrame" min="0" max="9999" step="1" value="0" style="width:42px;" title="播放起始帧" />
             <span style="color:#9CA6B4;">-</span>
             <input type="number" class="tl-sec-input" id="tlRangeEndFrame" min="1" max="9999" step="1" value="144" style="width:42px;" title="播放结束帧" />
           </div>
 
-          <!-- 4. 关键帧操作纯图标按钮组：录帧、复制帧、粘贴帧、删除选中帧、多选、自动录帧 -->
+          <!-- 4. 关键帧操作纯图标按钮组：录帧、清空本轨、多选、自动录帧 -->
           <button class="tl-icon-btn" id="btnRecordActiveKf" title="录帧：在当前整数帧记录选中对象或摄影机关键帧 (I / K)" aria-label="录帧">
             <svg viewBox="0 0 24 24"><polygon points="12 3 21 12 12 21 3 12"/></svg>
-          </button>
-
-          <button class="tl-icon-btn" id="btnCopyKf" title="复制帧：当前轨道，支持多帧（⌘/Ctrl+C）" aria-label="复制帧">
-            <svg viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V4H4v12h4"/></svg>
-          </button>
-
-          <button class="tl-icon-btn" id="btnPasteKf" title="粘贴帧：当前轨道，支持多帧（⌘/Ctrl+V）" aria-label="粘贴帧">
-            <svg viewBox="0 0 24 24"><path d="M8 5H5v16h14V5h-3"/><rect x="8" y="3" width="8" height="4" rx="1"/></svg>
-          </button>
-
-          <button class="tl-icon-btn" id="btnTlDeleteSelectedKf" title="删除选中帧：仅删除选中的关键帧，不删除轨道与对象（Delete / Backspace）" aria-label="删除选中帧" style="color:#E16B6B;" disabled>
-            <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
-            <span id="lblTlDeleteSelectedKf" style="display:none;">删除选中帧</span>
           </button>
 
           <button class="tl-icon-btn" id="btnTlClearActiveTrack" title="清空本轨：一键删除当前选中轨道的全部关键帧（保留对象与画面，可撤销，⌥X）" aria-label="清空本轨" style="color:#E16B6B;padding:0 7px;width:auto;gap:4px;font-size:11px;font-weight:600;" disabled>
@@ -9067,11 +9048,13 @@
 
     const _trackContinuityPlanCacheMapJS = new Map();
     const _TRACK_CONTINUITY_CACHE_MAX_JS = 48;
+    let _lastCamPathVisualSig = "";
 
     function invalidateCameraSpeedCurveCache() {
       _speedCurveSolveCacheMapJS.clear();
       _speedCurveArcSigCacheMapJS.clear();
       _trackContinuityPlanCacheMapJS.clear();
+      _lastCamPathVisualSig = "";
     }
 
     const _MC_GL3_U_JS = [0.1127016653792583, 0.5, 0.8872983346207417];
@@ -11139,13 +11122,28 @@
       return { pos: posCusps, rot: rotCusps, zoom: zoomCusps };
     }
 
+    function _buildCameraStaticFallbackSigJS(scene) {
+      const kfs = Array.isArray(scene?.camera_keyframes) ? scene.camera_keyframes : [];
+      const hasPosKfs = kfs.some((k) => k && k.has_pos !== false && Array.isArray(k.pos) && Array.isArray(k.target));
+      const hasFovKfs = kfs.some((k) => k && k.has_fov !== false && (k.fov !== undefined || k.focal_mm !== undefined));
+      const hasRollKfs = kfs.some((k) => k && k.has_roll !== false && k.roll_deg !== undefined && k.roll_deg !== null);
+      const cam = scene?.camera || {};
+      return {
+        pos: hasPosKfs ? null : (cam.pos || null),
+        target: hasPosKfs ? null : (cam.target || null),
+        fov: hasFovKfs ? null : (cam.fov ?? null),
+        roll_deg: hasRollKfs ? null : (cam.roll_deg ?? 0),
+        roll_lock: Boolean(scene?.camera_rig?.lock_roll ?? true),
+      };
+    }
+
     function buildCameraArcLengthTableJS(scene) {
       const dur = Math.max(0.5, Number(scene?.duration) || 4.0);
       const curveCfg = scene?.camera_speed_curve || {};
       const rigNorm = normalizeCameraRigConfigJS(scene?.camera_rig);
       const arcSig = JSON.stringify({
         dur: Number(dur.toFixed(4)),
-        cam: scene?.camera || null,
+        cam: _buildCameraStaticFallbackSigJS(scene),
         kfs: scene?.camera_keyframes || [],
         comps: (curveCfg.compositions || []).map((c) => Number((c.path_tau ?? c.t ?? 0).toFixed(4))),
         rig_geom: {
@@ -11959,7 +11957,7 @@
       const rigNorm = normalizeCameraRigConfigJS(scene?.camera_rig);
       const sig = JSON.stringify({
         dur: Number((Number(scene?.duration) || 4.0).toFixed(4)),
-        cam: scene?.camera || null,
+        cam: _buildCameraStaticFallbackSigJS(scene),
         kfs: scene?.camera_keyframes || [],
         curve: scene?.camera_speed_curve || null,
         rig_geom: {
@@ -12305,8 +12303,23 @@
     function updateCameraPathCurveVisual() {
       const allKfs = sceneData?.camera_keyframes || [];
       const kfs = allKfs.filter((k) => k.has_pos !== false && Array.isArray(k.pos));
+      const nextSig = JSON.stringify({
+        shotId: projectBank?.activeShotId || "",
+        dur: Number(sceneData?.duration || 0),
+        sel: String(selectedObjId || ""),
+        kfs,
+        curve: sceneData?.camera_speed_curve || null,
+        rig: sceneData?.camera_rig || null,
+      });
+      if (nextSig === _lastCamPathVisualSig && camPathNodesRoot.children.length === kfs.length) {
+        return;
+      }
+      _lastCamPathVisualSig = nextSig;
       while (camPathNodesRoot.children.length > 0) {
-        camPathNodesRoot.remove(camPathNodesRoot.children[0]);
+        const ch = camPathNodesRoot.children[0];
+        if (ch.geometry) ch.geometry.dispose();
+        if (ch.material) ch.material.dispose();
+        camPathNodesRoot.remove(ch);
       }
 
       if (kfs.length === 0) {
@@ -13202,7 +13215,7 @@
       directorCamera.lookAt(targetArr[0], targetArr[1], targetArr[2]);
       if (!isOfflineExporting) {
         updateDirectorCamRigVisual(rollVal);
-        updateCameraGateLayout();
+        if (!isPlaying) updateCameraGateLayout();
         if (workOrbit.enabled) {
           if (selectedObjId === "__camera__") {
             activeDragProxy.position.set(posArr[0], posArr[1], posArr[2]);
@@ -26575,7 +26588,7 @@
       return triggerPythonVideoExport();
     }
 
-    document.getElementById("btnExportVideo").addEventListener("click", () => triggerDefaultVideoExport({ openModal: true }));
+    document.getElementById("btnExportVideo")?.addEventListener("click", () => triggerDefaultVideoExport({ openModal: true }));
     document.getElementById("btnPythonQuickVideo").addEventListener("click", () => triggerDefaultVideoExport({ openModal: true }));
     document.getElementById("btnMenuOfflinePythonExport")?.addEventListener("click", () => {
       closeAllTopMenus();

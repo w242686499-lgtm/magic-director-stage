@@ -106,7 +106,7 @@
 
     async function exportVideo(customOpts = {}) {
       if (state.exporting) return { ok: false, error: "正在进行极速导出" };
-      if (window.__cameraScreenRecorder?.isRecording || window.__cameraScreenRecorder?.isSaving) {
+      if (!customOpts?.fromCameraRecorder && (window.__cameraScreenRecorder?.isRecording || window.__cameraScreenRecorder?.isSaving)) {
         return { ok: false, error: "当前正在进行摄影机录屏，请先等待结束" };
       }
       if (typeof D.prepareCleanCameraBatchSession !== "function") {
@@ -191,6 +191,9 @@
             }
           });
 
+        const yieldToUi = () => new Promise((resolve) => setTimeout(resolve, 0));
+        let lastYieldMs = performance.now();
+
         for (let fIdx = 0; fIdx < totalFrames; fIdx++) {
           if (encoderErr) throw encoderErr;
           const tSec = totalFrames > 1 ? Math.min(duration, fIdx / fps) : 0.0;
@@ -206,6 +209,12 @@
             const pct = Math.min(99, Math.round(((fIdx + 1) / totalFrames) * 100));
             setBusyLabel(`⚡ ${pct}%`);
             await waitForQueueDrain();
+            lastYieldMs = performance.now();
+          } else if (performance.now() - lastYieldMs >= 16) {
+            const pct = Math.min(99, Math.round(((fIdx + 1) / totalFrames) * 100));
+            setBusyLabel(`⚡ ${pct}%`);
+            await yieldToUi();
+            lastYieldMs = performance.now();
           }
         }
 
