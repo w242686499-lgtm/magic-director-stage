@@ -20,125 +20,101 @@
     style.id = "mdsCamRecorderPluginStyle";
     style.textContent = `
       .cam-record-group {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        gap: 2px;
+        pointer-events: auto;
+      }
+      .cam-record-group.is-floating-fallback {
         position: absolute;
         top: 7px;
         right: 46px;
         z-index: 26;
-        display: inline-flex;
-        align-items: center;
-        gap: 3px;
-        pointer-events: auto;
-      }
-      #camPaneDom .touch-cam-toggle-btn {
-        right: 105px !important;
       }
       .cam-rec-btn {
-        width: 30px;
-        height: 26px;
-        padding: 0;
-        background: rgba(24, 28, 35, 0.92);
-        border: 1px solid #485260;
-        color: #F8FAFC;
-        border-radius: 5px;
+        height: 22px;
+        padding: 0 5px 0 3px;
+        background: transparent;
+        border: 1px solid transparent;
+        color: #4ADE80;
+        border-radius: 4px;
         display: inline-flex;
         align-items: center;
-        justify-content: center;
+        gap: 5px;
         cursor: pointer;
         user-select: none;
+        font-family: "SF Mono", "Menlo", "DIN Alternate", monospace;
+        font-size: 12.5px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        white-space: nowrap;
         transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
       }
       .cam-rec-btn:hover {
-        background: #2B313A;
-        border-color: #E05252;
-        color: #FFFFFF;
+        background: rgba(74, 222, 128, 0.12);
+        border-color: rgba(74, 222, 128, 0.35);
       }
-      .cam-rec-btn.recording {
-        background: rgba(224, 82, 82, 0.24);
-        border-color: #F87171;
-        color: #FECACA;
+      .cam-rec-btn.recording,
+      .cam-rec-btn.saving {
+        background: rgba(239, 68, 68, 0.16);
+        border-color: rgba(248, 113, 113, 0.55);
+        color: #F87171;
       }
       .cam-rec-btn.saving {
-        opacity: 0.85;
         cursor: wait;
-        border-color: #60A5FA;
-        color: #93C5FD;
       }
-      .cam-rec-icon {
-        width: 15px;
-        height: 15px;
-        display: block;
+      .cam-arri-dot {
+        width: 9.5px;
+        height: 9.5px;
+        border-radius: 50%;
+        background: #4ADE80;
+        box-shadow: 0 0 8px rgba(74, 222, 128, 0.78);
+        display: inline-block;
         flex-shrink: 0;
       }
-      .cam-rec-icon-stop,
-      .cam-rec-icon-spin {
-        display: none;
-      }
-      .cam-rec-btn.recording .cam-rec-icon-idle {
-        display: none;
-      }
-      .cam-rec-btn.recording .cam-rec-icon-stop {
-        display: block;
+      .cam-rec-btn.recording .cam-arri-dot,
+      .cam-rec-btn.saving .cam-arri-dot {
+        background: #EF4444;
+        box-shadow: 0 0 9px rgba(239, 68, 68, 0.9);
         animation: mdsRecPulse 1s ease-in-out infinite;
-      }
-      .cam-rec-btn.saving .cam-rec-icon-idle,
-      .cam-rec-btn.saving .cam-rec-icon-stop {
-        display: none;
-      }
-      .cam-rec-btn.saving .cam-rec-icon-spin {
-        display: block;
-        animation: mdsRecSpin 0.9s linear infinite;
-      }
-      .cam-rec-sr-only {
-        position: absolute;
-        width: 1px;
-        height: 1px;
-        padding: 0;
-        margin: -1px;
-        overflow: hidden;
-        clip: rect(0, 0, 0, 0);
-        white-space: nowrap;
-        border: 0;
       }
       @keyframes mdsRecPulse {
         0%, 100% { opacity: 1; transform: scale(1); }
         50% { opacity: 0.45; transform: scale(0.88); }
       }
-      @keyframes mdsRecSpin {
-        from { transform: rotate(0deg); }
-        to { transform: rotate(360deg); }
-      }
       .cam-rec-gear-btn {
-        width: 20px;
-        height: 26px;
+        width: 16px;
+        height: 22px;
         padding: 0;
-        background: rgba(24, 28, 35, 0.92);
-        border: 1px solid #485260;
-        color: #CBD5E1;
-        border-radius: 5px;
+        background: transparent;
+        border: 1px solid transparent;
+        color: #64748B;
+        border-radius: 4px;
         display: inline-flex;
         align-items: center;
         justify-content: center;
         cursor: pointer;
-        font-size: 11px;
+        font-size: 10px;
         transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
       }
       .cam-rec-gear-btn:hover,
       .cam-rec-gear-btn.open {
-        background: #2B313A;
-        border-color: #5B9DFF;
-        color: #FFFFFF;
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(96, 165, 250, 0.45);
+        color: #E2E8F0;
       }
       .cam-rec-popover {
         position: absolute;
-        top: 36px;
-        right: 10px;
+        bottom: 36px;
+        left: 8px;
         z-index: 38;
         width: 238px;
-        background: rgba(24, 28, 35, 0.97);
+        background: rgba(20, 24, 30, 0.97);
         border: 1px solid #3B4452;
-        border-radius: 7px;
+        border-radius: 8px;
         padding: 9px 10px;
-        box-shadow: 0 10px 28px rgba(0, 0, 0, 0.55);
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.58);
         color: #E2E8F0;
         font-size: 11.5px;
         display: none;
@@ -263,33 +239,19 @@
       openModalOnFinish: false,
     };
 
-    // 1. 右视口顶部录屏按钮组（紧邻截图按钮左侧）
+    // 1. 底部 ARRI 监视器状态栏 STBY 录屏按钮组（嵌入 #arriStbySlot）
+    const stbyHost = document.getElementById("arriStbySlot");
     const recGroup = document.createElement("div");
-    recGroup.className = "cam-record-group";
+    recGroup.className = "cam-record-group" + (stbyHost ? "" : " is-floating-fallback");
     recGroup.id = "camRecordPluginGroup";
     recGroup.innerHTML = `
-      <button class="cam-rec-btn" id="btnCamScreenRecord" title="录制纯净摄影机画面 (快捷键 6) · 不带软件界面、不走导出确认" aria-label="录屏">
-        <svg class="cam-rec-icon cam-rec-icon-idle" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="2"></circle>
-          <circle cx="12" cy="12" r="4.5" fill="#EF4444"></circle>
-        </svg>
-        <svg class="cam-rec-icon cam-rec-icon-stop" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <circle cx="12" cy="12" r="8.5" stroke="#F87171" stroke-width="2"></circle>
-          <rect x="8.5" y="8.5" width="7" height="7" rx="1.4" fill="#EF4444"></rect>
-        </svg>
-        <svg class="cam-rec-icon cam-rec-icon-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <circle cx="12" cy="12" r="8" stroke="rgba(147,197,253,0.28)" stroke-width="2.2"></circle>
-          <path d="M12 4a8 8 0 0 1 8 8" stroke="#60A5FA" stroke-width="2.2" stroke-linecap="round"></path>
-        </svg>
-        <span id="camRecBtnLabel" class="cam-rec-sr-only">录屏</span>
+      <button class="cam-rec-btn" id="btnCamScreenRecord" title="STBY：点击录制纯净摄影机画面 (快捷键 6) · 不带软件界面、不走导出确认" aria-label="录屏">
+        <span class="cam-arri-dot" aria-hidden="true"></span>
+        <span id="camRecBtnLabel">STBY</span>
       </button>
-      <button class="cam-rec-gear-btn" id="btnCamRecSettings" title="录屏模式与设置" aria-label="录屏设置">
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <polyline points="6 9 12 15 18 9"></polyline>
-        </svg>
-      </button>
+      <button class="cam-rec-gear-btn" id="btnCamRecSettings" title="录屏模式与帧率设置" aria-label="录屏设置">▾</button>
     `;
-    D.camPaneDom.appendChild(recGroup);
+    (stbyHost || D.camPaneDom).appendChild(recGroup);
 
     const popover = document.createElement("div");
     popover.className = "cam-rec-popover";
@@ -392,7 +354,7 @@
         btnRec.classList.remove("recording");
         btnRec.classList.add("saving");
         btnRec.title = "正在转码保存摄影机录屏…";
-        btnRecLabel.textContent = "转码保存中…";
+        btnRecLabel.textContent = "REC";
         if (topBarLabel) topBarLabel.textContent = "保存中…";
         if (menuText) menuText.textContent = "正在保存录屏…";
         if (mainExportBtn) mainExportBtn.textContent = "⏳ 保存录屏…";
@@ -404,15 +366,15 @@
         const elapsed = (performance.now() - state.startedAtMs) / 1000;
         btnRec.classList.add("recording");
         btnRec.title = `正在录屏 (${formatDurationSec(elapsed)}) · 点击或按 6 停止并保存`;
-        btnRecLabel.textContent = `停止 ${formatDurationSec(elapsed)}`;
+        btnRecLabel.textContent = `REC ${formatDurationSec(elapsed)}`;
         if (topBarBtn) topBarBtn.classList.add("active");
         if (topBarLabel) topBarLabel.textContent = `停止 ${formatDurationSec(elapsed)}`;
         if (menuText) menuText.textContent = "停止摄影机录屏";
         if (mainExportBtn) mainExportBtn.textContent = `⏹ 停止 ${formatDurationSec(elapsed)}`;
       } else {
         btnRec.classList.remove("recording");
-        btnRec.title = "录制纯净摄影机画面 (快捷键 6) · 不带软件界面、不走导出确认";
-        btnRecLabel.textContent = "录屏";
+        btnRec.title = "STBY：点击录制纯净摄影机画面 (快捷键 6) · 不带软件界面、不走导出确认";
+        btnRecLabel.textContent = "STBY";
         if (topBarBtn) topBarBtn.classList.remove("active");
         if (topBarLabel) topBarLabel.textContent = "录屏";
         if (menuText) menuText.textContent = "摄影机录屏";
@@ -719,6 +681,10 @@
     btnGear.addEventListener("click", (e) => {
       e.stopPropagation();
       const nextOpen = !popover.classList.contains("open");
+      if (nextOpen) {
+        ["arriLensPopover", "arriAspectPopover"].forEach((id) => document.getElementById(id)?.classList.remove("open"));
+        ["btnArriLensPicker", "btnArriAspectPicker"].forEach((id) => document.getElementById(id)?.classList.remove("open"));
+      }
       popover.classList.toggle("open", nextOpen);
       btnGear.classList.toggle("open", nextOpen);
     });

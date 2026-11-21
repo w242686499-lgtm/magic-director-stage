@@ -129,15 +129,16 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      border: 1.5px solid rgba(251, 191, 36, 0.88);
+      border: 1px solid rgba(255, 255, 255, 0.25);
       border-radius: 1px;
+      box-sizing: border-box;
       box-shadow: 0 0 0 9999px rgba(10, 10, 12, 0.78);
       pointer-events: none;
       z-index: 4;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
-      padding: 5px 8px;
+      justify-content: center;
+      padding: 0;
     }
     .cam-gate-thirds-h {
       position: absolute;
@@ -1977,6 +1978,195 @@
       min-height:72px;
       max-height:380px;
     }
+    /* 方案 A：独立「摄影机机位」分区（与场景对象分开排布，底部新增摄影机，仅 0 摄影机模式可切换机位） */
+    .outliner-camera-section {
+      flex-shrink:0;
+      margin-top:6px;
+      padding:7px;
+      border-radius:7px;
+      border:1px solid rgba(197, 174, 121, 0.30);
+      background:rgba(197, 174, 121, 0.04);
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      transition:border-color 0.15s ease, background 0.15s ease;
+    }
+    .outliner-camera-section.cam-mode-active {
+      border-color:rgba(197, 174, 121, 0.65);
+      background:rgba(197, 174, 121, 0.07);
+    }
+    .outliner-camera-header {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:6px;
+      font-size:11px;
+    }
+    .outliner-camera-title {
+      display:inline-flex;
+      align-items:center;
+      gap:5px;
+      color:#D4B56C;
+      font-weight:600;
+      white-space:nowrap;
+    }
+    .outliner-camera-mode-icon {
+      display:inline-flex;
+      align-items:center;
+      gap:4px;
+      padding:2px 6px;
+      border-radius:4px;
+      color:#7D8797;
+      background:rgba(255, 255, 255, 0.04);
+      border:1px solid rgba(255, 255, 255, 0.08);
+      font-family:"SF Mono", Menlo, monospace;
+      font-size:10px;
+      line-height:1;
+    }
+    .outliner-camera-section.cam-mode-active .outliner-camera-mode-icon {
+      color:#62BEC7;
+      background:rgba(98, 190, 199, 0.14);
+      border-color:rgba(98, 190, 199, 0.42);
+    }
+    .outliner-cam-icon-badge {
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      width:22px;
+      height:22px;
+      border-radius:4px;
+      flex-shrink:0;
+    }
+    .outliner-cam-icon-badge.current {
+      color:#60A5FA;
+      background:rgba(91, 157, 255, 0.18);
+      border:1px solid rgba(91, 157, 255, 0.42);
+    }
+    .outliner-cam-icon-badge.switchable {
+      color:#CBD5E1;
+      background:rgba(255, 255, 255, 0.06);
+      border:1px solid #38414F;
+    }
+    .outliner-cam-icon-badge.locked {
+      color:#6E7888;
+      background:transparent;
+      border:1px solid transparent;
+    }
+    .outliner-camera-list {
+      background:#141619;
+      border:1px solid #2C333E;
+      border-radius:5px;
+      padding:4px;
+      display:flex;
+      flex-direction:column;
+      gap:3px;
+      max-height:148px;
+      overflow-y:auto;
+    }
+    .outliner-cam-row {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:6px;
+      min-height:28px;
+      padding:3px 8px;
+      border-radius:5px;
+      border:1px solid transparent;
+      font-size:12px;
+      color:#DCE3EC;
+      cursor:pointer;
+      transition:background 0.12s ease, border-color 0.12s ease, opacity 0.12s ease;
+    }
+    .outliner-cam-row:hover {
+      background:#222730;
+      border-color:#353C46;
+    }
+    .outliner-cam-row.active {
+      background:rgba(91, 157, 255, 0.16);
+      border-color:#5B9DFF;
+      color:#FFFFFF;
+    }
+    .outliner-cam-row.switch-locked {
+      opacity:0.55;
+      cursor:not-allowed;
+    }
+    .outliner-cam-row.switch-locked:hover {
+      background:transparent;
+      border-color:transparent;
+    }
+    .outliner-cam-row.active.switch-locked {
+      opacity:0.86;
+      cursor:default;
+    }
+    .outliner-cam-row.active.switch-locked:hover {
+      background:rgba(91, 157, 255, 0.16);
+      border-color:#5B9DFF;
+    }
+    .outliner-cam-left {
+      display:flex;
+      align-items:center;
+      gap:7px;
+      min-width:0;
+      flex:1;
+    }
+    .outliner-cam-name {
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+      font-weight:500;
+    }
+    .outliner-cam-mm {
+      font-family:"SF Mono", Menlo, monospace;
+      font-size:10.5px;
+      color:#8B96A8;
+      flex-shrink:0;
+    }
+    .outliner-cam-row.active .outliner-cam-mm {
+      color:#BFDBFE;
+    }
+    .outliner-cam-tag {
+      font-size:10px;
+      padding:1px 6px;
+      border-radius:4px;
+      flex-shrink:0;
+      white-space:nowrap;
+    }
+    .outliner-cam-tag.current {
+      background:rgba(91, 157, 255, 0.22);
+      border:1px solid rgba(91, 157, 255, 0.48);
+      color:#93C5FD;
+    }
+    .outliner-cam-tag.switchable {
+      background:rgba(255, 255, 255, 0.06);
+      border:1px solid #38414F;
+      color:#CBD5E1;
+    }
+    .outliner-cam-tag.locked {
+      background:rgba(255, 255, 255, 0.03);
+      border:1px solid rgba(255, 255, 255, 0.08);
+      color:#707A8A;
+    }
+    .outliner-add-camera-btn {
+      width:100%;
+      height:28px;
+      border-radius:5px;
+      border:1px dashed #4E6B96;
+      background:rgba(91, 157, 255, 0.09);
+      color:#93C5FD;
+      font-size:11.5px;
+      font-weight:600;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:5px;
+      transition:background 0.14s ease, border-color 0.14s ease, color 0.14s ease;
+    }
+    .outliner-add-camera-btn:hover {
+      background:rgba(91, 157, 255, 0.20);
+      border-color:#60A5FA;
+      color:#E0F2FE;
+    }
     /* 图2精简：右侧变换属性面板仅保留对象名称、单位切换与「尺寸(m/cm)」（宽X / 高Y / 深Z） */
     #bottomPropertyPanel #propTransformContextBar,
     #bottomPropertyPanel #propMixedStateHint,
@@ -2862,18 +3052,15 @@
       box-sizing:border-box;
     }
 
-    /* iPad / 触屏运镜与变焦虚拟操控板 */
-    .touch-cam-toggle-btn {
-      position: absolute;
-      top: 7px;
-      right: 46px !important;
-      z-index: 26;
+    /* iPad / 触屏运镜与变焦虚拟操控板 + ARRI 底部监视器状态栏 */
+    .touch-cam-toggle-btn,
+    .cam-screenshot-btn {
       pointer-events: auto;
-      width: 30px;
-      height: 26px;
-      background: rgba(24, 28, 35, 0.92);
-      border: 1px solid #485260;
-      color: #F8FAFC;
+      width: 24px;
+      height: 22px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      color: #CBD5E1;
       border-radius: 5px;
       padding: 0;
       display: inline-flex;
@@ -2895,25 +3082,6 @@
       border-color: #5B9DFF;
       color: #93C5FD;
     }
-    .cam-screenshot-btn {
-      position: absolute;
-      top: 7px;
-      right: 10px;
-      z-index: 26;
-      pointer-events: auto;
-      width: 30px;
-      height: 26px;
-      background: rgba(24, 28, 35, 0.92);
-      border: 1px solid #485260;
-      color: #F8FAFC;
-      border-radius: 5px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      padding: 0;
-      transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
-    }
     .cam-screenshot-btn:hover {
       background: #2B313A;
       border-color: #79B69C;
@@ -2922,6 +3090,139 @@
     .cam-screenshot-btn:active {
       background: rgba(121, 182, 156, 0.24);
       border-color: #79B69C;
+    }
+    .arri-monitor-bar {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 32px;
+      background: #0B0D10;
+      border-top: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 0 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      font-family: "SF Mono", "Menlo", "DIN Alternate", monospace;
+      pointer-events: auto;
+      z-index: 26;
+      box-sizing: border-box;
+    }
+    .arri-left-telemetry {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      min-width: 0;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .arri-left-telemetry::-webkit-scrollbar {
+      display: none;
+    }
+    .arri-stby-slot {
+      display: inline-flex;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .arri-kv {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 3.5px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .arri-k {
+      font-size: 9px;
+      color: #8B95A5;
+      letter-spacing: 0.3px;
+      font-weight: 600;
+    }
+    .arri-v {
+      font-size: 12.5px;
+      color: #F1F5F9;
+      font-weight: 600;
+      letter-spacing: 0.1px;
+    }
+    .arri-lens-btn {
+      appearance: none;
+      display: inline-flex;
+      align-items: baseline;
+      gap: 3.5px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 4px;
+      padding: 1px 6px;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+      font-family: inherit;
+      transition: background 0.12s ease, border-color 0.12s ease;
+    }
+    .arri-lens-btn:hover,
+    .arri-lens-btn.open {
+      background: rgba(59, 130, 246, 0.18);
+      border-color: rgba(96, 165, 250, 0.65);
+    }
+    .arri-right-tools {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+    .arri-lens-popover {
+      position: absolute;
+      bottom: 36px;
+      left: 160px;
+      z-index: 38;
+      width: 224px;
+      background: rgba(20, 24, 30, 0.97);
+      border: 1px solid #3B4452;
+      border-radius: 8px;
+      padding: 9px 10px;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.58);
+      color: #E2E8F0;
+      display: none;
+      flex-direction: column;
+      gap: 8px;
+      pointer-events: auto;
+    }
+    .arri-lens-popover.open {
+      display: flex;
+    }
+    .arri-lens-pop-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      font-weight: 600;
+      color: #94A3B8;
+    }
+    .arri-lens-pop-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 5px;
+    }
+    .arri-lens-opt {
+      appearance: none;
+      background: #161A20;
+      border: 1px solid #353E4D;
+      color: #D5DCE6;
+      border-radius: 5px;
+      padding: 4px 0;
+      font-size: 11px;
+      font-family: "SF Mono", Menlo, monospace;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .arri-lens-opt:hover {
+      border-color: #60A5FA;
+      color: #FFFFFF;
+    }
+    .arri-lens-opt.active {
+      background: rgba(37, 99, 235, 0.34);
+      border-color: #60A5FA;
+      color: #93C5FD;
     }
     .cam-hud-pill {
       font-size: 11px !important;
@@ -2973,7 +3274,7 @@
     }
     .touch-cam-pad {
       position: absolute;
-      bottom: 10px;
+      bottom: 40px;
       left: 50%;
       transform: translateX(-50%);
       z-index: 25;
@@ -3445,22 +3746,6 @@
     </div>
     <div class="split-divider" id="splitDivider" style="left:52%;" title="左右拖动调整 Blender 分屏比例"></div>
     <div class="vp-pane-dom" id="camPaneDom" style="left:52%;width:48%;">
-      <button class="touch-cam-toggle-btn collapsed" id="btnToggleTouchCamPad" title="展开/收起触屏运镜面板（右视口支持双指捏合变焦）" aria-label="触屏运镜">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <polyline points="9 5 12 2 15 5"></polyline>
-          <polyline points="9 19 12 22 15 19"></polyline>
-          <polyline points="5 9 2 12 5 15"></polyline>
-          <polyline points="19 9 22 12 19 15"></polyline>
-          <circle cx="12" cy="12" r="2.6" fill="currentColor" stroke="none"></circle>
-        </svg>
-      </button>
-      <button class="cam-screenshot-btn" id="btnCaptureDesktopPng" title="截图到桌面 (快捷键 5) · 按 4 截图到剪贴板" aria-label="截图到桌面">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
-          <circle cx="12" cy="13" r="4"></circle>
-        </svg>
-      </button>
-
       <!-- 右视口底部可折叠触屏操控板 (虚拟 WASD/QE + 记录机位帧 + 上下左右摇仰) -->
       <div class="touch-cam-pad collapsed" id="touchCamPad">
         <div>
@@ -3543,20 +3828,86 @@
           手动透视标定工具 (非自动反求) | 地平线 Y:52.0% 倾角:0.0° | VP1:(50%,52%)
         </div>
 
-        <div class="cam-gate-thirds-h"></div>
-        <div class="cam-gate-thirds-v"></div>
         <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:5;">
-          <div style="width:14px;height:1px;background:rgba(251,191,36,0.45);"></div>
-          <div style="height:14px;width:1px;background:rgba(251,191,36,0.45);position:absolute;"></div>
+          <svg width="54" height="54" viewBox="0 0 54 54" style="filter:drop-shadow(0 1px 2px rgba(0,0,0,0.65));" aria-hidden="true">
+            <line x1="27" y1="5"  x2="27" y2="19" stroke="rgba(255,255,255,0.88)" stroke-width="1.6" stroke-linecap="square"/>
+            <line x1="27" y1="35" x2="27" y2="49" stroke="rgba(255,255,255,0.88)" stroke-width="1.6" stroke-linecap="square"/>
+            <line x1="5"  y1="27" x2="19" y2="27" stroke="rgba(255,255,255,0.88)" stroke-width="1.6" stroke-linecap="square"/>
+            <line x1="35" y1="27" x2="49" y2="27" stroke="rgba(255,255,255,0.88)" stroke-width="1.6" stroke-linecap="square"/>
+          </svg>
         </div>
-        <div class="cam-gate-hud-row" style="flex-wrap:wrap;gap:4px 6px;align-items:center;">
-          <span id="vfRecHud" class="cam-hud-pill">2.39:1</span>
-          <span id="vfLensHud" class="cam-hud-pill">35mm</span>
-          <button type="button" id="btnToggleCamGateDetail" class="cam-hud-pill cam-hud-detail-btn" title="展开/收起摄影机机位 XYZ 与角度详情">详情 ▸</button>
+      </div>
+
+      <!-- 画幅比快捷选择浮层（点击底栏 画幅 展开） -->
+      <div class="arri-lens-popover" id="arriAspectPopover" role="dialog" aria-label="切换画面画幅比">
+        <div class="arri-lens-pop-head">
+          <span>画面画幅比</span>
+          <span id="arriAspectPopoverVal" style="color:#60A5FA;font-family:'SF Mono',Menlo,monospace;">2.39:1</span>
         </div>
-        <div class="cam-gate-hud-row" style="flex-direction:column;align-items:flex-start;gap:4px;">
-          <span id="vfGateModeLabel" class="cam-hud-pill" style="display:none;white-space:pre-line;">机位 XYZ: [2.20, 1.50, 2.75]m&#10;角度 Yaw: -38° · Pitch: -15.4° · 高: 1.50m</span>
-          <span id="vfTimeHud" class="cam-hud-pill">TC 00:00:00:00 | F:0</span>
+        <div class="arri-lens-pop-grid" style="grid-template-columns:repeat(2,1fr);">
+          <button type="button" class="arri-lens-opt arri-aspect-opt" data-aspect="2.39:1">2.39:1 宽银幕</button>
+          <button type="button" class="arri-lens-opt arri-aspect-opt" data-aspect="16:9">16:9 横屏</button>
+          <button type="button" class="arri-lens-opt arri-aspect-opt" data-aspect="9:16">9:16 竖屏</button>
+          <button type="button" class="arri-lens-opt arri-aspect-opt" data-aspect="4:3">4:3 经典</button>
+          <button type="button" class="arri-lens-opt arri-aspect-opt" data-aspect="1:1" style="grid-column:span 2;">1:1 方画幅</button>
+        </div>
+      </div>
+
+      <!-- 焦距快捷选择浮层（点击底栏 LENS 展开） -->
+      <div class="arri-lens-popover" id="arriLensPopover" role="dialog" aria-label="切换摄影机焦距">
+        <div class="arri-lens-pop-head">
+          <span>定焦焦距选择</span>
+          <span id="arriLensPopoverVal" style="color:#60A5FA;font-family:'SF Mono',Menlo,monospace;">24mm</span>
+        </div>
+        <div class="arri-lens-pop-grid">
+          <button type="button" class="arri-lens-opt" data-mm="16">16mm</button>
+          <button type="button" class="arri-lens-opt" data-mm="20">20mm</button>
+          <button type="button" class="arri-lens-opt" data-mm="24">24mm</button>
+          <button type="button" class="arri-lens-opt" data-mm="35">35mm</button>
+          <button type="button" class="arri-lens-opt" data-mm="50">50mm</button>
+          <button type="button" class="arri-lens-opt" data-mm="85">85mm</button>
+          <button type="button" class="arri-lens-opt" data-mm="135">135mm</button>
+          <button type="button" class="arri-lens-opt" data-mm="200">200mm</button>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <span style="font-size:10px;color:#8B95A5;">14</span>
+          <input type="range" id="arriLensPopoverSlider" min="14" max="200" step="1" value="24" style="flex:1;accent-color:#3B82F6;" />
+          <span style="font-size:10px;color:#8B95A5;">200mm</span>
+        </div>
+      </div>
+
+      <!-- ARRI 风格右视口最底部状态栏 -->
+      <div class="arri-monitor-bar" id="arriMonitorBar">
+        <div class="arri-left-telemetry">
+          <div class="arri-stby-slot" id="arriStbySlot"></div>
+          <span class="arri-kv"><span class="arri-k">FPS</span><span class="arri-v" id="vfFpsDisplay">23.976</span></span>
+          <span class="arri-kv"><span class="arri-k">开口角</span><span class="arri-v" id="vfShutterDisplay">172.8°</span></span>
+          <button type="button" class="arri-lens-btn" id="btnArriAspectPicker" title="点击切换画面画幅比">
+            <span class="arri-k">画幅</span>
+            <span class="arri-v" id="vfRecHud">2.39:1</span>
+          </button>
+          <button type="button" class="arri-lens-btn" id="btnArriLensPicker" title="点击切换摄影机焦距">
+            <span class="arri-k">LENS</span>
+            <span class="arri-v" id="vfLensMmHud">24mm</span>
+          </button>
+          <span class="arri-kv"><span class="arri-k">机高</span><span class="arri-v" id="vfCamHeightHud">1.36m</span></span>
+        </div>
+        <div class="arri-right-tools" id="arriRightTools">
+          <button class="touch-cam-toggle-btn collapsed" id="btnToggleTouchCamPad" title="展开/收起触屏运镜面板（右视口支持双指捏合变焦）" aria-label="触屏运镜">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="9 5 12 2 15 5"></polyline>
+              <polyline points="9 19 12 22 15 19"></polyline>
+              <polyline points="5 9 2 12 5 15"></polyline>
+              <polyline points="19 9 22 12 19 15"></polyline>
+              <circle cx="12" cy="12" r="2.6" fill="currentColor" stroke="none"></circle>
+            </svg>
+          </button>
+          <button class="cam-screenshot-btn" id="btnCaptureDesktopPng" title="截图到桌面 (快捷键 5) · 按 4 截图到剪贴板" aria-label="截图到桌面">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+              <circle cx="12" cy="13" r="4"></circle>
+            </svg>
+          </button>
         </div>
       </div>
     </div>
@@ -3593,6 +3944,13 @@
               <span>保存</span>
             </span>
             <span class="menu-shortcut">⌘S</span>
+          </button>
+          <button class="menu-row-item" id="btnToggleAutoSave" title="开启或关闭自动保存（每 1 分钟自动将改动静默保存到工程库）">
+            <span class="menu-row-left">
+              <span class="menu-check" id="autoSaveMenuCheck" style="width:16px;display:inline-flex;align-items:center;justify-content:center;color:#4ADE80;font-weight:700;">✓</span>
+              <span>自动保存</span>
+            </span>
+            <span class="menu-shortcut" id="autoSaveMenuState" style="color:#4ADE80;">开</span>
           </button>
           <!-- 另存为 -->
           <div class="cascade-item" id="openMenuSaveParent" title="另存为新镜头、新场次或指定场次">
@@ -3652,12 +4010,6 @@
             <div class="cascade-sub-panel" id="editAspectRatioSub" style="width:206px;">
               <div class="cascade-item menu-aspect-item" data-menu-aspect="2.39:1" title="切换为 2.39:1 电影宽银幕">
                 <span class="menu-row-left"><span class="menu-check">✓</span><span>2.39:1 宽银幕</span></span>
-              </div>
-              <div class="cascade-item menu-aspect-item" data-menu-aspect="2.35:1" title="切换为 2.35:1 宽银幕 (1280×544)">
-                <span class="menu-row-left"><span class="menu-check"></span><span>2.35:1 宽银幕</span></span>
-              </div>
-              <div class="cascade-item menu-aspect-item" data-menu-aspect="2.33:1" title="切换为 2.33:1 宽银幕 (21:9)">
-                <span class="menu-row-left"><span class="menu-check"></span><span>2.33:1 宽银幕</span></span>
               </div>
               <div class="cascade-item menu-aspect-item" data-menu-aspect="16:9" title="切换为 16:9 标准横屏">
                 <span class="menu-row-left"><span class="menu-check"></span><span>16:9 横屏</span></span>
@@ -4322,6 +4674,10 @@
           <svg class="menu-icon" viewBox="0 0 24 24" style="width:14px;height:14px;"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="6" y1="8" x2="6" y2="8"/><line x1="10" y1="8" x2="10" y2="8"/><line x1="14" y1="8" x2="14" y2="8"/><line x1="18" y1="8" x2="18" y2="8"/><line x1="6" y1="12" x2="6" y2="12"/><line x1="10" y1="12" x2="10" y2="12"/><line x1="14" y1="12" x2="14" y2="12"/><line x1="18" y1="12" x2="18" y2="12"/><line x1="8" y1="16" x2="16" y2="16"/></svg>
           <span>快捷键</span>
         </button>
+        <span class="top-status-pill" id="autoSaveStatusPill" style="cursor:pointer;display:inline-flex;align-items:center;gap:5px;font-size:11px;" title="自动保存已开启：编辑后自动保存到工程库（点击立即保存）">
+          <span id="autoSaveStatusDot" style="width:6px;height:6px;border-radius:50%;background:#4ADE80;flex-shrink:0;"></span>
+          <span id="autoSaveStatusText">自动保存</span>
+        </span>
         <span class="top-status-pill" id="currentShotIndicator" style="cursor:pointer;" title="当前场次与镜头，点击打开场次与镜头文件夹">第1场 ▸ 第1镜</span>
       </div>
     </div>
@@ -4479,7 +4835,7 @@
     <!-- 1. 场景对象列表 (支持拖拽分隔条调整高度) -->
     <div class="sidebar-section">
       <div class="sidebar-section-header">
-        <span>场景对象列表</span>
+        <span>场景对象列表 <span id="outlinerObjCount" style="color:#7E8999;font-family:monospace;font-weight:500;"></span></span>
         <div style="display:flex;align-items:center;gap:4px;">
           <button class="btn active" id="btnToggleWorkMode" style="padding:1px 6px;font-size:11px;min-height:22px;" title="切换全局布景保护（布景锁定）与编辑解锁；临时关闭不清除对象自身锁">布景锁定</button>
           <button class="btn" id="btnDeleteSelected" style="padding:1px 6px;font-size:11px;min-height:22px;color:#E16B6B !important;" title="删除选中对象 (Del)">删除</button>
@@ -4502,6 +4858,22 @@
         <button class="btn" id="btnArchShowAll" style="padding:1px 5px;font-size:11px;min-height:20px;" title="仅恢复显示全部墙面与屋顶（含组合子部件）并关闭智能剖切，不影响人物与其他隐藏对象">显示全部墙顶</button>
       </div>
       <div class="scene-list" id="sceneList"></div>
+
+      <!-- 独立摄影机机位分区（图形化：仅在 0 摄影机模式下展现，与场景对象分开排布，底部放增加摄影机图标） -->
+      <div class="outliner-camera-section" id="outlinerCameraSection" style="display:none;">
+        <div class="outliner-camera-header">
+          <span class="outliner-camera-title" title="摄影机机位列表">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#C5AE79" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><rect x="2" y="6" width="14" height="12" rx="2"/><path d="M16 10l6-3v10l-6-3z"/></svg>
+            <span id="outlinerCameraSectionTitle" style="font-family:'SF Mono',Menlo,monospace;font-size:11px;">1</span>
+          </span>
+        </div>
+        <div class="outliner-camera-list" id="outlinerCameraList"></div>
+        <button type="button" class="outliner-add-camera-btn" id="btnOutlinerAddCamera" title="增加摄影机（以左视口当前视角新建独立机位）" aria-label="增加摄影机">
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="14" height="12" rx="2"/><path d="M16 10l6-3v10l-6-3z"/></svg>
+        </button>
+      </div>
+
       <div class="outliner-resize-handle" id="outlinerResizeHandle" title="上下拖动调整对象列表与下方属性区的高度"></div>
 
       <!-- 选中对象颜色（所有物体/人物/道具/编组通用）与人物形态切换（仅单选人物显示） -->
@@ -4529,8 +4901,8 @@
       </div>
     </div>
 
-    <!-- 2. 选中对象变换属性与单位换算 (标题独占一行，单位开关靠右；对象名放下一行；仅保留一行简短绑定状态) -->
-    <div class="sidebar-section">
+    <!-- 2. 选中对象变换属性与单位换算 (仅选中实际物体/人物时显示尺寸，选中摄影机或无选区时隐藏) -->
+    <div class="sidebar-section" id="propTransformSidebarSection" style="display:none;">
       <div class="timeline-prop-panel" id="bottomPropertyPanel">
         <div class="prop-panel-header">
           <div class="prop-header-top-row">
@@ -4664,28 +5036,13 @@
       </div>
     </div>
 
-    <!-- 3. 导演摄影机焦距切换（仅在选中摄影机/焦点时显示，不常驻人物或车辆属性下方） -->
+    <!-- 3. 摄影机轨道与手持姿态（焦距已移至右视口底栏 LENS） -->
     <div class="sidebar-section" id="inspFocalSection" style="display:none;">
       <div class="sidebar-section-header">
-        <span title="快捷键：【 或 [ 变广，】 或 ] 变紧（按住 Shift 跳切定焦档位）">摄影机焦距</span>
-        <span id="inspFocalValue" style="font-size:11px;color:#5B9DFF;font-family:monospace;">35mm · FOV 37.8°</span>
+        <span>摄影机轨道与手持</span>
       </div>
       <div style="display:flex;flex-direction:column;gap:5px;font-size:11px;color:#9CA6B4;">
-        <div style="display:flex;align-items:center;gap:4px;">
-          <button class="btn" id="btnInspFocalWider" style="padding:2px 6px;font-size:11px;min-height:22px;" title="焦距变广 (【 或 [)">【 更广-</button>
-          <input type="range" id="inspFocalSlider" min="14" max="200" step="1" value="35" style="flex:1;" title="拖动切换导演摄影机焦距（14–200mm）" />
-          <button class="btn" id="btnInspFocalTighter" style="padding:2px 6px;font-size:11px;min-height:22px;" title="焦距变紧 (】 或 ])">+更紧 】</button>
-        </div>
-        <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;">
-          <button class="btn lens-btn" style="padding:2px 0;justify-content:center;font-size:11px;" data-mm="16">16</button>
-          <button class="btn lens-btn" style="padding:2px 0;justify-content:center;font-size:11px;" data-mm="24">24</button>
-          <button class="btn lens-btn active" style="padding:2px 0;justify-content:center;font-size:11px;" data-mm="35">35</button>
-          <button class="btn lens-btn" style="padding:2px 0;justify-content:center;font-size:11px;" data-mm="50">50</button>
-          <button class="btn lens-btn" style="padding:2px 0;justify-content:center;font-size:11px;" data-mm="85">85</button>
-          <button class="btn lens-btn" style="padding:2px 0;justify-content:center;font-size:11px;" data-mm="135">135</button>
-          <button class="btn lens-btn" style="padding:2px 0;justify-content:center;font-size:11px;" data-mm="200">200</button>
-        </div>
-        <div style="margin-top:4px;padding-top:6px;border-top:1px solid #353C46;display:grid;grid-template-columns:1fr 1fr;gap:4px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;">
           <label class="prop-field" title="摄影机空间轨道模式：自由三维向心样条 / 直线滑轨 / 圆弧弯轨">
             <span class="prop-axis-tag" style="color:#9CA6B4;background:rgba(156,166,180,0.12);border-right:1px solid #353C46;">轨道</span>
             <select id="inspCamRailMode" class="prop-num-input" style="padding:2px 4px;font-size:11px;cursor:pointer;">
@@ -5439,10 +5796,8 @@
           <span>导出画幅比</span>
           <span id="aspectBadge" style="font-family:monospace;color:#E7EBF0;">2.39:1 宽银幕</span>
         </div>
-        <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;">
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:4px;">
           <button class="btn aspect-btn active" style="justify-content:center;" data-aspect="2.39:1">2.39:1</button>
-          <button class="btn aspect-btn" style="justify-content:center;" data-aspect="2.35:1">2.35:1</button>
-          <button class="btn aspect-btn" style="justify-content:center;" data-aspect="2.33:1">2.33:1</button>
           <button class="btn aspect-btn" style="justify-content:center;" data-aspect="16:9">16:9</button>
           <button class="btn aspect-btn" style="justify-content:center;" data-aspect="9:16">9:16</button>
           <button class="btn aspect-btn" style="justify-content:center;" data-aspect="4:3">4:3</button>
@@ -13021,19 +13376,19 @@
         const rigLine = rigTags.length > 0 ? ` · ${rigTags.join(" / ")}` : "";
         gateHud.textContent = `机位 XYZ: [${cp[0].toFixed(2)}, ${cp[1].toFixed(2)}, ${cp[2].toFixed(2)}]m\n角度 Yaw: ${yawDeg > 0 ? "+" : ""}${yawDeg.toFixed(0)}° · Pitch: ${pitchDeg > 0 ? "+" : ""}${pitchDeg.toFixed(1)}°${rollPart} · 高: ${cp[1].toFixed(2)}m${rigLine}`;
       }
-      const lensHud = document.getElementById("vfLensHud");
-      if (lensHud) {
-        const liveFov = getTrueVerticalFovDeg();
-        const liveMm = fovToFocalMm(liveFov);
-        lensHud.textContent = `f = ${liveMm}mm | 机高 ${Number(cp[1]).toFixed(2)}m | FOV ${liveFov.toFixed(1)}°`;
-      }
+      const lensMmHud = document.getElementById("vfLensMmHud");
+      const camHeightHud = document.getElementById("vfCamHeightHud");
+      const liveFov = getTrueVerticalFovDeg();
+      const liveMm = fovToFocalMm(liveFov);
+      if (lensMmHud) lensMmHud.textContent = `${liveMm}mm`;
+      if (camHeightHud) camHeightHud.textContent = `${Number(cp[1]).toFixed(2)}m`;
     }
 
     // 计算右侧视频视口内 1:1 真实取景框 (#camGateFrame) 与参考视频并排/叠加/滑杆对照框的精确等比例尺寸（绝不拉伸！）
     function updateCameraGateLayout() {
       const workRect = workPaneDom.getBoundingClientRect();
       const camRect = camPaneDom.getBoundingClientRect();
-      const H = Math.max(1, Math.round(workRect.height || window.innerHeight));
+      const H = Math.max(1, Math.round(camRect.height || workRect.height || window.innerHeight));
       const leftW = Math.max(100, Math.round(workRect.width || window.innerWidth * splitRatio));
       const rightW = (viewLayoutMode === "split" || viewLayoutMode === "right")
         ? Math.max(100, Math.round(camRect.width || (viewLayoutMode === "right" ? window.innerWidth : window.innerWidth * (1 - splitRatio))))
@@ -13054,7 +13409,15 @@
       const isOverlay = (refVideoState.loaded && refVideoState.compareMode === "overlay");
       const isWipe = (refVideoState.loaded && refVideoState.compareMode === "wipe");
 
-      const maxGateH = Math.max(90, Math.min(H * 0.82, H - 88));
+      // 扣除底部 ARRI 状态栏高度，使竖屏/方画幅顶满可用高度（无多余上下黑边），同时光学中心严格对齐取景框中心
+      const arriBarEl = document.getElementById("arriMonitorBar");
+      const bottomBarH = (arriBarEl && arriBarEl.offsetParent !== null)
+        ? Math.round(arriBarEl.getBoundingClientRect().height || 32)
+        : 0;
+      const availH = Math.max(90, H - bottomBarH);
+      const gateCenterY = availH * 0.5;
+      const offsetFromPaneCenterY = gateCenterY - H * 0.5;
+      const maxGateH = availH;
 
       if (isSbs) {
         // 并排对照：左原片框 (#sideBySideRefBox) + 右白模框 (#camGateFrame)，两侧严格使用相同画幅 R 与相同宽高 gateW × gateH
@@ -13079,13 +13442,13 @@
           sbsBox.style.width = `${gateW}px`;
           sbsBox.style.height = `${gateH}px`;
           sbsBox.style.left = `${pairLeft}px`;
-          sbsBox.style.top = "50%";
+          sbsBox.style.top = `${gateCenterY}px`;
           sbsBox.style.transform = "translateY(-50%)";
         }
         camGateFrame.style.width = `${gateW}px`;
         camGateFrame.style.height = `${gateH}px`;
         camGateFrame.style.left = `${pairLeft + gateW + gapPx}px`;
-        camGateFrame.style.top = "50%";
+        camGateFrame.style.top = `${gateCenterY}px`;
         camGateFrame.style.transform = "translateY(-50%)";
         camGateFrame.style.boxShadow = showFrameGuide
           ? "0 0 0 9999px rgba(7, 8, 12, 0.78)"
@@ -13099,11 +13462,11 @@
         const effectiveFovDeg = THREE.MathUtils.radToDeg(2 * Math.atan(effectiveTanHalf));
         directorCamera.aspect = Math.max(0.1, rightW / H);
         directorCamera.fov = THREE.MathUtils.clamp(effectiveFovDeg, 4, 155);
-        directorCamera.setViewOffset(rightW, H, -offsetFromPaneCenterX, 0, rightW, H);
+        directorCamera.setViewOffset(rightW, H, -offsetFromPaneCenterX, -offsetFromPaneCenterY, rightW, H);
         directorCamera.updateProjectionMatrix();
       } else {
         if (sbsBox) sbsBox.classList.remove("active");
-        const maxGateW = Math.max(120, rightW * 0.90);
+        const maxGateW = Math.max(120, rightW);
         let gateW = maxGateW;
         let gateH = gateW / R;
         if (gateH > maxGateH) {
@@ -13116,7 +13479,7 @@
         camGateFrame.style.width = `${gateW}px`;
         camGateFrame.style.height = `${gateH}px`;
         camGateFrame.style.left = "50%";
-        camGateFrame.style.top = "50%";
+        camGateFrame.style.top = `${gateCenterY}px`;
         camGateFrame.style.transform = "translate(-50%, -50%)";
         camGateFrame.style.boxShadow = showFrameGuide
           ? "0 0 0 9999px rgba(7, 8, 12, 0.76)"
@@ -13143,7 +13506,11 @@
 
         const effectiveTanHalf = Math.tan(trueFovRad * 0.5) * (H / Math.max(1, gateH));
         const effectiveFovDeg = THREE.MathUtils.radToDeg(2 * Math.atan(effectiveTanHalf));
-        directorCamera.clearViewOffset();
+        if (Math.abs(offsetFromPaneCenterY) > 0.25) {
+          directorCamera.setViewOffset(rightW, H, 0, -offsetFromPaneCenterY, rightW, H);
+        } else {
+          directorCamera.clearViewOffset();
+        }
         directorCamera.aspect = Math.max(0.1, rightW / H);
         directorCamera.fov = THREE.MathUtils.clamp(effectiveFovDeg, 4, 155);
         directorCamera.updateProjectionMatrix();
@@ -13268,6 +13635,7 @@
       setActivePane(activePane);
       updateDirectorCamRigVisual();
       updateCameraGateLayout();
+      if (typeof renderOutlinerCameraSection === "function") renderOutlinerCameraSection();
     }
 
     // 选中暖金 3D 导演摄影机并进入摄影机模式
@@ -16862,6 +17230,7 @@
       });
 
       // 同步左侧工具栏「编组 / 解组」按钮状态
+      if (typeof renderOutlinerCameraSection === "function") renderOutlinerCameraSection();
       const grpShelfBtn = document.getElementById("toolShelfGroup");
       if (grpShelfBtn) {
         const selObjsNow = typeof selectedObjIds !== "undefined" && typeof getSceneObjById === "function"
@@ -17131,6 +17500,7 @@
       if (undoStack.length > MAX_HISTORY) undoStack.shift();
       redoStack.length = 0;
       updateUndoRedoButtons();
+      if (typeof scheduleAutoSave === "function") scheduleAutoSave();
     }
 
     function restoreSnapshotObj(snap) {
@@ -19498,6 +19868,76 @@
       closeAllTopMenus();
     });
 
+    document.getElementById("btnOutlinerAddCamera")?.addEventListener("click", (ev) => {
+      ev.stopPropagation();
+      addNewCameraInScene({ fromWorkView: true, keepKeyframes: false });
+    });
+
+    function renderOutlinerCameraSection() {
+      const secEl = document.getElementById("outlinerCameraSection");
+      const listEl = document.getElementById("outlinerCameraList");
+      const titleEl = document.getElementById("outlinerCameraSectionTitle");
+      if (!secEl || !listEl) return;
+
+      // 仅在「0 摄影机」模式下展现摄影机切换与新增面板；其他模式 (1 浏览 / 2 物体 / 3 姿态) 彻底隐藏
+      const isCamMode = typeof getUnifiedActiveModeKey === "function" && getUnifiedActiveModeKey() === "camera";
+      secEl.style.display = isCamMode ? "flex" : "none";
+      secEl.classList.toggle("cam-mode-active", isCamMode);
+      secEl.classList.toggle("cam-mode-locked", !isCamMode);
+      if (!isCamMode) return;
+
+      const activeSc = (projectBank?.scenes || []).find((s) => s.id === projectBank?.activeSceneId);
+      const rawShots = Array.isArray(activeSc?.shots) ? activeSc.shots : [];
+      const liveMm = Math.max(14, Math.min(200, Math.round(Number(fovToFocalMm(getTrueVerticalFovDeg())) || currentFocalMm || 35)));
+      const shots = rawShots.length > 0
+        ? rawShots
+        : [{ id: projectBank?.activeShotId || "__default_cam__", name: "机位 1", scene: sceneData }];
+
+      const svgCam = (color) => `<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="${color}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><rect x="2" y="6" width="14" height="12" rx="2"/><path d="M16 10l6-3v10l-6-3z"/></svg>`;
+      const svgCheck = '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+      const svgSwitch = '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 2 21 6 17 10"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 22 3 18 7 14"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>';
+
+      if (titleEl) titleEl.textContent = String(shots.length);
+
+      listEl.innerHTML = "";
+      shots.forEach((sh, idx) => {
+        const isCur = rawShots.length === 0 ? true : (sh.id === projectBank?.activeShotId);
+        const mm = isCur
+          ? liveMm
+          : Math.max(14, Math.min(200, Math.round(Number(sh.scene?.camera?.focal_mm || fovToFocalMm(sh.scene?.camera?.fov || 37.8)) || 35)));
+        const row = document.createElement("div");
+        row.className = "outliner-cam-row" + (isCur ? " active" : "");
+        row.dataset.shotId = sh.id;
+        row.title = isCur
+          ? `${sh.name || `机位 ${idx + 1}`} (${mm}mm)`
+          : `切换至 ${sh.name || `机位 ${idx + 1}`} (${mm}mm)`;
+        const badgeHtml = isCur
+          ? `<span class="outliner-cam-icon-badge current" title="当前机位">${svgCheck}</span>`
+          : `<span class="outliner-cam-icon-badge switchable" title="切换机位">${svgSwitch}</span>`;
+        row.innerHTML = `
+          <div class="outliner-cam-left">
+            ${svgCam(isCur ? "#C5AE79" : "#7D7053")}
+            <span class="outliner-cam-name">机位 ${idx + 1}</span>
+            <span class="outliner-cam-mm">${mm}mm</span>
+          </div>
+          ${badgeHtml}
+        `;
+        row.addEventListener("click", (ev) => {
+          ev.stopPropagation();
+          if (getUnifiedActiveModeKey() !== "camera") {
+            showCameraScreenshotToast("仅在「0 摄影机」模式下可切换机位，请先按 0 进入摄影机模式", true);
+            return;
+          }
+          if (!isCur) {
+            switchCameraShotQuick(sh.id);
+          } else {
+            selectDirectorCameraInWorkspace(false);
+          }
+        });
+        listEl.appendChild(row);
+      });
+    }
+
     function renderSceneOutliner() {
       syncSelectedSetFromPrimary();
       if (typeof ensureValidActiveGroupContext === "function") ensureValidActiveGroupContext();
@@ -19511,57 +19951,12 @@
       const svgLockClosed = '<svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>';
       const svgLockOpen = '<svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 7.4-2"/></svg>';
 
-      // 顶部固定显示【导演摄影机】（使用暖金 #C5AE79 色点，带快捷增加机位按钮及多机位切换栏）
-      const activeScForCam = (projectBank?.scenes || []).find((s) => s.id === projectBank?.activeSceneId);
-      const camShots = Array.isArray(activeScForCam?.shots) ? activeScForCam.shots : [];
-      const activeCamShotIdx = Math.max(0, camShots.findIndex((sh) => sh.id === projectBank?.activeShotId));
-      const camRow = document.createElement("div");
-      camRow.className = "scene-item" + (selectedObjId === "__camera__" ? " selected" : "");
-      camRow.title = "导演摄影机 (机位 / 焦距) · 快捷键 0（右侧 + 可在当前视角增加新机位）";
-      camRow.innerHTML = `
-        <div class="item-left">
-          <span class="color-dot" style="background:#C5AE79"></span>
-          <span class="scene-item-name" title="导演摄影机 (机位)">导演摄影机${camShots.length > 1 ? ` (机位 ${activeCamShotIdx + 1}/${camShots.length})` : " (机位)"}</span>
-        </div>
-        <div style="display:inline-flex;align-items:center;gap:4px;flex-shrink:0;">
-          <button type="button" id="btnOutlinerAddCamera" title="增加摄影机（以左视口当前视角新建独立机位）" style="height:20px;padding:0 6px;border-radius:4px;border:1px solid #3C4554;background:#242931;color:#E2E8F0;font-size:10.5px;cursor:pointer;line-height:1;">+机位</button>
-          <span style="font-size:11px;color:#9CA6B4;">0</span>
-        </div>
-      `;
-      camRow.addEventListener("click", (ev) => {
-        if (ev.target.closest("#btnOutlinerAddCamera")) return;
-        selectDirectorCameraInWorkspace(false);
-      });
-      camRow.querySelector("#btnOutlinerAddCamera")?.addEventListener("click", (ev) => {
-        ev.stopPropagation();
-        addNewCameraInScene({ fromWorkView: true, keepKeyframes: false });
-      });
-      listEl.appendChild(camRow);
-
-      if (camShots.length > 1) {
-        const camSwitchBar = document.createElement("div");
-        camSwitchBar.id = "outlinerCamSwitchBar";
-        camSwitchBar.style.cssText = "display:flex;flex-wrap:wrap;gap:4px;padding:2px 6px 6px 22px;";
-        camShots.forEach((sh, idx) => {
-          const isCur = sh.id === projectBank?.activeShotId;
-          const chip = document.createElement("button");
-          chip.type = "button";
-          chip.textContent = `机位${idx + 1}`;
-          chip.title = sh.name || `机位 ${idx + 1}`;
-          chip.style.cssText = isCur
-            ? "height:20px;padding:0 7px;border-radius:4px;border:1px solid #5B9DFF;background:rgba(91,157,255,0.22);color:#E7EBF0;font-size:10.5px;cursor:pointer;"
-            : "height:20px;padding:0 7px;border-radius:4px;border:1px solid #353C46;background:#1C2027;color:#9CA6B4;font-size:10.5px;cursor:pointer;";
-          chip.addEventListener("click", (ev) => {
-            ev.stopPropagation();
-            if (!isCur) switchCameraShotQuick(sh.id);
-          });
-          camSwitchBar.appendChild(chip);
-        });
-        listEl.appendChild(camSwitchBar);
-      }
-
+      // 场景对象列表与「摄影机机位」彻底分开：摄影机机位独立渲染在 #outlinerCameraSection，且仅在 0 摄影机模式下允许切换机位
       const visitedOutlinerIds = new Set();
       const allObjs = Array.isArray(sceneData.objects) ? sceneData.objects : [];
+      const objCountEl = document.getElementById("outlinerObjCount");
+      if (objCountEl) objCountEl.textContent = `(${allObjs.length})`;
+      if (typeof renderOutlinerCameraSection === "function") renderOutlinerCameraSection();
       const topRoots = allObjs.filter((o) => {
         if (!o || !o.id) return false;
         const p = typeof getParentGroupObj === "function" ? getParentGroupObj(o) : null;
@@ -19983,12 +20378,15 @@
 
       const aspectBadge = document.getElementById("aspectBadge");
       if (aspectBadge) aspectBadge.textContent = dispLabel;
+      const activeAspectKey = customAspectRatioNum ? `${customAspectRatioNum.toFixed(2)}:1` : key;
       const vfRecHud = document.getElementById("vfRecHud");
-      if (vfRecHud) vfRecHud.textContent = `REC ● ${customAspectRatioNum ? `${customAspectRatioNum.toFixed(2)}:1` : key} (${dispW}×${dispH})`;
+      if (vfRecHud) vfRecHud.textContent = activeAspectKey;
+      const arriAspectPopVal = document.getElementById("arriAspectPopoverVal");
+      if (arriAspectPopVal) arriAspectPopVal.textContent = activeAspectKey;
       const focalBadge = document.getElementById("focalBadge");
-      if (focalBadge) focalBadge.textContent = `${currentFocalMm}mm | ${customAspectRatioNum ? `${customAspectRatioNum.toFixed(2)}:1` : key}`;
+      if (focalBadge) focalBadge.textContent = `${currentFocalMm}mm | ${activeAspectKey}`;
 
-      document.querySelectorAll(".aspect-btn").forEach((btn) => {
+      document.querySelectorAll(".aspect-btn, .arri-aspect-opt").forEach((btn) => {
         btn.classList.toggle("active", !customAspectRatioNum && btn.dataset.aspect === key);
       });
       document.querySelectorAll(".menu-aspect-item").forEach((item) => {
@@ -20008,6 +20406,7 @@
       }
       updateDirectorCamRigVisual();
       updateCameraGateLayout();
+      if (typeof renderOutlinerCameraSection === "function") renderOutlinerCameraSection();
     }
 
     document.querySelectorAll(".aspect-btn").forEach((btn) => {
@@ -20433,34 +20832,32 @@
 
       const slider = document.getElementById("focalSlider");
       const badge = document.getElementById("focalBadge");
-      const hud = document.getElementById("vfLensHud");
+      const lensMmHud = document.getElementById("vfLensMmHud");
+      const camHeightHud = document.getElementById("vfCamHeightHud");
       if (slider && Number(slider.value) !== mm) slider.value = mm;
-      const inspSlider = document.getElementById("inspFocalSlider");
-      if (inspSlider && document.activeElement !== inspSlider && Number(inspSlider.value) !== mm) inspSlider.value = mm;
-      const inspVal = document.getElementById("inspFocalValue");
+      const arriPopSlider = document.getElementById("arriLensPopoverSlider");
+      if (arriPopSlider && document.activeElement !== arriPopSlider && Number(arriPopSlider.value) !== mm) arriPopSlider.value = mm;
+      const arriPopVal = document.getElementById("arriLensPopoverVal");
       const camYForHud = Number.isFinite(directorCamera?.position?.y)
         ? directorCamera.position.y
         : Number(sceneData?.camera?.pos?.[1] ?? 1.5);
-      setTxtFast(inspVal, `${mm}mm · FOV ${fov.toFixed(1)}°`);
       setTxtFast(badge, `${mm}mm | ${currentAspectRatio}`);
-      setTxtFast(hud, `f = ${mm}mm | 机高 ${camYForHud.toFixed(2)}m | FOV ${fov.toFixed(1)}°`);
+      setTxtFast(lensMmHud, `${mm}mm`);
+      setTxtFast(camHeightHud, `${camYForHud.toFixed(2)}m`);
+      setTxtFast(arriPopVal, `${mm}mm`);
 
       if (prevMm !== mm) {
-        document.querySelectorAll(".lens-btn").forEach((btn) => {
+        document.querySelectorAll(".arri-lens-opt").forEach((btn) => {
           btn.classList.toggle("active", Number(btn.dataset.mm) === mm);
         });
       }
 
       updateDirectorCamRigVisual();
       updateCameraGateLayout();
+      if (typeof renderOutlinerCameraSection === "function") renderOutlinerCameraSection();
     }
 
-    document.getElementById("focalSlider").addEventListener("input", (e) => {
-      updateFocalLengthUI(Number(e.target.value));
-    });
-
-    document.getElementById("focalSlider").addEventListener("change", (e) => {
-      const mm = Number(e.target.value);
+    function commitCameraFocalLength(mm, sourceText = null) {
       updateFocalLengthUI(mm);
       const trueFov = getTrueVerticalFovDeg();
       if (sceneData?.camera_keyframes) {
@@ -20477,42 +20874,129 @@
       }
       renderTimelineUI();
       syncPythonCodeFromScene();
-      logStatus(`摄影机焦距已调至 ${currentFocalMm}mm (FOV ${trueFov.toFixed(1)}°)`);
+      logStatus(sourceText || `摄影机焦距已调至 ${currentFocalMm}mm (FOV ${trueFov.toFixed(1)}°)`);
+    }
+
+    document.getElementById("focalSlider").addEventListener("input", (e) => {
+      updateFocalLengthUI(Number(e.target.value));
     });
 
-    document.querySelectorAll(".lens-btn").forEach((btn) => {
+    document.getElementById("focalSlider").addEventListener("change", (e) => {
+      commitCameraFocalLength(Number(e.target.value));
+    });
+
+    const arriAspectPopoverEl = document.getElementById("arriAspectPopover");
+    const btnArriAspectPickerEl = document.getElementById("btnArriAspectPicker");
+    const arriLensPopoverEl = document.getElementById("arriLensPopover");
+    const btnArriLensPickerEl = document.getElementById("btnArriLensPicker");
+    const arriLensPopoverSliderEl = document.getElementById("arriLensPopoverSlider");
+
+    function closeArriAspectPopover() {
+      arriAspectPopoverEl?.classList.remove("open");
+      btnArriAspectPickerEl?.classList.remove("open");
+    }
+
+    function closeArriLensPopover() {
+      arriLensPopoverEl?.classList.remove("open");
+      btnArriLensPickerEl?.classList.remove("open");
+    }
+
+    function positionBottomArriPopover(popoverEl, anchorEl, popWidth) {
+      if (!popoverEl || !anchorEl || !camPaneDom) return;
+      const paneRect = camPaneDom.getBoundingClientRect();
+      const btnRect = anchorEl.getBoundingClientRect();
+      const leftPx = Math.max(8, Math.min(paneRect.width - popWidth - 8, Math.round(btnRect.left - paneRect.left - 36)));
+      popoverEl.style.left = `${leftPx}px`;
+    }
+
+    btnArriAspectPickerEl?.addEventListener("pointerdown", (e) => e.stopPropagation());
+    btnArriAspectPickerEl?.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (!arriAspectPopoverEl) return;
+      const nextOpen = !arriAspectPopoverEl.classList.contains("open");
+      if (nextOpen) {
+        closeArriLensPopover();
+        const recPop = document.getElementById("camRecSettingsPopover");
+        const recGear = document.getElementById("btnCamRecSettings");
+        recPop?.classList.remove("open");
+        recGear?.classList.remove("open");
+        positionBottomArriPopover(arriAspectPopoverEl, btnArriAspectPickerEl, 224);
+        document.querySelectorAll(".arri-aspect-opt").forEach((opt) => {
+          opt.classList.toggle("active", !customAspectRatioNum && opt.dataset.aspect === currentAspectRatio);
+        });
+        const aspectPopVal = document.getElementById("arriAspectPopoverVal");
+        if (aspectPopVal) aspectPopVal.textContent = customAspectRatioNum ? `${customAspectRatioNum.toFixed(2)}:1` : currentAspectRatio;
+      }
+      arriAspectPopoverEl.classList.toggle("open", nextOpen);
+      btnArriAspectPickerEl.classList.toggle("open", nextOpen);
+    });
+
+    arriAspectPopoverEl?.addEventListener("pointerdown", (e) => e.stopPropagation());
+    arriAspectPopoverEl?.addEventListener("click", (e) => e.stopPropagation());
+
+    document.querySelectorAll(".arri-aspect-opt").forEach((btn) => {
       btn.addEventListener("click", () => {
-        const mm = Number(btn.dataset.mm);
-        updateFocalLengthUI(mm);
-        const trueFov = getTrueVerticalFovDeg();
-        if (sceneData?.camera_keyframes) {
-          const fps = getProjectFps();
-          const curFrame = Math.round(currentTime * fps);
-          const nearKf = sceneData.camera_keyframes.find((k) => Math.round(Number(k.t || 0) * fps) === curFrame || Math.abs(k.t - currentTime) <= 0.06);
-          if (nearKf) {
-            nearKf.focal_mm = currentFocalMm;
-            nearKf.fov = Number(trueFov.toFixed(2));
-            nearKf.has_fov = true;
-          } else if (autoRecordKeyframe && !isTimelineTrackLocked("__camera__")) {
-            recordCameraChannelKeyframe("fov", { silent: true });
-          }
-        }
-        renderTimelineUI();
+        const aspect = btn.dataset.aspect;
+        if (!aspect) return;
+        pushUndoSnapshot(`切换画幅比 (${aspect})`);
+        updateAspectRatioUI(aspect, null);
         syncPythonCodeFromScene();
-        logStatus(`已切换导演定焦镜头：${btn.textContent} (FOV ${trueFov.toFixed(1)}°)`);
+        closeArriAspectPopover();
+        logStatus(`📐 已切换视频画幅为 ${ASPECT_CONFIGS[aspect]?.label || aspect}，右侧视频取景框已等比同步`);
       });
     });
 
-    // 右侧栏【摄影机焦距】滑条：拖动实时变焦，松手写入当前时间附近的摄影机关键帧（与顶部菜单焦距滑条同一套逻辑）
-    const inspFocalSliderEl = document.getElementById("inspFocalSlider");
-    const mainFocalSliderEl = document.getElementById("focalSlider");
-    inspFocalSliderEl?.addEventListener("input", (e) => {
+    btnArriLensPickerEl?.addEventListener("pointerdown", (e) => e.stopPropagation());
+    btnArriLensPickerEl?.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (!arriLensPopoverEl) return;
+      const nextOpen = !arriLensPopoverEl.classList.contains("open");
+      if (nextOpen) {
+        closeArriAspectPopover();
+        const recPop = document.getElementById("camRecSettingsPopover");
+        const recGear = document.getElementById("btnCamRecSettings");
+        recPop?.classList.remove("open");
+        recGear?.classList.remove("open");
+        positionBottomArriPopover(arriLensPopoverEl, btnArriLensPickerEl, 224);
+        document.querySelectorAll(".arri-lens-opt").forEach((opt) => {
+          opt.classList.toggle("active", Number(opt.dataset.mm) === Number(currentFocalMm));
+        });
+        if (arriLensPopoverSliderEl) arriLensPopoverSliderEl.value = currentFocalMm;
+        const popVal = document.getElementById("arriLensPopoverVal");
+        if (popVal) popVal.textContent = `${currentFocalMm}mm`;
+      }
+      arriLensPopoverEl.classList.toggle("open", nextOpen);
+      btnArriLensPickerEl.classList.toggle("open", nextOpen);
+    });
+
+    arriLensPopoverEl?.addEventListener("pointerdown", (e) => e.stopPropagation());
+    arriLensPopoverEl?.addEventListener("click", (e) => e.stopPropagation());
+
+    document.querySelectorAll(".arri-lens-opt").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        commitCameraFocalLength(Number(btn.dataset.mm), `已切换导演定焦镜头：${btn.textContent}`);
+        closeArriLensPopover();
+      });
+    });
+
+    arriLensPopoverSliderEl?.addEventListener("input", (e) => {
       updateFocalLengthUI(Number(e.target.value));
     });
-    inspFocalSliderEl?.addEventListener("change", (e) => {
-      if (!mainFocalSliderEl) return;
-      mainFocalSliderEl.value = e.target.value;
-      mainFocalSliderEl.dispatchEvent(new Event("change"));
+    arriLensPopoverSliderEl?.addEventListener("change", (e) => {
+      commitCameraFocalLength(Number(e.target.value));
+    });
+
+    document.addEventListener("pointerdown", (ev) => {
+      if (arriAspectPopoverEl?.classList.contains("open")) {
+        if (!arriAspectPopoverEl.contains(ev.target) && !btnArriAspectPickerEl?.contains(ev.target)) {
+          closeArriAspectPopover();
+        }
+      }
+      if (arriLensPopoverEl?.classList.contains("open")) {
+        if (!arriLensPopoverEl.contains(ev.target) && !btnArriLensPickerEl?.contains(ev.target)) {
+          closeArriLensPopover();
+        }
+      }
     });
 
     function ensureMutableCameraRig() {
@@ -20744,8 +21228,6 @@
       btnEl.addEventListener("pointercancel", stopHold);
       btnEl.addEventListener("pointerleave", stopHold);
     }
-    bindHoldableFocalButton(document.getElementById("btnInspFocalWider"), -1);
-    bindHoldableFocalButton(document.getElementById("btnInspFocalTighter"), 1);
     bindHoldableFocalButton(document.getElementById("btnTouchFocalWider"), -1);
     bindHoldableFocalButton(document.getElementById("btnTouchFocalTighter"), 1);
 
@@ -25202,6 +25684,12 @@
           e.preventDefault();
           return;
         }
+        if (arriAspectPopoverEl?.classList.contains("open") || arriLensPopoverEl?.classList.contains("open")) {
+          closeArriAspectPopover();
+          closeArriLensPopover();
+          e.preventDefault();
+          return;
+        }
         if (isBoxSelectToolActive) { toggleBoxSelectTool(false); e.preventDefault(); return; }
         closeAllTopMenus();
         hideObjectContextMenu();
@@ -27038,6 +27526,9 @@
       }).then((r) => r.json());
       if (resp.ok) {
         pythonEditor.value = resp.python_code;
+      }
+      if (!_isRestoringOrLoadingScene && typeof scheduleAutoSave === "function") {
+        scheduleAutoSave();
       }
     }
 
@@ -33205,6 +33696,8 @@
       if (typeof renderConstraintsListUI === "function") renderConstraintsListUI();
       if (typeof syncAnimEditPolicyCheckmarks === "function") syncAnimEditPolicyCheckmarks();
       if (typeof updateShortcutsContextBadge === "function") updateShortcutsContextBadge();
+      const propTransformSidebarSection = document.getElementById("propTransformSidebarSection");
+      if (propTransformSidebarSection) propTransformSidebarSection.style.display = "none";
       if (inspFocalSection) inspFocalSection.style.display = isCamSelection ? "block" : "none";
       if (propSizeSectionRow) propSizeSectionRow.style.display = isCamSelection ? "none" : "flex";
       if (propRotScaleSectionRow) propRotScaleSectionRow.style.display = isCamSelection ? "none" : "flex";
@@ -33301,6 +33794,7 @@
         propRotY.disabled = true;
         return;
       }
+      if (propTransformSidebarSection) propTransformSidebarSection.style.display = "";
 
       const norm = normalizeSelectionForTransform(selectedObjIds, currentTime);
       const perm = checkTransformPermissions(norm.rootIds, "transform");
@@ -34202,82 +34696,88 @@
 
     function applyLoadedSceneDict(loadedScene, statusMsg = "", isBlankNew = false) {
       if (typeof endTimelineGesture === "function") endTimelineGesture(false, "load_scene");
-      soloActiveState = null;
-      sceneData = stripTransientSceneFields(JSON.parse(JSON.stringify(loadedScene)));
-      if (FORCE_HIDE_EDGES && sceneData) sceneData.hide_edges = true;
-      // 不在打开/切换镜头时静默截断关键帧数量或总时长（完整保留手工与既有工程帧）
-      ensureCharacterIdentityColors(sceneData);
-      const rmSel = document.getElementById("selectRenderMode");
-      if (rmSel && sceneData.render_mode) rmSel.value = sceneData.render_mode;
-      if (sceneData.camera) {
-        updateAspectRatioUI(
-          sceneData.camera.aspect_ratio || "2.39:1",
-          null,
-          sceneData.camera.export_width || null,
-          sceneData.camera.export_height || null
-        );
-        const fMm = sceneData.camera.focal_mm || fovToFocalMm(sceneData.camera.fov || 37.8);
-        updateFocalLengthUI(fMm, sceneData.camera.fov || focalMmToFov(fMm));
-        syncDirectorCameraToScene(sceneData.camera.pos, sceneData.camera.target, sceneData.camera.roll_deg || 0);
-      }
-      if (typeof updateCameraRigInspectorUI === "function") updateCameraRigInspectorUI();
-      if (typeof setPlaybackState === "function") setPlaybackState(false, "load_scene");
-      else isPlaying = false;
-      currentTime = 0.0;
-      selectedKeyframes.clear();
-      selectedObjIds.clear();
-      activeGroupContextId = null;
-      lastLockConflictInfo = null;
-      renderLockConflictBanner(null);
-      tlViewStart = 0.0;
-      tlViewEnd = Number(sceneData.duration) || 10.0;
-      lastLoadedDurForView = tlViewEnd;
-      lastRenderedRulerSignature = "";
-      playRangeEndFrame = Math.max(0, getProjectTotalFrames() - 1);
+      _isRestoringOrLoadingScene = true;
+      try {
+        soloActiveState = null;
+        sceneData = stripTransientSceneFields(JSON.parse(JSON.stringify(loadedScene)));
+        if (FORCE_HIDE_EDGES && sceneData) sceneData.hide_edges = true;
+        // 不在打开/切换镜头时静默截断关键帧数量或总时长（完整保留手工与既有工程帧）
+        ensureCharacterIdentityColors(sceneData);
+        const rmSel = document.getElementById("selectRenderMode");
+        if (rmSel && sceneData.render_mode) rmSel.value = sceneData.render_mode;
+        if (sceneData.camera) {
+          updateAspectRatioUI(
+            sceneData.camera.aspect_ratio || "2.39:1",
+            null,
+            sceneData.camera.export_width || null,
+            sceneData.camera.export_height || null
+          );
+          const fMm = sceneData.camera.focal_mm || fovToFocalMm(sceneData.camera.fov || 37.8);
+          updateFocalLengthUI(fMm, sceneData.camera.fov || focalMmToFov(fMm));
+          syncDirectorCameraToScene(sceneData.camera.pos, sceneData.camera.target, sceneData.camera.roll_deg || 0);
+        }
+        if (typeof updateCameraRigInspectorUI === "function") updateCameraRigInspectorUI();
+        if (typeof setPlaybackState === "function") setPlaybackState(false, "load_scene");
+        else isPlaying = false;
+        currentTime = 0.0;
+        selectedKeyframes.clear();
+        selectedObjIds.clear();
+        activeGroupContextId = null;
+        lastLockConflictInfo = null;
+        renderLockConflictBanner(null);
+        tlViewStart = 0.0;
+        tlViewEnd = Number(sceneData.duration) || 10.0;
+        lastLoadedDurForView = tlViewEnd;
+        lastRenderedRulerSignature = "";
+        playRangeEndFrame = Math.max(0, getProjectTotalFrames() - 1);
 
-      const isBlank = isBlankNew || (!!sceneData.blank_axes_only && (sceneData.objects || []).length === 0);
-      if (isBlank) {
-        selectedObjId = null;
-        activeTimelineTrackId = "__camera__";
-        transformControl.detach();
-      }
-
-      rebuildThreeScene();
-      applyCameraAtTime(currentTime);
-      if (typeof recordCommittedCamPosIntervalsJS === "function") recordCommittedCamPosIntervalsJS(sceneData);
-      if (!isBlank) {
-        const firstUaz = (sceneData.objects || []).find((o) => o.type === "uaz469" && !isObjectLocked(o) && evaluateEntityFinalVisibilityJS(o, currentTime, false).visible);
-        const firstChar = (sceneData.objects || []).find((o) => o.type === "character" && !isObjectLocked(o) && evaluateEntityFinalVisibilityJS(o, currentTime, false).visible);
-        const defaultTargetObj = firstUaz || firstChar || null;
-        if (defaultTargetObj) {
-          selectedObjId = defaultTargetObj.id;
-          activeTimelineTrackId = defaultTargetObj.id;
-          syncOrbitTargetToSelection();
-        } else {
+        const isBlank = isBlankNew || (!!sceneData.blank_axes_only && (sceneData.objects || []).length === 0);
+        if (isBlank) {
           selectedObjId = null;
           activeTimelineTrackId = "__camera__";
+          transformControl.detach();
         }
-        syncWorkViewToDirectorCamera();
-        renderSceneOutliner();
-        attachGizmoToSelection();
-        renderTimelineUI();
-        updateDirectorCamRigVisual();
-      } else {
-        syncWorkViewToDirectorCamera();
-        renderSceneOutliner();
-        renderTimelineUI();
-        updateDirectorCamRigVisual();
-      }
-      syncPythonCodeFromScene();
-      updateCurrentShotBadge();
-      renderProjectCascadeMenus();
-      checkSavedRefVideoPathOnLoad(sceneData);
-      if (statusMsg) logStatus(statusMsg);
-      requestAnimationFrame(() => {
+
+        rebuildThreeScene();
+        applyCameraAtTime(currentTime);
+        if (typeof recordCommittedCamPosIntervalsJS === "function") recordCommittedCamPosIntervalsJS(sceneData);
+        if (!isBlank) {
+          const firstUaz = (sceneData.objects || []).find((o) => o.type === "uaz469" && !isObjectLocked(o) && evaluateEntityFinalVisibilityJS(o, currentTime, false).visible);
+          const firstChar = (sceneData.objects || []).find((o) => o.type === "character" && !isObjectLocked(o) && evaluateEntityFinalVisibilityJS(o, currentTime, false).visible);
+          const defaultTargetObj = firstUaz || firstChar || null;
+          if (defaultTargetObj) {
+            selectedObjId = defaultTargetObj.id;
+            activeTimelineTrackId = defaultTargetObj.id;
+            syncOrbitTargetToSelection();
+          } else {
+            selectedObjId = null;
+            activeTimelineTrackId = "__camera__";
+          }
+          syncWorkViewToDirectorCamera();
+          renderSceneOutliner();
+          attachGizmoToSelection();
+          renderTimelineUI();
+          updateDirectorCamRigVisual();
+        } else {
+          syncWorkViewToDirectorCamera();
+          renderSceneOutliner();
+          renderTimelineUI();
+          updateDirectorCamRigVisual();
+        }
+        syncPythonCodeFromScene();
+        updateCurrentShotBadge();
+        renderProjectCascadeMenus();
+        checkSavedRefVideoPathOnLoad(sceneData);
+        if (statusMsg) logStatus(statusMsg);
         requestAnimationFrame(() => {
-          refreshActiveShotLiveThumb();
+          requestAnimationFrame(() => {
+            refreshActiveShotLiveThumb();
+          });
         });
-      });
+      } finally {
+        _isRestoringOrLoadingScene = false;
+        if (typeof markAutoSaveCleanBaseline === "function") markAutoSaveCleanBaseline();
+      }
     }
 
     // ================== 轻量级场景缩略图生成 & Finder 文件夹风格场镜浏览器 ==================
@@ -34558,8 +35058,108 @@
       applyLoadedSceneDict(sh.scene, `📂 已打开【${sc.name} ▸ ${sh.name}】（同场多镜头共享 3D 场景）`);
     }
 
-    async function saveCurrentShotToBank() {
-      if (!sceneData) return;
+    const AUTO_SAVE_STORAGE_KEY = "mds_auto_save_enabled_v1";
+    let autoSaveEnabled = (() => {
+      try { return localStorage.getItem(AUTO_SAVE_STORAGE_KEY) !== "0"; } catch (_) { return true; }
+    })();
+    let _autoSaveDebounceTimer = null;
+    let _autoSaveSafetyTimer = null;
+    let _autoSaveInFlight = false;
+    let _autoSaveNeedsRerun = false;
+    let _isRestoringOrLoadingScene = false;
+    let _lastSavedSceneSignature = "";
+    let _lastAutoSaveThumbAt = 0;
+    let _lastAutoSaveLabel = "";
+    let _autoSaveStateName = autoSaveEnabled ? "idle" : "off";
+
+    const TRANSIENT_SCENE_KEYS = new Set([
+      "_kfVisible",
+      "_editedAtTime",
+      "_baseEditedAtTime",
+      "_twoHandedReachClamped",
+      "_twoHandedReachMsg",
+    ]);
+
+    function computeAutoSaveSceneSignature() {
+      if (!sceneData) return "";
+      const hasCamKfs = Array.isArray(sceneData.camera_keyframes) && sceneData.camera_keyframes.length > 0;
+      try {
+        return JSON.stringify(sceneData, (k, v) => {
+          if (TRANSIENT_SCENE_KEYS.has(k)) return undefined;
+          // 播放或拖动时间轴时 applyCameraAtTime 会插值覆写 camera.pos/target/fov，若有关键帧则以关键帧与画幅为准
+          if (k === "camera" && hasCamKfs && v && typeof v === "object") {
+            return {
+              aspect_ratio: v.aspect_ratio || "2.39:1",
+              export_width: v.export_width || null,
+              export_height: v.export_height || null,
+            };
+          }
+          return v;
+        });
+      } catch (_) {
+        return "";
+      }
+    }
+
+    function updateAutoSaveUI(stateName = _autoSaveStateName, detailText = "") {
+      _autoSaveStateName = autoSaveEnabled ? stateName : "off";
+      const dot = document.getElementById("autoSaveStatusDot");
+      const txt = document.getElementById("autoSaveStatusText");
+      const pill = document.getElementById("autoSaveStatusPill");
+      const menuChk = document.getElementById("autoSaveMenuCheck");
+      const menuState = document.getElementById("autoSaveMenuState");
+
+      if (menuChk) {
+        menuChk.textContent = autoSaveEnabled ? "✓" : "";
+        menuChk.style.color = autoSaveEnabled ? "#4ADE80" : "#64748B";
+      }
+      if (menuState) {
+        menuState.textContent = autoSaveEnabled ? "开" : "关";
+        menuState.style.color = autoSaveEnabled ? "#4ADE80" : "#9CA6B4";
+      }
+      if (!dot || !txt || !pill) return;
+
+      if (!autoSaveEnabled) {
+        dot.style.background = "#64748B";
+        txt.textContent = "自动保存: 关";
+        pill.title = "自动保存已关闭（可点击立即手动保存，或在「工程 → 自动保存」重新开启）";
+        return;
+      }
+
+      if (stateName === "pending") {
+        dot.style.background = "#FBBF24";
+        txt.textContent = "待保存…";
+        pill.title = "检测到场景修改，将在 1 分钟内自动保存（点击可立即保存）";
+      } else if (stateName === "saving") {
+        dot.style.background = "#60A5FA";
+        txt.textContent = "保存中…";
+        pill.title = "正在写入本地工程库 saved_projects.json…";
+      } else if (stateName === "error") {
+        dot.style.background = "#F87171";
+        txt.textContent = "保存失败";
+        pill.title = detailText || "自动保存失败，将在稍后自动重试（点击立即重试保存）";
+      } else if (stateName === "saved") {
+        dot.style.background = "#4ADE80";
+        txt.textContent = detailText ? `已保存 ${detailText}` : (_lastAutoSaveLabel ? `已保存 ${_lastAutoSaveLabel}` : "自动保存");
+        pill.title = `自动保存已开启 · 最近保存：${detailText || _lastAutoSaveLabel || "刚刚"}（点击立即保存）`;
+      } else {
+        dot.style.background = "#4ADE80";
+        txt.textContent = _lastAutoSaveLabel ? `已保存 ${_lastAutoSaveLabel}` : "自动保存";
+        pill.title = "自动保存已开启：编辑后自动保存至本地工程库（点击立即保存）";
+      }
+    }
+
+    function markAutoSaveCleanBaseline(savedLabel = "") {
+      _lastSavedSceneSignature = computeAutoSaveSceneSignature();
+      if (_autoSaveDebounceTimer) {
+        clearTimeout(_autoSaveDebounceTimer);
+        _autoSaveDebounceTimer = null;
+      }
+      if (savedLabel) _lastAutoSaveLabel = savedLabel;
+      updateAutoSaveUI(savedLabel ? "saved" : "idle", savedLabel);
+    }
+
+    function commitSceneToActiveShotEntry({ captureThumb = true } = {}) {
       let sc = (projectBank.scenes || []).find((s) => s.id === projectBank.activeSceneId);
       if (!sc) {
         sc = {
@@ -34570,32 +35170,172 @@
         projectBank.scenes.push(sc);
         projectBank.activeSceneId = sc.id;
       }
+      const timeLabel = getNowTimeLabel();
       let sh = (sc.shots || []).find((k) => k.id === projectBank.activeShotId);
       if (!sh) {
         sh = {
           id: `shot_${Date.now()}`,
           name: `第 ${(sc.shots?.length || 0) + 1} 镜：主镜头`,
-          updatedAt: getNowTimeLabel(),
+          updatedAt: timeLabel,
           scene: stripTransientSceneFields(JSON.parse(JSON.stringify(sceneData))),
         };
         sc.shots.push(sh);
         projectBank.activeShotId = sh.id;
       } else {
-        sh.updatedAt = getNowTimeLabel();
+        sh.updatedAt = timeLabel;
         sh.scene = stripTransientSceneFields(JSON.parse(JSON.stringify(sceneData)));
       }
-      const liveThumb = captureLiveViewportThumbDataUrl();
-      if (liveThumb) sh.thumb = liveThumb;
+      if (captureThumb || !sh.thumb) {
+        const liveThumb = captureLiveViewportThumbDataUrl();
+        if (liveThumb) {
+          sh.thumb = liveThumb;
+          _lastAutoSaveThumbAt = Date.now();
+        }
+      }
       _syntheticShotThumbCache.delete(sh.id);
-
       syncSharedEnvironmentAcrossScene(sc, sceneData);
+      return { sc, sh, timeLabel };
+    }
+
+    const AUTO_SAVE_INTERVAL_MS = 60000;
+
+    function scheduleAutoSave(delayMs = AUTO_SAVE_INTERVAL_MS, { resetTimer = false } = {}) {
+      if (!autoSaveEnabled || !sceneData || _isPageUnloading || _isRestoringOrLoadingScene || isPlaying || isOfflineExporting) return;
+      if (_autoSaveStateName !== "saving") {
+        updateAutoSaveUI("pending");
+      }
+      if (_autoSaveDebounceTimer) {
+        if (!resetTimer) return;
+        clearTimeout(_autoSaveDebounceTimer);
+      }
+      _autoSaveDebounceTimer = setTimeout(() => {
+        _autoSaveDebounceTimer = null;
+        runAutoSaveNow({ silent: true });
+      }, Math.max(300, Number(delayMs) || AUTO_SAVE_INTERVAL_MS));
+    }
+
+    async function runAutoSaveNow({ silent = true, force = false } = {}) {
+      if (!sceneData || _isPageUnloading || _isRestoringOrLoadingScene || isOfflineExporting) return false;
+      if (!force && !autoSaveEnabled) return false;
+      if (!force && (isPlaying || isGizmoDragging)) {
+        scheduleAutoSave(1500, { resetTimer: true });
+        return false;
+      }
+      const curSig = computeAutoSaveSceneSignature();
+      if (!force && curSig && curSig === _lastSavedSceneSignature) {
+        updateAutoSaveUI("idle");
+        return true;
+      }
+      if (_autoSaveInFlight) {
+        _autoSaveNeedsRerun = true;
+        return false;
+      }
+      _autoSaveInFlight = true;
+      updateAutoSaveUI("saving");
+      try {
+        const nowMs = Date.now();
+        const shouldRefreshThumb = nowMs - _lastAutoSaveThumbAt > 30000;
+        const { timeLabel } = commitSceneToActiveShotEntry({ captureThumb: shouldRefreshThumb });
+        const saved = await persistProjectBank();
+        if (!saved) {
+          updateAutoSaveUI("error");
+          return false;
+        }
+        _lastSavedSceneSignature = computeAutoSaveSceneSignature();
+        _lastAutoSaveLabel = timeLabel;
+        updateCurrentShotBadge();
+        updateAutoSaveUI("saved", timeLabel);
+        if (!silent) {
+          logStatus(`💾 已自动保存当前镜头（${timeLabel}）`);
+        }
+        return true;
+      } catch (err) {
+        updateAutoSaveUI("error", String(err?.message || err));
+        return false;
+      } finally {
+        _autoSaveInFlight = false;
+        if (_autoSaveNeedsRerun) {
+          _autoSaveNeedsRerun = false;
+          scheduleAutoSave(1000, { resetTimer: true });
+        }
+      }
+    }
+
+    function setAutoSaveEnabled(nextEnabled) {
+      autoSaveEnabled = Boolean(nextEnabled);
+      try {
+        localStorage.setItem(AUTO_SAVE_STORAGE_KEY, autoSaveEnabled ? "1" : "0");
+      } catch (_) {}
+      if (!autoSaveEnabled && _autoSaveDebounceTimer) {
+        clearTimeout(_autoSaveDebounceTimer);
+        _autoSaveDebounceTimer = null;
+      }
+      updateAutoSaveUI(autoSaveEnabled ? "idle" : "off");
+      logStatus(autoSaveEnabled ? "✅ 已开启自动保存（每 1 分钟自动保存一次）" : "⏸ 已关闭自动保存（请使用 ⌘S 手动保存）");
+      if (autoSaveEnabled) {
+        const sig = computeAutoSaveSceneSignature();
+        if (sig && sig !== _lastSavedSceneSignature) {
+          scheduleAutoSave(AUTO_SAVE_INTERVAL_MS);
+        }
+      }
+    }
+
+    function startAutoSaveLoop() {
+      updateAutoSaveUI(autoSaveEnabled ? "idle" : "off");
+      if (_autoSaveSafetyTimer) return;
+      _autoSaveSafetyTimer = setInterval(() => {
+        if (!autoSaveEnabled || !sceneData || _isPageUnloading || _isRestoringOrLoadingScene || isPlaying || isOfflineExporting || isGizmoDragging || _autoSaveInFlight || _autoSaveDebounceTimer) {
+          return;
+        }
+        const sig = computeAutoSaveSceneSignature();
+        if (sig && sig !== _lastSavedSceneSignature) {
+          runAutoSaveNow({ silent: true });
+        }
+      }, AUTO_SAVE_INTERVAL_MS);
+    }
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState !== "hidden") return;
+      if (!autoSaveEnabled || !sceneData || _isPageUnloading || _isRestoringOrLoadingScene) return;
+      const sig = computeAutoSaveSceneSignature();
+      if (!sig || sig === _lastSavedSceneSignature) return;
+      try {
+        commitSceneToActiveShotEntry({ captureThumb: false });
+        const payload = JSON.stringify({ project_bank: projectBank });
+        const opts = {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: payload,
+        };
+        if (payload.length < 60000) opts.keepalive = true;
+        fetch("/api/projects", opts)
+          .then((r) => r.json())
+          .then((res) => {
+            if (res?.ok) {
+              _lastSavedSceneSignature = sig;
+              _lastAutoSaveLabel = getNowTimeLabel();
+              updateAutoSaveUI("saved", _lastAutoSaveLabel);
+            }
+          })
+          .catch(() => {});
+      } catch (_) {}
+    });
+
+    async function saveCurrentShotToBank() {
+      if (!sceneData) return;
+      const { sc, sh } = commitSceneToActiveShotEntry({ captureThumb: true });
       const saved = await persistProjectBank();
-      if (!saved) return false;
+      if (!saved) {
+        updateAutoSaveUI("error");
+        return false;
+      }
+      markAutoSaveCleanBaseline(sh.updatedAt);
       updateCurrentShotBadge();
       renderProjectCascadeMenus();
       closeAllTopMenus();
       showCameraScreenshotToast("当前镜头已保存到电脑");
       logStatus(`💾 已保存【${sc.name} ▸ ${sh.name}】（时间 ${sh.updatedAt}，本场公共 3D 布景已同步）`);
+      return true;
     }
 
     function createNewShotInScene(targetSceneId, resetCameraKeyframes = false) {
@@ -34653,15 +35393,21 @@
     }
 
     function switchCameraShotQuick(shotId) {
+      if (typeof getUnifiedActiveModeKey === "function" && getUnifiedActiveModeKey() !== "camera") {
+        showCameraScreenshotToast("仅在「0 摄影机」模式下可切换机位，请先按 0 进入摄影机模式", true);
+        return false;
+      }
       const sc = (projectBank.scenes || []).find((s) => s.id === projectBank.activeSceneId);
-      if (!sc) return;
+      if (!sc) return false;
       const nextSh = (sc.shots || []).find((k) => k.id === shotId);
-      if (!nextSh || !nextSh.scene || nextSh.id === projectBank.activeShotId) return;
+      if (!nextSh || !nextSh.scene || nextSh.id === projectBank.activeShotId) return false;
       _commitActiveShotBeforeCameraSwitch(sc);
       projectBank.activeShotId = nextSh.id;
       persistProjectBank();
       closeAllTopMenus();
       applyLoadedSceneDict(nextSh.scene, `📷 已切换至【${nextSh.name}】`);
+      selectDirectorCameraInWorkspace(false);
+      return true;
     }
 
     function addNewCameraInScene({ fromWorkView = true, keepKeyframes = false } = {}) {
@@ -34887,6 +35633,15 @@
     }
 
     document.getElementById("btnSaveCurrentShot")?.addEventListener("click", (e) => {
+      e.stopPropagation();
+      saveCurrentShotToBank();
+    });
+    document.getElementById("btnToggleAutoSave")?.addEventListener("click", (e) => {
+      e.stopPropagation();
+      setAutoSaveEnabled(!autoSaveEnabled);
+      closeAllTopMenus();
+    });
+    document.getElementById("autoSaveStatusPill")?.addEventListener("click", (e) => {
       e.stopPropagation();
       saveCurrentShotToBank();
     });
@@ -40226,6 +40981,14 @@
       performUndo,
       performRedo,
       saveCurrentShotToBank,
+      setAutoSaveEnabled,
+      autoSaveNow: () => runAutoSaveNow({ silent: false, force: true }),
+      getAutoSaveState: () => ({
+        enabled: autoSaveEnabled,
+        state: _autoSaveStateName,
+        lastSavedAt: _lastAutoSaveLabel,
+        dirty: computeAutoSaveSceneSignature() !== _lastSavedSceneSignature,
+      }),
       setTimelineLabelWidth,
       getTimelineLabelWidth,
       updatePropertyInspectorUI,
@@ -40317,6 +41080,8 @@
     updateInteractionStatus();
     initApp()
       .then(() => {
+        markAutoSaveCleanBaseline();
+        startAutoSaveLoop();
         startLiveStatePolling();
       })
       .catch((err) => {
@@ -40332,6 +41097,14 @@
 
     const _markUnloadingFast = () => {
       _isPageUnloading = true;
+      if (_autoSaveDebounceTimer) {
+        clearTimeout(_autoSaveDebounceTimer);
+        _autoSaveDebounceTimer = null;
+      }
+      if (_autoSaveSafetyTimer) {
+        clearInterval(_autoSaveSafetyTimer);
+        _autoSaveSafetyTimer = null;
+      }
       if (_livePollTimer) {
         clearInterval(_livePollTimer);
         _livePollTimer = null;

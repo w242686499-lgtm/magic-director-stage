@@ -92,6 +92,7 @@
       const topBtn = document.getElementById("btnTopBarFastGpuExport");
       const menuText = document.getElementById("menuFastGpuExportText");
       const mainExportBtn = document.getElementById("btnExportVideo");
+      const stbyLabel = document.getElementById("camRecBtnLabel");
       if (topBtn) {
         topBtn.classList.toggle("busy", state.exporting);
         topBtn.textContent = text || "⚡ 极速直出";
@@ -101,6 +102,14 @@
       }
       if (mainExportBtn) {
         mainExportBtn.textContent = state.exporting ? (text || "⚡ 导出中…") : "导出视频";
+      }
+      if (stbyLabel) {
+        if (state.exporting && text) {
+          const m = String(text).match(/(\d+%)/);
+          stbyLabel.textContent = m ? `REC ${m[1]}` : "REC";
+        } else if (!window.__cameraScreenRecorder?.isRecording && !window.__cameraScreenRecorder?.isSaving) {
+          stbyLabel.textContent = "STBY";
+        }
       }
     }
 
